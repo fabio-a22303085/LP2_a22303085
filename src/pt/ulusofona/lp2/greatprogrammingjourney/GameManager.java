@@ -1,6 +1,8 @@
     package pt.ulusofona.lp2.greatprogrammingjourney;
 
     import javax.swing.*;
+    import java.io.File;
+    import java.io.FileNotFoundException;
     import java.util.*;
 
     public class GameManager {
@@ -300,6 +302,17 @@
 
         public HashMap<String, String> customizeBoard(){
             return new HashMap<>();
+        }
+
+        public String getProgrammersInfo(){
+            return "";
+        }
+
+        public boolean saveGame(File file){
+            return true;
+        }
+
+        public void loadGame(File file) {
         }
 
         public String reactToAbyssOrTool() {
