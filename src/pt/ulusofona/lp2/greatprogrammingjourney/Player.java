@@ -1,23 +1,34 @@
 package pt.ulusofona.lp2.greatprogrammingjourney;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Player {
     int id, posicao;
     String nome, cor, linguagens;
-    Boolean emJogo;
+    String emJogo;
+
+    private int turnosPreso = 0;
+    private int ultimoDado = 0;
+
+    private List<Tool> ferramentas = new ArrayList<>();
+    private List<Integer> historicoPosicoes = new ArrayList<>();
 
     public Player(int id, int posicao, String nome, String cor, String linguagens) {
         this.id = id;
         this.posicao = posicao;
         this.nome = nome;
         this.cor = cor;
-        this.emJogo = true;
+        this.emJogo = "Em Jogo";
 
         String[] linguasArray = linguagens.split(";");
         Arrays.sort(linguasArray, String.CASE_INSENSITIVE_ORDER);
         this.linguagens = String.join("; ", linguasArray);
+        this.historicoPosicoes.add(this.posicao);
     }
+
+
 
     public int getId() {
         return id;
@@ -39,13 +50,117 @@ public class Player {
         return linguagens;
     }
 
+    public String getEmJogo() {
+        return emJogo;
+    }
+
     public void setPosicao(int posicao) {
         this.posicao = posicao;
     }
 
+    public boolean temFerramenta(int idFerramenta) {
+        for (Tool t : ferramentas) {
+            if (t.getId() == idFerramenta) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void setTurnosPreso(int turnos) {
+        this.turnosPreso = turnos;
+    }
+
+    public int getTurnosPreso() {
+        return turnosPreso;
+    }
+
+    public void decrementarTurnosPreso() {
+        if (turnosPreso > 0) turnosPreso--;
+    }
+
+    public void move(int deslocamento) {
+        this.posicao += deslocamento;
+        if (this.posicao < 0) this.posicao = 0;
+    }
+
+    public void apanharFerramenta(Tool ferramenta) {
+        ferramentas.add(ferramenta);
+    }
+
+    public boolean removerFerramenta(int idFerramenta) {
+        for (int i = 0; i < ferramentas.size(); i++) {
+            if (ferramentas.get(i).getId() == idFerramenta) {
+                ferramentas.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void setEmJogo(String emJogo) {
+        this.emJogo = emJogo;
+    }
+
     @Override
     public String toString() {
-        String estado = (emJogo)?"Em Jogo":"Derrotado";
-        return id + " | " + nome + " | " + posicao  +  " | " + linguagens + " | " + estado;
+        return id + " | " + nome + " | " + posicao  +  " | " + linguagens + " | " + emJogo;
+    }
+
+    public String getFerramentasToString() {
+        if (ferramentas.isEmpty()) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < ferramentas.size(); i++) {
+            sb.append(ferramentas.get(i).getTitle());
+
+            if (i < ferramentas.size() - 1) {
+                sb.append(";");
+            }
+        }
+
+        return sb.toString().replaceAll(";", "; ");
+    }
+
+    public String getEstado() {
+        return emJogo;
+    }
+
+    public void registarJogada() {
+        // Guarda a posição ATUAL na lista de histórico
+        this.historicoPosicoes.add(this.posicao);
+    }
+
+    // 4. Implementação do Abismo 5: "Voltar Posição Anterior"
+    public void voltarPosicaoAnterior() {
+        // A posição anterior é o último elemento que foi gravado no histórico
+        if (!historicoPosicoes.isEmpty()) {
+            // Pega no último valor gravado (onde estavas antes deste turno começar)
+            int posAnterior = historicoPosicoes.get(historicoPosicoes.size() - 1);
+            this.posicao = posAnterior;
+        }
+    }
+
+    // 5. Implementação do Abismo 6: "Voltar Dois Turnos"
+    public void voltarDoisTurnos() {
+        // Precisamos de ter pelo menos 2 registos no histórico para recuar 2 vezes
+        if (historicoPosicoes.size() >= 2) {
+            // size-1 é o turno anterior. size-2 é há dois turnos.
+            int posAntiga = historicoPosicoes.get(historicoPosicoes.size() - 2);
+            this.posicao = posAntiga;
+        } else {
+            // Se não houver histórico suficiente, volta ao início (segurança)
+            this.posicao = 0;
+        }
+
+}
+    public void setUltimoDado(int valor) {
+        this.ultimoDado = valor;
+    }
+
+    public int getUltimoDado() {
+        return this.ultimoDado;
     }
 }
