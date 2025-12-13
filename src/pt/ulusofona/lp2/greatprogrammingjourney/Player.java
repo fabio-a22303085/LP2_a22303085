@@ -76,12 +76,12 @@ public class Player {
     }
 
     public void decrementarTurnosPreso() {
-        if (turnosPreso > 0) turnosPreso--;
+        if (turnosPreso > 0){turnosPreso--;}
     }
 
     public void move(int deslocamento) {
         this.posicao += deslocamento;
-        if (this.posicao < 0) this.posicao = 0;
+        if (this.posicao < 0){this.posicao = 0;}
     }
 
     public void apanharFerramenta(Tool ferramenta) {
@@ -104,7 +104,12 @@ public class Player {
 
     @Override
     public String toString() {
-        return id + " | " + nome + " | " + posicao  +  " | " + linguagens + " | " + emJogo;
+        if (ferramentas.isEmpty()) {
+            return id + " | " + nome + " | " + posicao + " | No tools | " + linguagens + " | " + emJogo;
+        } else {
+
+            return id + " | " + nome + " | " + posicao + " | " + getFerramentasToString() + " | " + linguagens + " | " + emJogo;
+        }
     }
 
     public String getFerramentasToString() {

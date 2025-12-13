@@ -89,7 +89,7 @@
             List<Integer> tempIds = new ArrayList<>();
 
             for (String[] info : playerInfo) {
-                if (info.length < 4) return false;
+                if (info.length < 4){return false;}
 
                 try {
                     int id = Integer.parseInt(info[0]);
@@ -97,8 +97,12 @@
                     String linguagens = info[2];
                     String corSolicitada = info[3];
 
-                    if (id < 1 || idJogadores.contains(id)) return false;
-                    if (nome == null || nome.isBlank()) return false;
+                    if (id < 1 || idJogadores.contains(id)){
+                        return false;
+                    }
+                    if (nome == null || nome.isBlank()){
+                        return false;
+                    }
 
                     String corFinal;
                     if (corSolicitada != null && coresDisponiveis.contains(corSolicitada)) {
@@ -144,9 +148,9 @@
                         int idItem = Integer.parseInt(dados[1]);
                         int posicao = Integer.parseInt(dados[2]);
 
-                        if (posicao < 1 || posicao > worldSize) return false;
+                        if (posicao < 1 || posicao > worldSize){return false;}
 
-                        if (tabuleiro.containsKey(posicao)) return false;
+                        if (tabuleiro.containsKey(posicao)){return false;}
 
                         if (tipoStr.equals("0")) { // ABISMO
                             if (idItem < 0 || idItem > 9) return false;
