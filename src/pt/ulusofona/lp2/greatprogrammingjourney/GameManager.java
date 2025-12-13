@@ -76,7 +76,7 @@
                 return false;
             }
 
-            int numJogadores = playerInfo.length;
+            this.numJogadores = playerInfo.length;
 
             if (worldSize < numJogadores * 2) {
                 return false;
@@ -129,6 +129,7 @@
                 currentPlayer[i] = tempIds.get(i);
             }
 
+
             if (abyssesAndTools != null) {
                 int[] countAbyss = new int[10];
                 int[] countTools = new int[6];
@@ -177,20 +178,17 @@
                                 case 9: elemento = new Abyss(9, posicao, nomesAbyss[9], ""); break;
                                 default: return false;
                             }
-                        }
-                        tabuleiro.put(posicao, elemento);
+                        } tabuleiro.put(posicao, elemento);
 
                     } catch (NumberFormatException e) {
                         return false;
                     }
                 }
-            }
-            return true;
+            } return true;
         }
 
         public String[] getSlotInfo(int pos){
-            // meter array dos abyss e das tools
-            String[] result = new String[1];
+            String[] result = new String[3];
             if(pos<=0 || pos>tamanhoTabuleiro-1){return null;}
 
             int cont=0;
@@ -246,6 +244,10 @@
 
         public boolean moveCurrentPlayer(int nrSpaces){
             this.nrSpaces = nrSpaces;
+
+            if (numJogadores == 0) {
+                return false;
+            }
 
             if(nrSpaces<1||nrSpaces>6){return false;}
             Player p= allInfoPlayers.get(currentPlayer[atual]);
