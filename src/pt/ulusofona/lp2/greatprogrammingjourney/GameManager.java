@@ -124,7 +124,6 @@
                 }
             }
 
-            // DEFINIR QUEM COMEÇA
             Collections.sort(tempIds);
             for (int i = 0; i < numJogadores; i++) {
                 currentPlayer[i] = tempIds.get(i);
@@ -141,7 +140,7 @@
                         "Tratamento de Excepções", "IDE", "Ajuda Do Professor"};
 
                 for (String[] dados : abyssesAndTools) {
-                    if (dados.length < 3) return false;
+                    if (dados.length < 3){return false;}
 
                     try {
                         String tipoStr = dados[0];
@@ -153,14 +152,13 @@
                         if (tabuleiro.containsKey(posicao)){return false;}
 
                         if (tipoStr.equals("0")) { // ABISMO
-                            if (idItem < 0 || idItem > 9) return false;
+                            if (idItem < 0 || idItem > 9){return false;}
                         } else if (tipoStr.equals("1")) { // FERRAMENTA
-                            if (idItem < 0 || idItem > 5) return false;
+                            if (idItem < 0 || idItem > 5){return false;}
                         } else {
                             return false;
                         }
 
-                        // Criação do Objeto
                         BoardElement elemento = null;
 
                         if (tipoStr.equals("1")) {
@@ -187,10 +185,8 @@
                     }
                 }
             }
-
             return true;
         }
-
 
         public String[] getSlotInfo(int pos){
             // meter array dos abyss e das tools
