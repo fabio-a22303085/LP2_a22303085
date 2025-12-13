@@ -187,31 +187,54 @@
             } return true;
         }
 
-        public String[] getSlotInfo(int pos){
+
+        public String[] getSlotInfo(int pos) {
+            // 1. Validação de Limites (Requisito: retorna null se inválido)
+            if (pos < 1 || pos > tamanhoTabuleiro) {
+                return null;
+            }
+
             String[] result = new String[3];
-            if(pos<=0 || pos>tamanhoTabuleiro-1){return null;}
 
-            int cont=0;
-            ArrayList<Integer> lista = new ArrayList<>();
-            for(Player p : listaPlayers){
-                if(p.getPosicao()==pos){lista.add(p.getId());}
-            }
+            // --- PARTE 1: Jogadores (Índice 0) ---
+            // IDs dos jogadores na casa separados por vírgula
+            StringBuilder sbPlayers = new StringBuilder();
+            boolean primeiro = true;
 
-            if (lista.isEmpty()) {
-                result[0]="";
-                return result;
-            }
-            StringBuilder strB = new StringBuilder();
-            for (Integer num: lista) {
-                cont++;
-                strB.append(num.toString());
-                if (cont != lista.size()) {
-                    strB.append(",");
+            for (Player p : listaPlayers) {
+                if (p.getPosicao() == pos) {
+                    if (!primeiro) {
+                        sbPlayers.append(",");
+                    }
+                    sbPlayers.append(p.getId());
+                    primeiro = false;
                 }
             }
-            result[0]= strB.toString();
+            result[0] = sbPlayers.toString(); // Retorna "1,2" ou "" se vazio
+
+            // --- PARTE 2: Tabuleiro (Índice 1 e 2) ---
+            // Verifica se existe algum Abismo ou Ferramenta nesta posição
+            if (tabuleiro.containsKey(pos)) {
+                BoardElement elemento = tabuleiro.get(pos);
+
+                // Índice [1]: Descrição/Título
+                result[1] = elemento.getTitle();
+
+                // Índice [2]: Tipo formatado (A:ID ou T:ID)
+                if (elemento instanceof Tool) {
+                    result[2] = "T:" + elemento.getId();
+                } else if (elemento instanceof Abyss) {
+                    result[2] = "A:" + elemento.getId();
+                }
+            } else {
+                // Se a casa estiver vazia de itens
+                result[1] = ""; // Descrição vazia
+                result[2] = ""; // Tipo vazio
+            }
+
             return result;
         }
+
 
         public int getCurrentPlayerID(){
             return currentPlayer[atual];

@@ -14,6 +14,7 @@ public class Player {
 
     private List<Tool> ferramentas = new ArrayList<>();
     private List<Integer> historicoPosicoes = new ArrayList<>();
+    int index = 0;
 
     public Player(int id, int posicao, String nome, String cor, String linguagens) {
         this.id = id;
@@ -139,11 +140,11 @@ public class Player {
     }
 
     // 4. Implementação do Abismo 5: "Voltar Posição Anterior"
-    public void voltarPosicaoAnterior() {
+    public void voltarPosicaoAnterior(int num) {
         // A posição anterior é o último elemento que foi gravado no histórico
         if (!historicoPosicoes.isEmpty()) {
-            // Pega no último valor gravado (onde estavas antes deste turno começar)
-            int posAnterior = historicoPosicoes.get(historicoPosicoes.size() - 1);
+
+            int posAnterior = historicoPosicoes.get(historicoPosicoes.size() - num);
             this.posicao = posAnterior;
         }
     }

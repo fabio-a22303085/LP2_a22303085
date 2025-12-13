@@ -63,7 +63,7 @@ public class Abyss extends BoardElement{
 
             case 4: // CRASH (Sem Tool)
                 // Efeito: Volta à casa 0 (início)
-                player.setPosicao(0);
+                player.setPosicao(1);
                 msg = "CRASH TOTAL! O sistema foi abaixo. Voltaste ao início.";
                 break;
 
@@ -73,7 +73,7 @@ public class Abyss extends BoardElement{
                     msg = "Usaste Herança para evitar código duplicado! Estás salvo.";
                 } else {
                     // Nota: O Player precisa de guardar histórico (posicaoAnterior)
-                    player.voltarPosicaoAnterior(); // fazer historico
+                    player.voltarPosicaoAnterior(1); // fazer historico
                     msg = "Código Duplicado! Tiveste de refazer o trabalho. Voltaste para a casa anterior.";
                 }
                 break;
@@ -84,7 +84,7 @@ public class Abyss extends BoardElement{
                     msg = "A Programação Funcional evitou efeitos secundários! Estás salvo.";
                 } else {
                     // Nota: O Player precisa de guardar histórico (posicaoHa2Turnos)
-                    player.voltarDoisTurnos(); // fazer historico, hashmap
+                    player.voltarPosicaoAnterior(2); // fazer historico, hashmap
                     msg = "Efeitos Secundários imprevistos! Voltaste à posição de há 2 turnos.";
                 }
                 break;
@@ -108,12 +108,10 @@ public class Abyss extends BoardElement{
                 break;
 
             case 9: // SEGMENTATION FAULT (Sem Tool)
-                // Efeito: Recua 3 casas (Só se houver >= 2 jogadores)
-                // IMPORTANTE: Como este método só recebe 1 player, não consegues saber aqui
-                // quantos estão na casa. Tens de gerir essa validação no GameManager ou recuar sempre.
-                // Vou implementar o recuo padrão:
-                player.move(-3);
-                msg = "Segmentation Fault! Acesso inválido à memória. Recuaste 3 casas.";
+                if (game.getSlotInfo(player.getPosicao())[0].split(",").length > 1) {
+                    player.move(-3);
+                    msg = "Segmentation Fault! Acesso inválido à memória. Recuaste 3 casas.";
+                }
                 break;
 
             default:
@@ -123,7 +121,10 @@ public class Abyss extends BoardElement{
         return msg;
     }
 
-    // Método auxiliar para não repetir o if/else em todos os cases
+    public String getDescricao() {
+        return descricao;
+    }
+
     private boolean tentarUsarFerramenta(Player p, int idTool) {
         if (p.temFerramenta(idTool)) {
             p.removerFerramenta(idTool);
