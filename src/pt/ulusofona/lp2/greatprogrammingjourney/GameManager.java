@@ -112,7 +112,7 @@
                          return false;
                     }
 
-                    Player p = new Player(id, 0, nome, corFinal, linguagens);
+                    Player p = new Player(id, 1, nome, corFinal, linguagens);
 
                     listaPlayers.add(p);
                     allInfoPlayers.put(id, p);
