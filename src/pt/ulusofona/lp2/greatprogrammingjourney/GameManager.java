@@ -279,6 +279,12 @@
 
             if(nrSpaces<1||nrSpaces>6){return false;}
             Player p= allInfoPlayers.get(currentPlayer[atual]);
+            if (p.getLinguagens().split(";")[0].equals("Assembly") && nrSpaces>2){
+                return false;
+            }
+            if (p.getLinguagens().split(";")[0].equals("C") && nrSpaces>3){
+                return false;
+            }
             if(p.getPosicao()+nrSpaces>tamanhoTabuleiro){p.setPosicao(tamanhoTabuleiro);return true;}
             p.setPosicao(p.getPosicao()+nrSpaces);
             atual = (atual + 1) % numJogadores;
