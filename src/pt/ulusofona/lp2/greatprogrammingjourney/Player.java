@@ -200,7 +200,7 @@ public class Player {
             for (int i = 0; i < ferramentas.size(); i++) {
                 sb.append(ferramentas.get(i).getId());
 
-                if (i < ferramentas.size() - 1) sb.append(",");
+                if (i < ferramentas.size() - 1) {sb.append(",");}
             }
         }
         sb.append(":");
@@ -210,7 +210,7 @@ public class Player {
         } else {
             for (int i = 0; i < historicoPosicoes.size(); i++) {
                 sb.append(historicoPosicoes.get(i));
-                if (i < historicoPosicoes.size() - 1) sb.append(",");
+                if (i < historicoPosicoes.size() - 1) {sb.append(",");}
             }
         }
 
