@@ -26,6 +26,7 @@
         private String vencedor;
         private int nrSpaces = 0;
 
+
         public int getNrSpaces() {
             return nrSpaces;
         }
@@ -396,9 +397,166 @@
             }
         }
 
+        private static final String[] NOMES_TOOLS = {
+                "Herança", "Programação funcional", "Testes unitários",
+                "Tratamento de excepções", "IDE", "Ajuda do professor"
+        };
 
-        public void loadGame(File file) {
-            //
+        public void loadGame(File file) throws FileNotFoundException, InvalidFileException {
+            if (!file.exists()) {
+                throw new FileNotFoundException("Ficheiro não encontrado");
+            }
+
+            // 1. Limpar Tudo (Começar do zero)
+            listaPlayers.clear();
+            allInfoPlayers.clear();
+            idJogadores.clear();
+            tabuleiro.clear();
+            // Não metemos a null para evitar NullPointer, criamos novo array depois
+            currentPlayer = null;
+
+            try (Scanner scanner = new Scanner(file)) {
+
+                // --- BLOCO 1: DADOS GLOBAIS ---
+                if (!scanner.hasNextLine()) throw new InvalidFileException("Ficheiro vazio");
+
+                try {
+                    this.tamanhoTabuleiro = Integer.parseInt(scanner.nextLine());
+                    this.numJogadores = Integer.parseInt(scanner.nextLine());
+                    this.atual = Integer.parseInt(scanner.nextLine()); // Índice de quem joga a seguir
+                    this.rondas = Integer.parseInt(scanner.nextLine());
+
+                    if (tamanhoTabuleiro <= 0 || numJogadores < 0) {
+                        throw new InvalidFileException("Dados globais inválidos");
+                    }
+
+                    this.currentPlayer = new int[numJogadores];
+
+                } catch (NumberFormatException e) {
+                    throw new InvalidFileException("Erro no cabeçalho");
+                }
+
+                // --- BLOCO 2: JOGADORES ---
+                if (!scanner.hasNextLine()) throw new InvalidFileException("Falta nº jogadores");
+                int qtdPlayers;
+                try {
+                    qtdPlayers = Integer.parseInt(scanner.nextLine());
+                } catch (NumberFormatException e) { throw new InvalidFileException("Erro numérico qtd players"); }
+
+                for (int i = 0; i < qtdPlayers; i++) {
+                    if (!scanner.hasNextLine()) throw new InvalidFileException("Fim inesperado (players)");
+                    restaurarJogador(scanner.nextLine());
+                }
+
+                // RECONSTRUIR ARRAY currentPlayer (Ordenado por ID, como no createInitialBoard)
+                // O createInitialBoard ordenava os IDs. Vamos assumir a mesma lógica.
+                idJogadores.sort(Integer::compareTo);
+                for (int i = 0; i < numJogadores; i++) {
+                    if (i < idJogadores.size()) {
+                        currentPlayer[i] = idJogadores.get(i);
+                    }
+                }
+
+                // --- BLOCO 3: TABULEIRO ---
+                if (!scanner.hasNextLine()) throw new InvalidFileException("Falta nº elementos tabuleiro");
+                int qtdElementos;
+                try {
+                    qtdElementos = Integer.parseInt(scanner.nextLine());
+                } catch (NumberFormatException e) { throw new InvalidFileException("Erro numérico qtd elementos"); }
+
+                for (int i = 0; i < qtdElementos; i++) {
+                    if (!scanner.hasNextLine()) throw new InvalidFileException("Fim inesperado (tabuleiro)");
+                    restaurarElementoTabuleiro(scanner.nextLine());
+                }
+
+            } catch (FileNotFoundException | InvalidFileException e) {
+                throw e; // Relança as esperadas
+            } catch (Exception e) {
+                throw new InvalidFileException("Erro desconhecido: " + e.getMessage());
+            }
+        }
+
+
+        private void restaurarJogador(String linha) throws InvalidFileException {
+            String[] p = linha.split(":");
+
+            // AGORA SÃO APENAS 9 CAMPOS (0 a 8)
+            // Antes eram 10 ou 11
+            if (p.length < 9) throw new InvalidFileException("Linha de jogador inválida");
+
+            try {
+                int id = Integer.parseInt(p[0]);
+                int pos = Integer.parseInt(p[1]);
+                String nome = p[2];
+                String cor = p[3];
+                String estado = p[4];
+                int turnosPreso = Integer.parseInt(p[5]);
+                int ultimoDado = Integer.parseInt(p[6]);
+                String langs = p[7].equals("NULL") ? "" : p[7];
+                String toolsStr = p[8]; // O último campo agora são as tools
+
+                // REMOVIDO: String histStr = p[9];
+
+                // 1. Criar Jogador
+                // (O construtor já mete a posição atual no histórico novo, por isso não dá erro)
+                Player player = new Player(id, pos, nome, cor, langs);
+
+                // 2. Definir estados
+                player.setEmJogo(estado);
+                player.setTurnosPreso(turnosPreso);
+                player.setUltimoDado(ultimoDado);
+
+                // REMOVIDO: player.restaurarHistorico(histStr);
+
+                // 3. Restaurar Ferramentas
+                if (!toolsStr.equals("NULL") && !toolsStr.isBlank()) {
+                    String[] tIds = toolsStr.split(",");
+                    for (String tId : tIds) {
+                        try {
+                            int tid = Integer.parseInt(tId);
+                            if (tid >= 0 && tid < NOMES_TOOLS.length) {
+                                player.apanharFerramenta(new Tool(tid, NOMES_TOOLS[tid]));
+                            }
+                        } catch (NumberFormatException ignored) {}
+                    }
+                }
+
+                // 4. Guardar nas listas
+                listaPlayers.add(player);
+                allInfoPlayers.put(id, player);
+                idJogadores.add(id);
+
+            } catch (NumberFormatException e) {
+                throw new InvalidFileException("Erro numérico no jogador");
+            }
+        }
+
+
+        private void restaurarElementoTabuleiro(String linha) throws InvalidFileException {
+            // Formato: Posicao:TipoID:ID:Titulo
+            String[] p = linha.split(":");
+            if (p.length < 4) throw new InvalidFileException("Linha de tabuleiro inválida");
+
+            try {
+                int pos = Integer.parseInt(p[0]);
+                int tipoId = Integer.parseInt(p[1]); // 0 = Abyss, 1 = Tool
+                int id = Integer.parseInt(p[2]);
+                String titulo = p[3]; // O título já vem no ficheiro, usamos esse
+
+                BoardElement elemento;
+
+                if (tipoId == 1) { // Tool
+                    elemento = new Tool(id, titulo);
+                } else { // Abyss
+                    // Abismo: Passamos string vazia na descrição, pois a lógica está no ID
+                    elemento = new Abyss(id, pos, titulo, "");
+                }
+
+                tabuleiro.put(pos, elemento);
+
+            } catch (NumberFormatException e) {
+                throw new InvalidFileException("Erro numérico no tabuleiro");
+            }
         }
 
 

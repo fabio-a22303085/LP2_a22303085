@@ -205,15 +205,6 @@ public class Player {
         }
         sb.append(":");
 
-        if (historicoPosicoes.isEmpty()) {
-            sb.append("NULL");
-        } else {
-            for (int i = 0; i < historicoPosicoes.size(); i++) {
-                sb.append(historicoPosicoes.get(i));
-                if (i < historicoPosicoes.size() - 1) {sb.append(",");}
-            }
-        }
-
         return sb.toString();
     }
 
