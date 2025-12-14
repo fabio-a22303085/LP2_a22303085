@@ -169,4 +169,46 @@ public class Player {
     public int getUltimoDado() {
         return this.ultimoDado;
     }
+
+    public String getDataForSave() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(id).append(":");
+        sb.append(posicao).append(":");
+        sb.append(nome).append(":");
+        sb.append(cor).append(":");
+        sb.append(getEstado()).append(":");
+        sb.append(turnosPreso).append(":");
+        sb.append(ultimoDado).append(":");
+
+        if (linguagens == null || linguagens.isBlank()) {
+            sb.append("NULL");
+        } else {
+            sb.append(linguagens);
+        }
+        sb.append(":");
+
+        if (ferramentas.isEmpty()) {
+            sb.append("NULL");
+        } else {
+            for (int i = 0; i < ferramentas.size(); i++) {
+                sb.append(ferramentas.get(i).getId());
+
+                if (i < ferramentas.size() - 1) sb.append(",");
+            }
+        }
+        sb.append(":");
+
+        if (historicoPosicoes.isEmpty()) {
+            sb.append("NULL");
+        } else {
+            for (int i = 0; i < historicoPosicoes.size(); i++) {
+                sb.append(historicoPosicoes.get(i));
+                if (i < historicoPosicoes.size() - 1) sb.append(",");
+            }
+        }
+
+        return sb.toString();
+    }
+
 }

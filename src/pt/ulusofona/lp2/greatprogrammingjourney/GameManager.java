@@ -4,6 +4,11 @@
     import java.io.File;
     import java.io.FileNotFoundException;
     import java.util.*;
+    import java.io.File;
+    import java.io.FileWriter;
+    import java.io.IOException;
+    import java.io.PrintWriter;
+    import java.util.Map;
 
     public class GameManager {
 
@@ -134,11 +139,11 @@
                 int[] countAbyss = new int[10];
                 int[] countTools = new int[6];
 
-                String[] nomesAbyss = {"Erro de Sintaxe", "Erro de Lógica", "Exception", "FileNotFoundException",
-                        "Crash", "Código Duplicado", "Efeitos Secundários",
-                        "Blue Screen of Death", "Ciclo Infinito", "Segmentation Fault"};
-                String[] nomesTools = {"Herança", "Programação Funcional", "Testes Unitários",
-                        "Tratamento de Excepções", "IDE", "Ajuda Do Professor"};
+                String[] nomesAbyss = {"Erro de sintaxe", "Erro de lógica", "Exception", "FileNotFoundException",
+                        "Crash", "Código duplicado", "Efeitos secundários",
+                        "Blue Screen of Death", "Ciclo infinito", "Segmentation fault"};
+                String[] nomesTools = {"Herança", "Programação funcional", "Testes unitários",
+                        "Tratamento de excepções", "IDE", "Ajuda do professor"};
 
                 for (String[] dados : abyssesAndTools) {
                     if (dados.length < 3){return false;}
@@ -329,12 +334,62 @@
             return new HashMap<>();
         }
 
-        public String getProgrammersInfo(){
-            return "";
+        public String getProgrammersInfo() {
+            if (listaPlayers == null || listaPlayers.isEmpty()) {
+                return "";
+            }
+
+            StringBuilder sb = new StringBuilder();
+            boolean primeiro = true;
+
+            for (Player p : listaPlayers) {
+                if (!p.getEstado().equals("Derrotado")) {
+
+                    if (!primeiro) {
+                        sb.append(" | ");
+                    }
+
+                    sb.append(p.getNome())
+                            .append(" : ")
+                            .append(p.getFerramentasToString());
+
+                    primeiro = false;
+                }
+            }
+
+            return sb.toString();
         }
 
-        public boolean saveGame(File file){
-            return true;
+        public boolean saveGame(File file) {
+            try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
+
+                writer.println(tamanhoTabuleiro);
+                writer.println(numJogadores);
+                writer.println(atual);
+                writer.println(rondas);
+
+                writer.println(listaPlayers.size());
+
+                for (Player p : listaPlayers) {
+                    writer.println(p.getDataForSave());
+                }
+
+                writer.println(tabuleiro.size());
+
+                for (Map.Entry<Integer, BoardElement> entry : tabuleiro.entrySet()) {
+                    int pos = entry.getKey();
+                    BoardElement el = entry.getValue();
+
+                    int tipo = (el instanceof Tool) ? 1 : 0;
+
+                    writer.println(pos + ":" + tipo + ":" + el.getId() + ":" + el.getTitle());
+                }
+
+                return true;
+
+            } catch (IOException e) {
+                return false;
+            }
         }
 
         public void loadGame(File file) {
