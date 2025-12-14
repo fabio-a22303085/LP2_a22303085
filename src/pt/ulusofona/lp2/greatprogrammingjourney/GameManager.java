@@ -398,8 +398,11 @@
             }
         }
 
+
         public void loadGame(File file) {
+
         }
+
 
         public String reactToAbyssOrTool() {
             int indiceQuemMoveu = (atual - 1 + numJogadores) % numJogadores;
