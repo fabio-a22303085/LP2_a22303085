@@ -126,11 +126,12 @@ public class TestGameManager {
         int boardSize = 7;
         gm.createInitialBoard(jogadoresValidos(), boardSize);
 
-        String[] str = new String[4];
+        String[] str = new String[7];
         str[0] = "1";
         str[1] = "Ana";
         str[2] = "Java; Python";
         str[3] = "Brown";
+
 
         assertArrayEquals(str, gm.getProgrammerInfo(1));
     }
@@ -150,7 +151,7 @@ public class TestGameManager {
         int boardSize = 7;
         gm.createInitialBoard(jogadoresValidos(), boardSize);
 
-        String s = "1 | Ana | 1 | Java; Python | Em Jogo";
+        String s = "1 | Ana | 1 | No tools | Java; Python | Em Jogo";
         assertEquals(s, gm.getProgrammerInfoAsStr(1));
     }
 

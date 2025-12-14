@@ -4,7 +4,6 @@
     import java.io.File;
     import java.io.FileNotFoundException;
     import java.util.*;
-    import java.io.File;
     import java.io.FileWriter;
     import java.io.IOException;
     import java.io.PrintWriter;
@@ -143,8 +142,9 @@
                 String[] nomesAbyss = {"Erro de sintaxe", "Erro de lógica", "Exception", "FileNotFoundException",
                         "Crash", "Código duplicado", "Efeitos secundários",
                         "Blue Screen of Death", "Ciclo infinito", "Segmentation fault"};
-                String[] nomesTools = {"Herança", "Programação funcional", "Testes unitários",
-                        "Tratamento de excepções", "IDE", "Ajuda do professor"};
+
+                String[] nomesTools = {"Herança", "Programação Funcional", "Testes Unitários",
+                        "Tratamento de Excepções", "IDE", "Ajuda do Professor"};
 
                 for (String[] dados : abyssesAndTools) {
                     if (dados.length < 3){return false;}
@@ -398,8 +398,12 @@
         }
 
         private static final String[] NOMES_TOOLS = {
-                "Herança", "Programação funcional", "Testes unitários",
-                "Tratamento de excepções", "IDE", "Ajuda do professor"
+                "Herança",
+                "Programação Funcional",
+                "Testes Unitários",
+                "Tratamento de Excepções",
+                "IDE",
+                "Ajuda Do Professor"
         };
 
         public void loadGame(File file) throws FileNotFoundException, InvalidFileException {
@@ -418,7 +422,7 @@
             try (Scanner scanner = new Scanner(file)) {
 
                 // --- BLOCO 1: DADOS GLOBAIS ---
-                if (!scanner.hasNextLine()) throw new InvalidFileException("Ficheiro vazio");
+                if (!scanner.hasNextLine()){throw new InvalidFileException("Ficheiro vazio");}
 
                 try {
                     this.tamanhoTabuleiro = Integer.parseInt(scanner.nextLine());
@@ -437,14 +441,14 @@
                 }
 
                 // --- BLOCO 2: JOGADORES ---
-                if (!scanner.hasNextLine()) throw new InvalidFileException("Falta nº jogadores");
+                if (!scanner.hasNextLine()){throw new InvalidFileException("Falta nº jogadores");}
                 int qtdPlayers;
                 try {
                     qtdPlayers = Integer.parseInt(scanner.nextLine());
                 } catch (NumberFormatException e) { throw new InvalidFileException("Erro numérico qtd players"); }
 
                 for (int i = 0; i < qtdPlayers; i++) {
-                    if (!scanner.hasNextLine()) throw new InvalidFileException("Fim inesperado (players)");
+                    if (!scanner.hasNextLine()){throw new InvalidFileException("Fim inesperado (players)");}
                     restaurarJogador(scanner.nextLine());
                 }
 
@@ -458,14 +462,14 @@
                 }
 
                 // --- BLOCO 3: TABULEIRO ---
-                if (!scanner.hasNextLine()) throw new InvalidFileException("Falta nº elementos tabuleiro");
+                if (!scanner.hasNextLine()){throw new InvalidFileException("Falta nº elementos tabuleiro");}
                 int qtdElementos;
                 try {
                     qtdElementos = Integer.parseInt(scanner.nextLine());
                 } catch (NumberFormatException e) { throw new InvalidFileException("Erro numérico qtd elementos"); }
 
                 for (int i = 0; i < qtdElementos; i++) {
-                    if (!scanner.hasNextLine()) throw new InvalidFileException("Fim inesperado (tabuleiro)");
+                    if (!scanner.hasNextLine()){throw new InvalidFileException("Fim inesperado (tabuleiro)");}
                     restaurarElementoTabuleiro(scanner.nextLine());
                 }
 
@@ -482,7 +486,7 @@
 
             // AGORA SÃO APENAS 9 CAMPOS (0 a 8)
             // Antes eram 10 ou 11
-            if (p.length < 9) throw new InvalidFileException("Linha de jogador inválida");
+            if (p.length < 9){throw new InvalidFileException("Linha de jogador inválida");}
 
             try {
                 int id = Integer.parseInt(p[0]);
@@ -535,7 +539,7 @@
         private void restaurarElementoTabuleiro(String linha) throws InvalidFileException {
             // Formato: Posicao:TipoID:ID:Titulo
             String[] p = linha.split(":");
-            if (p.length < 4) throw new InvalidFileException("Linha de tabuleiro inválida");
+            if (p.length < 4){throw new InvalidFileException("Linha de tabuleiro inválida");}
 
             try {
                 int pos = Integer.parseInt(p[0]);
