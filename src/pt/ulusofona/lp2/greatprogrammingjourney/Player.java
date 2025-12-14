@@ -15,6 +15,8 @@ public class Player {
     private List<Tool> ferramentas = new ArrayList<>();
     private List<Integer> historicoPosicoes = new ArrayList<>();
     int index = 0;
+    String primeiraLinguagem;
+
 
     public Player(int id, int posicao, String nome, String cor, String linguagens) {
         this.id = id;
@@ -24,9 +26,14 @@ public class Player {
         this.emJogo = "Em Jogo";
 
         String[] linguasArray = linguagens.split(";");
+        primeiraLinguagem = linguasArray[0];
         Arrays.sort(linguasArray, String.CASE_INSENSITIVE_ORDER);
         this.linguagens = String.join("; ", linguasArray);
         this.historicoPosicoes.add(this.posicao);
+    }
+
+    public String getPrimeiraLinguagem() {
+      return primeiraLinguagem;
     }
 
 
