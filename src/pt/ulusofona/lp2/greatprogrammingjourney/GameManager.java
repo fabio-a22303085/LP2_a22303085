@@ -222,19 +222,15 @@
             if (tabuleiro.containsKey(pos)) {
                 BoardElement elemento = tabuleiro.get(pos);
 
-                // Índice [1]: Descrição/Título
                 result[1] = elemento.getTitle();
 
-                // Índice [2]: Tipo formatado (A:ID ou T:ID)
-                if (elemento instanceof Tool) {
-                    result[2] = "T:" + elemento.getId();
-                } else if (elemento instanceof Abyss) {
-                    result[2] = "A:" + elemento.getId();
-                }
+                // CORREÇÃO AQUI (Sem instanceof):
+                // O elemento já sabe se é "A" ou "T"
+                result[2] = elemento.getTypePrefix() + ":" + elemento.getId();
+
             } else {
-                // Se a casa estiver vazia de itens
-                result[1] = ""; // Descrição vazia
-                result[2] = ""; // Tipo vazio
+                result[1] = "";
+                result[2] = "";
             }
 
             return result;
@@ -386,7 +382,9 @@
                     int pos = entry.getKey();
                     BoardElement el = entry.getValue();
 
-                    int tipo = (el instanceof Tool) ? 1 : 0;
+                    // CORREÇÃO AQUI (Sem instanceof):
+                    // O elemento já sabe se é 0 ou 1
+                    int tipo = el.getTypeId();
 
                     writer.println(pos + ":" + tipo + ":" + el.getId() + ":" + el.getTitle());
                 }

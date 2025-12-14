@@ -132,4 +132,15 @@ public class Abyss extends BoardElement{
         }
         return false;
     }
+
+    @Override
+    public String getTypePrefix() {
+        return "A"; //Abyss
+    }
+
+    @Override
+    public int getTypeId() {
+        return 0; // 0 representa Abyss
+    }
+
 }

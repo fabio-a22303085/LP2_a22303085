@@ -11,4 +11,15 @@ public class Tool extends BoardElement {
         player.apanharFerramenta(this);
         return "Apanhaste a ferramenta: " + this.title;
     }
+
+    @Override
+    public String getTypePrefix() {
+        return "T"; //Tool
+    }
+
+    @Override
+    public int getTypeId() {
+        return 1; // 1 representa Tool
+    }
+
 }

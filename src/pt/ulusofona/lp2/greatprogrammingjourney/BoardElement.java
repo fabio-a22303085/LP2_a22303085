@@ -14,4 +14,10 @@ public abstract class BoardElement {
 
     public abstract String interact(Player player, GameManager game);
 
+    //(retorna "A" ou "T")
+    public abstract String getTypePrefix();
+
+    //(retorna 0 ou 1)
+    public abstract int getTypeId();
+
 }
