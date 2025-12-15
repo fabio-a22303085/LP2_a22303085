@@ -10,6 +10,7 @@ public class Player {
     private int turnosPreso = 0;
     private int ultimoDado = 0;
 
+    private Set<String> nomeFerramentas = new HashSet<>();
     private Set<Tool> ferramentas = new HashSet<>();
     private List<Integer> historicoPosicoes = new ArrayList<>();
     int index = 0;
@@ -91,11 +92,13 @@ public class Player {
 
     public void apanharFerramenta(Tool ferramenta) {
         ferramentas.add(ferramenta);
+        nomeFerramentas.add(ferramenta.getTitle());
     }
 
     public void removerFerramenta(int idFerramenta) {
        for (Tool t: ferramentas) {
            if (t.id == idFerramenta){
+               nomeFerramentas.remove(t.getTitle());
                ferramentas.remove(t);
            }
        }
@@ -116,14 +119,14 @@ public class Player {
     }
 
     public String getFerramentasToString() {
-        if (ferramentas.isEmpty()) {
+        if (nomeFerramentas.isEmpty()) {
             return "";
         }
 
         StringBuilder sb = new StringBuilder();
 
-        for (Tool t: ferramentas) {
-            sb.append(t.getTitle());
+        for (String t: nomeFerramentas) {
+            sb.append(t);
             sb.append(";");
 
         }
@@ -194,8 +197,8 @@ public class Player {
             sb.append("NULL");
         } else {
 
-            for (Tool t: ferramentas) {
-                sb.append(t.getTitle());
+            for (String t: nomeFerramentas) {
+                sb.append(t);
                 sb.append(",");
 
             }
