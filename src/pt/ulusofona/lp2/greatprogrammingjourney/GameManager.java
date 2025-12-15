@@ -282,10 +282,15 @@
             if (p.getPrimeiraLinguagem().equals("C") && nrSpaces>3){
                 return false;
             }
-            if(p.getPosicao()+nrSpaces>tamanhoTabuleiro){p.setPosicao(tamanhoTabuleiro);return true;}
-            p.setPosicao(p.getPosicao()+nrSpaces);
+            if(p.getPosicao()+nrSpaces>=tamanhoTabuleiro){
+                p.setPosicao(tamanhoTabuleiro);
+            } else {
+                p.setPosicao(p.getPosicao() + nrSpaces);
+            }
+
             atual = (atual + 1) % numJogadores;
             rondas++;
+
             return true;
         }
 
