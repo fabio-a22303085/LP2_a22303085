@@ -89,22 +89,22 @@ public class Abyss extends BoardElement{
                 }
                 break;
 
-            case 7: // BSOD (Sem Tool)
-                // Efeito: Morre (sai do jogo)
+            case 7: // BSOD
                 player.setEmJogo("Derrotado");
+                // IMPORTANTE: Se está derrotado, não pode ter turnos presos, nem se mexe
+                player.setTurnosPreso(0);
                 msg = "BLUE SCREEN OF DEATH! O teu PC pifou. Fim de jogo para ti.";
                 break;
 
-            case 8: // CICLO INFINITO (Tool: Teacher Help - ID 5)
-                // Efeito: Fica preso
-                // Nota: A parte de "libertar outros" é complexa de fazer aqui sem acesso à lista de todos
+            case 8: // CICLO INFINITO
                 if (tentarUsarFerramenta(player, 5)) {
                     msg = "O Professor ajudou-te a sair do Ciclo Infinito!";
                 } else {
-                    // Vamos assumir que fica preso 1 turno (ou define um valor fixo)
                     player.setEmJogo("Preso");
-                    msg = "Entraste num Ciclo Infinito! Ficas preso.";
-                } // logica para quando alguem entrar, o preso anterior é libertado e o que vem fica preso!!
+                    // CORREÇÃO CRUCIAL AQUI:
+                    player.setTurnosPreso(1); // Tens de definir o Inteiro, senão o GameManager ignora!
+                    msg = "Entraste num Ciclo Infinito! Ficas preso 1 turno.";
+                }
                 break;
 
             case 9: // SEGMENTATION FAULT (Sem Tool)

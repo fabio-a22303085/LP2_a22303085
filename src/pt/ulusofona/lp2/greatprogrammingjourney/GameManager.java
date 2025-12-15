@@ -267,39 +267,45 @@
             return allInfoPlayers.get(id).toString();
         }
 
-        public boolean moveCurrentPlayer(int nrSpaces){
+        public boolean moveCurrentPlayer(int nrSpaces) {
             this.nrSpaces = nrSpaces;
 
-            if (numJogadores == 0) {
-                return false;
+            if (numJogadores == 0) return false;
+            if (nrSpaces < 1 || nrSpaces > 6) return false;
+
+            Player p = allInfoPlayers.get(currentPlayer[atual]);
+
+            //Se morreu não se mexe
+            if (p.getEstado().equals("Derrotado")) {
+                atual = (atual + 1) % numJogadores;
+                rondas++;
+                return true;
             }
 
-            if(nrSpaces<1||nrSpaces>6){return false;}
-
-            Player p= allInfoPlayers.get(currentPlayer[atual]);
-
+            //VERIFICAR SE ESTÁ PRESO
             if (p.getTurnosPreso() > 0) {
-                // Se está preso, não se mexe. Apenas "gasta" o turno a esperar.
                 p.decrementarTurnosPreso();
-
-                atual = (atual + 1) % numJogadores; // Passa ao próximo
-                rondas++; // O turno conta na mesma!
-
-                return true; // Jogada válida (foi uma jogada de espera)
+                atual = (atual + 1) % numJogadores;
+                rondas++;
+                return true;
             }
 
-            if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces>2){
-                return false;
-            }
-            if (p.getPrimeiraLinguagem().equals("C") && nrSpaces>3){
-                return false;
-            }
-            if(p.getPosicao()+nrSpaces>=tamanhoTabuleiro){
+            // --- 2. VALIDAÇÕES DE LINGUAGEM ---
+            if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) return false;
+            if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) return false;
+
+            // --- 3. PREPARAR DADOS PARA OS ABISMOS (O que faltava!) ---
+            p.setUltimoDado(nrSpaces); // Essencial para "Erro de Lógica"
+            p.registarJogada();        // Essencial para "Voltar Posição Anterior"
+
+            // --- 4. MOVIMENTO ---
+            if (p.getPosicao() + nrSpaces >= tamanhoTabuleiro) {
                 p.setPosicao(tamanhoTabuleiro);
             } else {
                 p.setPosicao(p.getPosicao() + nrSpaces);
             }
 
+            // --- 5. FINALIZAR TURNO ---
             atual = (atual + 1) % numJogadores;
             rondas++;
 

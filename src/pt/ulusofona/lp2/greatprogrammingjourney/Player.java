@@ -96,12 +96,19 @@ public class Player {
     }
 
     public void removerFerramenta(int idFerramenta) {
-       for (Tool t: ferramentas) {
-           if (t.id == idFerramenta){
-               nomeFerramentas.remove(t.getTitle());
-               ferramentas.remove(t);
-           }
-       }
+        // Procura a ferramenta para obter o título antes de remover
+        Tool toolToRemove = null;
+        for (Tool t : ferramentas) {
+            if (t.getId() == idFerramenta) {
+                toolToRemove = t;
+                break; // Parar assim que encontrar para não dar erro
+            }
+        }
+
+        if (toolToRemove != null) {
+            ferramentas.remove(toolToRemove);
+            nomeFerramentas.remove(toolToRemove.getTitle());
+        }
     }
 
     public void setEmJogo(String emJogo) {
