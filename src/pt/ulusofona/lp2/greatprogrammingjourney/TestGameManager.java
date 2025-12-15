@@ -248,7 +248,7 @@ public class TestGameManager {
         str.add("THE GREAT PROGRAMMING JOURNEY");
         str.add("");
         str.add("NR. DE TURNOS");
-        str.add("4");
+        str.add("5");
         str.add("");
         str.add("VENCEDOR");
         str.add("Ana");
