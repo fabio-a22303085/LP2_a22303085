@@ -24,6 +24,7 @@
         private int rondas = 0;
         private String vencedor;
         private int nrSpaces = 0;
+        private boolean playerMoved = false;
 
 
         public int getNrSpaces() {
@@ -269,6 +270,7 @@
 
         public boolean moveCurrentPlayer(int nrSpaces) {
             this.nrSpaces = nrSpaces;
+            this.playerMoved = false;
 
             if (numJogadores == 0) return false;
             if (nrSpaces < 1 || nrSpaces > 6) return false;
@@ -304,6 +306,8 @@
             } else {
                 p.setPosicao(p.getPosicao() + nrSpaces);
             }
+
+            this.playerMoved = true;
 
             // --- 5. FINALIZAR TURNO ---
             atual = (atual + 1) % numJogadores;
@@ -604,6 +608,11 @@
 
 
         public String reactToAbyssOrTool() {
+            // SE NÃO HOUVE MOVIMENTO REAL (estava preso ou derrotado), NÃO HÁ REAÇÃO
+            if (!playerMoved) {
+                return null;
+            }
+
             int indiceQuemMoveu = (atual - 1 + numJogadores) % numJogadores;
             int id = currentPlayer[indiceQuemMoveu];
 
