@@ -275,7 +275,19 @@
             }
 
             if(nrSpaces<1||nrSpaces>6){return false;}
+
             Player p= allInfoPlayers.get(currentPlayer[atual]);
+
+            if (p.getTurnosPreso() > 0) {
+                // Se está preso, não se mexe. Apenas "gasta" o turno a esperar.
+                p.decrementarTurnosPreso();
+
+                atual = (atual + 1) % numJogadores; // Passa ao próximo
+                rondas++; // O turno conta na mesma!
+
+                return true; // Jogada válida (foi uma jogada de espera)
+            }
+
             if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces>2){
                 return false;
             }
