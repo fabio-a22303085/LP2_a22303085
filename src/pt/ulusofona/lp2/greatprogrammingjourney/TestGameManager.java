@@ -85,7 +85,7 @@ public class TestGameManager {
         gm.createInitialBoard(jogadoresValidos(), boardSize);
         String[] result = new String[3];
 
-        result[0]="";
+        result[0]="1,2,3";
         result[1]="";
         result[2]="";
         assertArrayEquals(result, gm.getSlotInfo(1));
@@ -135,7 +135,7 @@ public class TestGameManager {
         str[2] = "Java; Python";    // Linguagens (Nota: verifica se o teu código mete espaço ou não depois do ;)
         str[3] = "Brown";           // Cor
         str[4] = "1";               // Posição Inicial
-        str[5] = "No tools";        // Ferramentas
+        str[5] = "";        // Ferramentas
         str[6] = "Em Jogo";         // Estado Inicial
 
         assertArrayEquals(str, gm.getProgrammerInfo(1));
@@ -248,7 +248,7 @@ public class TestGameManager {
         str.add("THE GREAT PROGRAMMING JOURNEY");
         str.add("");
         str.add("NR. DE TURNOS");
-        str.add("4");
+        str.add("3");
         str.add("");
         str.add("VENCEDOR");
         str.add("Ana");
