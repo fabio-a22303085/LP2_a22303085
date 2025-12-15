@@ -193,6 +193,7 @@ public class Player {
         if (ferramentas.isEmpty()) {
             sb.append("NULL");
         } else {
+
             for (Tool t: ferramentas) {
                 sb.append(t.getTitle());
                 sb.append(",");
