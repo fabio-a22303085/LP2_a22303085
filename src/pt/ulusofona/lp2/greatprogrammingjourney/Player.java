@@ -32,7 +32,7 @@ public class Player {
     }
 
     public String getPrimeiraLinguagem() {
-      return primeiraLinguagem;
+        return primeiraLinguagem;
     }
 
 
@@ -96,21 +96,18 @@ public class Player {
     }
 
     public void removerFerramenta(int idFerramenta) {
-        // Usar Iterator para remover com segurança enquanto percorremos
-        Iterator<Tool> it = ferramentas.iterator();
-
-        while (it.hasNext()) {
-            Tool t = it.next();
+        // Procura a ferramenta para obter o título antes de remover
+        Tool toolToRemove = null;
+        for (Tool t : ferramentas) {
             if (t.getId() == idFerramenta) {
-
-                // Removemos também do Set de nomes (se ainda o estiveres a usar)
-                nomeFerramentas.remove(t.getTitle());
-
-                // Removemos da lista de ferramentas de forma segura
-                it.remove();
-
-                return; // Já encontrámos e removemos, podemos sair
+                toolToRemove = t;
+                break; // Parar assim que encontrar para não dar erro
             }
+        }
+
+        if (toolToRemove != null) {
+            ferramentas.remove(toolToRemove);
+            nomeFerramentas.remove(toolToRemove.getTitle());
         }
     }
 
@@ -176,7 +173,7 @@ public class Player {
             this.posicao = 0;
         }
 
-}
+    }
     public void setUltimoDado(int valor) {
         this.ultimoDado = valor;
     }
