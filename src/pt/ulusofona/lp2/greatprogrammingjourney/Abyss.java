@@ -102,9 +102,9 @@ public class Abyss extends BoardElement{
                     msg = "O Professor ajudou-te a sair do Ciclo Infinito!";
                 } else {
                     // Vamos assumir que fica preso 1 turno (ou define um valor fixo)
-                    player.setTurnosPreso(1);
-                    msg = "Entraste num Ciclo Infinito (while(true))! Ficas preso.";
-                }
+                    player.setEmJogo("Preso");
+                    msg = "Entraste num Ciclo Infinito! Ficas preso.";
+                } // logica para quando alguem entrar, o preso anterior é libertado e o que vem fica preso!!
                 break;
 
             case 9: // SEGMENTATION FAULT (Sem Tool)

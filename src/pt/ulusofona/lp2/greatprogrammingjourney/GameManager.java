@@ -309,7 +309,7 @@
             str.add("THE GREAT PROGRAMMING JOURNEY");
             str.add("");
             str.add("NR. DE TURNOS");
-            str.add(String.valueOf(rondas+1));
+            str.add(String.valueOf(rondas));
             str.add("");
             str.add("VENCEDOR");
             str.add(vencedor);
