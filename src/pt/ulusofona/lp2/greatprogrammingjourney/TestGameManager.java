@@ -47,7 +47,6 @@ public class TestGameManager {
         jogadores[2][1] = "Clara";
         jogadores[2][2] = "JavaScript";
         jogadores[2][3] = "Green";
-
         jogadores[3][0] = "4";
         jogadores[3][1] = "John";
         jogadores[3][2] = "Java;Python";
@@ -84,9 +83,11 @@ public class TestGameManager {
         gm = new GameManager();
         int boardSize = 7;
         gm.createInitialBoard(jogadoresValidos(), boardSize);
-        String[] result = new String[1];
+        String[] result = new String[3];
 
-        result[0]="1,2,3";
+        result[0]="";
+        result[1]="";
+        result[2]="";
         assertArrayEquals(result, gm.getSlotInfo(1));
     }
 
@@ -96,8 +97,10 @@ public class TestGameManager {
         int boardSize = 7;
         gm.createInitialBoard(jogadoresValidos(), boardSize);
 
-        String[] result = new String[1];
+        String[] result = new String[3];
         result[0]="";
+        result[1]="";
+        result[2]="";
         assertArrayEquals(result, gm.getSlotInfo(2));
     }
 
@@ -127,11 +130,13 @@ public class TestGameManager {
         gm.createInitialBoard(jogadoresValidos(), boardSize);
 
         String[] str = new String[7];
-        str[0] = "1";
-        str[1] = "Ana";
-        str[2] = "Java; Python";
-        str[3] = "Brown";
-
+        str[0] = "1";               // ID
+        str[1] = "Ana";             // Nome
+        str[2] = "Java; Python";    // Linguagens (Nota: verifica se o teu código mete espaço ou não depois do ;)
+        str[3] = "Brown";           // Cor
+        str[4] = "1";               // Posição Inicial
+        str[5] = "No tools";        // Ferramentas
+        str[6] = "Em Jogo";         // Estado Inicial
 
         assertArrayEquals(str, gm.getProgrammerInfo(1));
     }
@@ -172,7 +177,7 @@ public class TestGameManager {
 
         gm.moveCurrentPlayer(3);
 
-        String s = "1 | Ana | 4 | Java; Python | Em Jogo";
+        String s = "1 | Ana | 4 | No tools | Java; Python | Em Jogo";
         assertEquals(s, gm.getProgrammerInfoAsStr(1));
 
     }
@@ -293,8 +298,7 @@ public class TestGameManager {
         System.out.println(gm.getProgrammerInfoAsStr(2));
         System.out.println(gm.getProgrammerInfoAsStr(3));
 
-        assertEquals(gm.getProgrammerInfoAsStr(4), "4 | John | 5 | Java; Python | Em Jogo");
-
+        assertEquals(gm.getProgrammerInfoAsStr(4), "4 | John | 5 | No tools | Java; Python | Em Jogo");
 
 
     }
