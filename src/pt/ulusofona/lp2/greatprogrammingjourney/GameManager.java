@@ -272,8 +272,8 @@
             this.nrSpaces = nrSpaces;
             this.playerMoved = false;
 
-            if (numJogadores == 0) return false;
-            if (nrSpaces < 1 || nrSpaces > 6) return false;
+            if (numJogadores == 0) {return false;}
+            if (nrSpaces < 1 || nrSpaces > 6) {return false;}
 
             Player p = allInfoPlayers.get(currentPlayer[atual]);
 
@@ -293,8 +293,8 @@
             }
 
             // --- 2. VALIDAÇÕES DE LINGUAGEM ---
-            if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) return false;
-            if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) return false;
+            if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) {return false;}
+            if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) {return false;}
 
             // --- 3. PREPARAR DADOS PARA OS ABISMOS (O que faltava!) ---
             p.setUltimoDado(nrSpaces); // Essencial para "Erro de Lógica"
