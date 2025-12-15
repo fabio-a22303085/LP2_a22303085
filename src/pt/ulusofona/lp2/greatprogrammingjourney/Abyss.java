@@ -100,15 +100,42 @@ public class Abyss extends BoardElement{
                 if (tentarUsarFerramenta(player, 5)) {
                     msg = "O Professor ajudou-te a sair do Ciclo Infinito!";
                 } else {
+                    // 1. Procurar e libertar quem já lá estava preso
+                    List<Player> todos = game.getPlayersList();
+
+                    // CICLO FOR TRADICIONAL
+                    for (Player outro : todos) {
+                        // Se não for eu, estiver na minha posição e estiver preso
+                        if (outro.getId() != player.getId() &&
+                                outro.getPosicao() == player.getPosicao() &&
+                                outro.getTurnosPreso() > 0) {
+
+                            outro.setTurnosPreso(0);
+                            outro.setEmJogo("Em Jogo");
+                            // Podemos parar assim que libertarmos um (ou libertar todos, como preferires)
+                        }
+                    }
+
+                    // 2. Prender o jogador atual
                     player.setEmJogo("Preso");
-                    // CORREÇÃO CRUCIAL AQUI:
-                    player.setTurnosPreso(1); // Tens de definir o Inteiro, senão o GameManager ignora!
-                    msg = "Entraste num Ciclo Infinito! Ficas preso 1 turno.";
+                    player.setTurnosPreso(999); // Valor alto para "infinito"
+                    msg = "Entraste num Ciclo Infinito! Ficas preso até alguém te render.";
                 }
                 break;
 
-            case 9: // SEGMENTATION FAULT (Sem Tool)
-                if (game.getSlotInfo(player.getPosicao())[0].split(",").length > 1) {
+            case 9: // SEGMENTATION FAULT
+                // Contar quantos jogadores estão nesta casa usando um contador e um ciclo
+                int contadorJogadores = 0;
+                List<Player> lista = game.getPlayersList();
+
+                for (Player p : lista) {
+                    if (p.getPosicao() == player.getPosicao()) {
+                        contadorJogadores++;
+                    }
+                }
+
+                // Se houver mais do que 1 (eu + outro), recua
+                if (contadorJogadores > 1) {
                     player.move(-3);
                     msg = "Segmentation Fault! Acesso inválido à memória. Recuaste 3 casas.";
                 }
@@ -117,7 +144,6 @@ public class Abyss extends BoardElement{
             default:
                 msg = "Caíste num abismo desconhecido.";
         }
-
         return msg;
     }
 

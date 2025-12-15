@@ -96,18 +96,21 @@ public class Player {
     }
 
     public void removerFerramenta(int idFerramenta) {
-        // Procura a ferramenta para obter o título antes de remover
-        Tool toolToRemove = null;
-        for (Tool t : ferramentas) {
-            if (t.getId() == idFerramenta) {
-                toolToRemove = t;
-                break; // Parar assim que encontrar para não dar erro
-            }
-        }
+        // Usar Iterator para remover com segurança enquanto percorremos
+        Iterator<Tool> it = ferramentas.iterator();
 
-        if (toolToRemove != null) {
-            ferramentas.remove(toolToRemove);
-            nomeFerramentas.remove(toolToRemove.getTitle());
+        while (it.hasNext()) {
+            Tool t = it.next();
+            if (t.getId() == idFerramenta) {
+
+                // Removemos também do Set de nomes (se ainda o estiveres a usar)
+                nomeFerramentas.remove(t.getTitle());
+
+                // Removemos da lista de ferramentas de forma segura
+                it.remove();
+
+                return; // Já encontrámos e removemos, podemos sair
+            }
         }
     }
 

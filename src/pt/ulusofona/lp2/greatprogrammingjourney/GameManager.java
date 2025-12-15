@@ -26,6 +26,9 @@
         private int nrSpaces = 0;
         private boolean playerMoved = false;
 
+        public List<Player> getPlayersList() {
+            return this.listaPlayers;
+        }
 
         public int getNrSpaces() {
             return nrSpaces;
