@@ -542,7 +542,7 @@
                             if (tid >= 0 && tid < NOMES_TOOLS.length) {
                                 player.apanharFerramenta(new Tool(tid, NOMES_TOOLS[tid]));
                             }
-                        } catch (NumberFormatException ignored) {}
+                        } catch (NumberFormatException ignored) {throw new InvalidFileException("Erro");}
                     }
                 }
 
