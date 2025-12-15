@@ -369,9 +369,13 @@
                         sb.append(" | ");
                     }
 
+                    String ferramentas = p.getFerramentasToString();
+                    if (ferramentas.isEmpty()) {
+                        ferramentas = "No tools";
+                    }
                     sb.append(p.getNome())
                             .append(" : ")
-                            .append(p.getFerramentasToString());
+                            .append(ferramentas);
 
                     primeiro = false;
                 }
