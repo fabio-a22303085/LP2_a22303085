@@ -293,7 +293,6 @@
             for(Player p: listaPlayers){
                 if(p.getPosicao()==tamanhoTabuleiro){
                     vencedor=p.getNome();
-                    rondas++;
                     return true;
                 }
             }
@@ -315,12 +314,25 @@
             return str;
         }
 
+// Em GameManager.java
+
         public ArrayList<String> restantes(){
-            listaPlayers.sort((p1, p2) -> Integer.compare(p2.getPosicao(), p1.getPosicao()));
+
+            listaPlayers.sort((p1, p2) -> {
+
+                int comparePos = Integer.compare(p2.getPosicao(), p1.getPosicao());
+
+                if (comparePos != 0) {
+                    return comparePos;
+                }
+
+                return p1.getNome().compareTo(p2.getNome());
+            });
+
             ArrayList<String> resultado = new ArrayList<>();
 
             for(Player p : listaPlayers){
-                if(p.getPosicao()!=tamanhoTabuleiro){
+                if(p.getPosicao() != tamanhoTabuleiro){
                     resultado.add(p.getNome() + " " + p.getPosicao());
                 }
             }
