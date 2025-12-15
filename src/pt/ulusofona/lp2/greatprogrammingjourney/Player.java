@@ -1,8 +1,6 @@
 package pt.ulusofona.lp2.greatprogrammingjourney;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Player {
     int id, posicao;
@@ -12,7 +10,7 @@ public class Player {
     private int turnosPreso = 0;
     private int ultimoDado = 0;
 
-    private List<Tool> ferramentas = new ArrayList<>();
+    private Set<Tool> ferramentas = new HashSet<>();
     private List<Integer> historicoPosicoes = new ArrayList<>();
     int index = 0;
     String primeiraLinguagem;
@@ -95,14 +93,12 @@ public class Player {
         ferramentas.add(ferramenta);
     }
 
-    public boolean removerFerramenta(int idFerramenta) {
-        for (int i = 0; i < ferramentas.size(); i++) {
-            if (ferramentas.get(i).getId() == idFerramenta) {
-                ferramentas.remove(i);
-                return true;
-            }
-        }
-        return false;
+    public void removerFerramenta(int idFerramenta) {
+       for (Tool t: ferramentas) {
+           if (t.id == idFerramenta){
+               ferramentas.remove(t);
+           }
+       }
     }
 
     public void setEmJogo(String emJogo) {
@@ -125,13 +121,13 @@ public class Player {
         }
 
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < ferramentas.size(); i++) {
-            sb.append(ferramentas.get(i).getTitle());
 
-            if (i < ferramentas.size() - 1) {
-                sb.append(";");
-            }
+        for (Tool t: ferramentas) {
+            sb.append(t.getTitle());
+            sb.append(";");
+
         }
+        sb.deleteCharAt(sb.length()-1);
 
         return sb.toString().replaceAll(";", "; ");
     }
@@ -197,11 +193,12 @@ public class Player {
         if (ferramentas.isEmpty()) {
             sb.append("NULL");
         } else {
-            for (int i = 0; i < ferramentas.size(); i++) {
-                sb.append(ferramentas.get(i).getId());
+            for (Tool t: ferramentas) {
+                sb.append(t.getTitle());
+                sb.append(",");
 
-                if (i < ferramentas.size() - 1) {sb.append(",");}
             }
+            sb.deleteCharAt(sb.length()-1);
         }
         sb.append(":");
 
