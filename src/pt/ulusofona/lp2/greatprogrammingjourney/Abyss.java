@@ -100,15 +100,32 @@ public class Abyss extends BoardElement{
                 if (tentarUsarFerramenta(player, 5)) {
                     msg = "O Professor ajudou-te a sair do Ciclo Infinito!";
                 } else {
+                    // 1. Libertar quem já lá estava (Lógica Simplificada e Robusta)
+                    List<Player> todos = game.getPlayersList();
+                    for (Player outro : todos) {
+                        // Se houver alguém na mesma posição que não seja eu, liberto-o
+                        if (outro.getId() != player.getId() && outro.getPosicao() == player.getPosicao()) {
+                            outro.setTurnosPreso(0);
+                            outro.setEmJogo("Em Jogo");
+                        }
+                    }
+
+                    // 2. Prender o jogador atual
                     player.setEmJogo("Preso");
-                    // CORREÇÃO CRUCIAL AQUI:
-                    player.setTurnosPreso(1); // Tens de definir o Inteiro, senão o GameManager ignora!
-                    msg = "Entraste num Ciclo Infinito! Ficas preso 1 turno.";
+                    player.setTurnosPreso(999);
+                    msg = "Entraste num Ciclo Infinito! Ficas preso até alguém te render.";
                 }
                 break;
 
-            case 9: // SEGMENTATION FAULT (Sem Tool)
-                if (game.getSlotInfo(player.getPosicao())[0].split(",").length > 1) {
+            case 9: // SEGMENTATION FAULT
+                int contadorJogadores = 0;
+                List<Player> lista = game.getPlayersList();
+                for (Player p : lista) {
+                    if (p.getPosicao() == player.getPosicao()) {
+                        contadorJogadores++;
+                    }
+                }
+                if (contadorJogadores > 1) {
                     player.move(-3);
                     msg = "Segmentation Fault! Acesso inválido à memória. Recuaste 3 casas.";
                 }
@@ -117,7 +134,6 @@ public class Abyss extends BoardElement{
             default:
                 msg = "Caíste num abismo desconhecido.";
         }
-
         return msg;
     }
 
