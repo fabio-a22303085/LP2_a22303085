@@ -54,7 +54,7 @@ public class TestGameManager {
 
         return jogadores;
 
-    }//3 jogadores
+    }
 
     @Test
     public void testeCreateInitialBoard1(){
