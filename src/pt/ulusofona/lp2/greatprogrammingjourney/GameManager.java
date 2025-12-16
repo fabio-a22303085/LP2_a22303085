@@ -272,12 +272,8 @@ public class GameManager {
 
         Player p = allInfoPlayers.get(currentPlayer[atual]);
 
-        if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) {
-            nrSpaces = 2; // Anda o máximo possível 2
-        }
-        if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) {
-            nrSpaces = 3; // Anda o máximo possível 3
-        }
+        if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) {return false;}
+        if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) {return false;}
 
         //Se morreu não se mexe
         if (p.getEstado().equals("Derrotado")) {
