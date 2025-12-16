@@ -8,6 +8,7 @@ public class TestGameManager {
 
     GameManager gm;
 
+
     public String[][] jogadoresValidos(){
         String[][] jogadores = new String[3][4];
 
@@ -302,7 +303,5 @@ public class TestGameManager {
 
 
     }
-
-
 
 }
