@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class GameManager {
 
