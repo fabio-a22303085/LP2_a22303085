@@ -82,7 +82,13 @@ public class Player {
     }
 
     public void decrementarTurnosPreso() {
-        if (turnosPreso > 0){turnosPreso--;}
+        if (turnosPreso > 0) {
+            turnosPreso--;
+
+            if (turnosPreso == 0) {
+                this.emJogo = "Em Jogo";
+            }
+        }
     }
 
     public void move(int deslocamento) {
