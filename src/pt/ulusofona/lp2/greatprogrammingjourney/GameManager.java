@@ -284,11 +284,11 @@ public class GameManager {
 
         //Verifica se está preso
         if (p.getTurnosPreso() > 0) {
-            p.setTurnosPreso(0); // Liberta o jogador para a PRÓXIMA jogada
+            p.setTurnosPreso(0); // Liberta o jogador para a jogada
 
             atual = (atual + 1) % numJogadores; // Passa a vez ao próximo
             rondas++;
-            return true; // O jogador atual não se mexe neste turno (perde a vez)
+            return true; // O jogador atual não se mexe neste turno
         }
 
         p.setUltimoDado(nrSpaces); //Erro de Lógica
