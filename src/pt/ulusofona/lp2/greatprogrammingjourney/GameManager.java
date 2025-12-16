@@ -24,6 +24,7 @@ public class GameManager {
     private int rondas = 0;
     private String vencedor;
     private int nrSpaces = 0;
+    private int posicaoAntesDoTurno = -1;
 
 
     public int getNrSpaces() {
@@ -274,6 +275,9 @@ public class GameManager {
         if (nrSpaces < 1 || nrSpaces > 6) {return false;}
 
         Player p = allInfoPlayers.get(currentPlayer[atual]);
+
+        // Guardamos onde o jogador está AGORA, antes de tentarmos mexê-lo
+        this.posicaoAntesDoTurno = p.getPosicao();
 
         // --- 2. VALIDAÇÕES DE LINGUAGEM ---
         if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) {return false;}
@@ -608,6 +612,10 @@ public class GameManager {
         int id = currentPlayer[indiceQuemMoveu];
 
         Player player = allInfoPlayers.get(id);
+
+        if (player.getPosicao() == this.posicaoAntesDoTurno) {
+            return null; // Não faz nada
+        }
 
         int posicao = player.getPosicao();
 
