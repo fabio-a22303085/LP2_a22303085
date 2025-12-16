@@ -101,7 +101,7 @@ public class Player {
         for (Tool t : ferramentas) {
             if (t.getId() == idFerramenta) {
                 toolToRemove = t;
-                break; // Parar assim que encontrar para não dar erro
+                break; // Parar assim que encontrar
             }
         }
 
@@ -147,7 +147,6 @@ public class Player {
     }
 
     public void registarJogada() {
-        // Guarda a posição ATUAL na lista de histórico
         this.historicoPosicoes.add(this.posicao);
     }
 
@@ -169,7 +168,7 @@ public class Player {
             int posAntiga = historicoPosicoes.get(historicoPosicoes.size() - 2);
             this.posicao = posAntiga;
         } else {
-            // Se não houver histórico suficiente, volta ao início (segurança)
+            // Se não houver histórico suficiente, volta ao início
             this.posicao = 0;
         }
 

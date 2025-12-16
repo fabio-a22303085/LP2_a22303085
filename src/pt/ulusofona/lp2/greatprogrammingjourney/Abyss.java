@@ -25,7 +25,7 @@ public class Abyss extends BoardElement{
                     msg = "O IDE corrigiu o Erro de Sintaxe! Estás salvo.";
                 } else {
                     player.move(-1);
-                    msg = "Erro de Sintaxe! Esqueceste-te de um ponto e vírgula. Recuaste 1 casa.";
+                    msg = "Caiu num erro de sintaxe! Recua 1 casa";
                 }
                 break;
 
@@ -37,7 +37,7 @@ public class Abyss extends BoardElement{
                     // Nota: Precisas de ter getUltimoDado() no Player
                     int recuo = (int) Math.floor(game.getNrSpaces() / 2.0);
                     player.move(-recuo);
-                    msg = "Erro de Lógica! A lógica falhou. Recuaste " + recuo + " casas.";
+                    msg = "Erro de Lógica! Recua " + recuo + " casas.";
                 }
                 break;
 
@@ -47,7 +47,7 @@ public class Abyss extends BoardElement{
                     msg = "Apanhaste a Exception com um Try-Catch! Estás salvo.";
                 } else {
                     player.move(-2);
-                    msg = "Exception não tratada! O programa rebentou. Recuaste 2 casas.";
+                    msg = "Exception! Recua 2 casas";
                 }
                 break;
 
@@ -57,14 +57,14 @@ public class Abyss extends BoardElement{
                     msg = "Trataste a FileNotFoundException! Estás salvo.";
                 } else {
                     player.move(-3);
-                    msg = "Ficheiro não encontrado! Recuaste 3 casas.";
+                    msg = "FileNotFoundException! Recua 3 casas";
                 }
                 break;
 
             case 4: // CRASH (Sem Tool)
                 // Efeito: Volta à casa 0 (início)
                 player.setPosicao(1);
-                msg = "CRASH TOTAL! O sistema foi abaixo. Voltaste ao início.";
+                msg = "Crash! Volta à primeira casa do jogo";
                 break;
 
             case 5: // CÓDIGO DUPLICADO (Tool: Herança - ID 0)
@@ -74,7 +74,7 @@ public class Abyss extends BoardElement{
                 } else {
                     // Nota: O Player precisa de guardar histórico (posicaoAnterior)
                     player.voltarPosicaoAnterior(1); // fazer historico
-                    msg = "Código Duplicado! Tiveste de refazer o trabalho. Voltaste para a casa anterior.";
+                    msg = "Código duplicado! Recua para a casa anterior";
                 }
                 break;
 
@@ -85,7 +85,7 @@ public class Abyss extends BoardElement{
                 } else {
                     // Nota: O Player precisa de guardar histórico (posicaoHa2Turnos)
                     player.voltarPosicaoAnterior(2); // fazer historico, hashmap
-                    msg = "Efeitos Secundários imprevistos! Voltaste à posição de há 2 turnos.";
+                    msg = "Efeitos secundários! Recua para a posição de 2 movimentos atrás";
                 }
                 break;
 
@@ -93,7 +93,7 @@ public class Abyss extends BoardElement{
                 player.setEmJogo("Derrotado");
                 // IMPORTANTE: Se está derrotado, não pode ter turnos presos, nem se mexe
                 player.setTurnosPreso(0);
-                msg = "BLUE SCREEN OF DEATH! O teu PC pifou. Fim de jogo para ti.";
+                msg = "Blue Screen of Death! Perde o jogo";
                 break;
 
             case 8: // CICLO INFINITO
@@ -102,14 +102,14 @@ public class Abyss extends BoardElement{
                 } else {
                     player.setEmJogo("Preso");
                     player.setTurnosPreso(1); // Tens de definir o Inteiro, senão o GameManager ignora!
-                    msg = "Entraste num Ciclo Infinito! Ficas preso 1 turno.";
+                    msg = "Ciclo infinito! Fica preso nesta casa 1 turno.";
                 }
                 break;
 
             case 9: // SEGMENTATION FAULT (Sem Tool)
                 if (game.getSlotInfo(player.getPosicao())[0].split(",").length > 1) {
                     player.move(-3);
-                    msg = "Segmentation Fault! Acesso inválido à memória. Recuaste 3 casas.";
+                    msg = "Segmentation Fault! Todos os programadores nesta casa recuam 3 casas";
                 }
                 break;
 

@@ -37,7 +37,7 @@ public class GameManager {
         idJogadores.clear();
 
         numJogadores = playerInfo.length;
-        if(numJogadores<=1 || numJogadores>4){return false;}//----------
+        if(numJogadores<=1 || numJogadores>4){return false;}
         currentPlayer = new int[numJogadores];
         List<String> cores = new ArrayList<>(Arrays.asList("Purple", "Green", "Blue", "Brown"));
         int cont=0;
@@ -45,14 +45,14 @@ public class GameManager {
             String[] dados = playerInfo[i];
 
             int id= Integer.parseInt(dados[0]);
-            if(id<0 || idJogadores.contains(id)){return false;}//----------
+            if(id<0 || idJogadores.contains(id)){return false;}
 
             String nome = dados[1];
-            if(nome.isBlank() || nome.isEmpty()){return false;}//----------
+            if(nome.isBlank() || nome.isEmpty()){return false;}
 
             String linguagens = dados[2];
             String cor = dados[3];
-            if(!cores.contains(cor)){return false;}//----------
+            if(!cores.contains(cor)){return false;}
             cores.remove(cor);
 
             currentPlayer[cont]=id;
@@ -196,14 +196,12 @@ public class GameManager {
 
 
     public String[] getSlotInfo(int pos) {
-        // 1. Validação de Limites (Requisito: retorna null se inválido)
         if (pos < 1 || pos > tamanhoTabuleiro) {
             return null;
         }
 
         String[] result = new String[3];
 
-        // --- PARTE 1: Jogadores (Índice 0) ---
         // IDs dos jogadores na casa separados por vírgula
         StringBuilder sbPlayers = new StringBuilder();
         boolean primeiro = true;
@@ -219,14 +217,12 @@ public class GameManager {
         }
         result[0] = sbPlayers.toString(); // Retorna "1,2" ou "" se vazio
 
-        // --- PARTE 2: Tabuleiro (Índice 1 e 2) ---
         // Verifica se existe algum Abismo ou Ferramenta nesta posição
         if (tabuleiro.containsKey(pos)) {
             BoardElement elemento = tabuleiro.get(pos);
 
             result[1] = elemento.getTitle();
 
-            // CORREÇÃO AQUI (Sem instanceof):
             // O elemento já sabe se é "A" ou "T"
             result[2] = elemento.getTypePrefix() + ":" + elemento.getId();
 
@@ -276,7 +272,6 @@ public class GameManager {
 
         Player p = allInfoPlayers.get(currentPlayer[atual]);
 
-        // --- 2. VALIDAÇÕES DE LINGUAGEM ---
         if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) {return false;}
         if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) {return false;}
 
@@ -287,7 +282,7 @@ public class GameManager {
             return true;
         }
 
-        //VERIFICAR SE ESTÁ PRESO
+        //Verifica se está preso
         if (p.getTurnosPreso() > 0) {
             p.decrementarTurnosPreso();
             atual = (atual + 1) % numJogadores;
@@ -295,18 +290,17 @@ public class GameManager {
             return true;
         }
 
-        // --- 3. PREPARAR DADOS PARA OS ABISMOS (O que faltava!) ---
-        p.setUltimoDado(nrSpaces); // Essencial para "Erro de Lógica"
-        p.registarJogada();        // Essencial para "Voltar Posição Anterior"
+        p.setUltimoDado(nrSpaces); //Erro de Lógica
+        p.registarJogada();        //Voltar Posição Anterior
 
-        // --- 4. MOVIMENTO ---
+        // Movimento
         if (p.getPosicao() + nrSpaces >= tamanhoTabuleiro) {
             p.setPosicao(tamanhoTabuleiro);
         } else {
             p.setPosicao(p.getPosicao() + nrSpaces);
         }
 
-        // --- 5. FINALIZAR TURNO ---
+        // Terminar turno
         atual = (atual + 1) % numJogadores;
         rondas++;
 
@@ -338,7 +332,6 @@ public class GameManager {
         return str;
     }
 
-// Em GameManager.java
 
     public ArrayList<String> restantes(){
 
@@ -451,17 +444,14 @@ public class GameManager {
             throw new FileNotFoundException("Ficheiro não encontrado");
         }
 
-        // 1. Limpar Tudo (Começar do zero)
         listaPlayers.clear();
         allInfoPlayers.clear();
         idJogadores.clear();
         tabuleiro.clear();
-        // Não metemos a null para evitar NullPointer, criamos novo array depois
         currentPlayer = null;
 
         try (Scanner scanner = new Scanner(file)) {
 
-            // --- BLOCO 1: DADOS GLOBAIS ---
             if (!scanner.hasNextLine()){throw new InvalidFileException("Ficheiro vazio");}
 
             try {
@@ -480,7 +470,6 @@ public class GameManager {
                 throw new InvalidFileException("Erro no cabeçalho");
             }
 
-            // --- BLOCO 2: JOGADORES ---
             if (!scanner.hasNextLine()){throw new InvalidFileException("Falta nº jogadores");}
             int qtdPlayers;
             try {
@@ -492,8 +481,6 @@ public class GameManager {
                 restaurarJogador(scanner.nextLine());
             }
 
-            // RECONSTRUIR ARRAY currentPlayer (Ordenado por ID, como no createInitialBoard)
-            // O createInitialBoard ordenava os IDs. Vamos assumir a mesma lógica.
             idJogadores.sort(Integer::compareTo);
             for (int i = 0; i < numJogadores; i++) {
                 if (i < idJogadores.size()) {
@@ -501,7 +488,6 @@ public class GameManager {
                 }
             }
 
-            // --- BLOCO 3: TABULEIRO ---
             if (!scanner.hasNextLine()){throw new InvalidFileException("Falta nº elementos tabuleiro");}
             int qtdElementos;
             try {
@@ -524,8 +510,6 @@ public class GameManager {
     private void restaurarJogador(String linha) throws InvalidFileException {
         String[] p = linha.split(":");
 
-        // AGORA SÃO APENAS 9 CAMPOS (0 a 8)
-        // Antes eram 10 ou 11
         if (p.length < 9){throw new InvalidFileException("Linha de jogador inválida");}
 
         try {
@@ -537,20 +521,16 @@ public class GameManager {
             int turnosPreso = Integer.parseInt(p[5]);
             int ultimoDado = Integer.parseInt(p[6]);
             String langs = p[7].equals("NULL") ? "" : p[7];
-            String toolsStr = p[8]; // O último campo agora são as tools
+            String toolsStr = p[8]; // O último campo são as tools
 
-            // REMOVIDO: String histStr = p[9];
 
-            // 1. Criar Jogador
-            // (O construtor já mete a posição atual no histórico novo, por isso não dá erro)
+            // O construtor já mete a posição atual no histórico novo
             Player player = new Player(id, pos, nome, cor, langs);
 
-            // 2. Definir estados
             player.setEmJogo(estado);
             player.setTurnosPreso(turnosPreso);
             player.setUltimoDado(ultimoDado);
 
-            // REMOVIDO: player.restaurarHistorico(histStr);
 
             // 3. Restaurar Ferramentas
             if (!toolsStr.equals("NULL") && !toolsStr.isBlank()) {
@@ -585,14 +565,13 @@ public class GameManager {
             int pos = Integer.parseInt(p[0]);
             int tipoId = Integer.parseInt(p[1]); // 0 = Abyss, 1 = Tool
             int id = Integer.parseInt(p[2]);
-            String titulo = p[3]; // O título já vem no ficheiro, usamos esse
+            String titulo = p[3]; // O título já vem no ficheiro
 
             BoardElement elemento;
 
             if (tipoId == 1) { // Tool
                 elemento = new Tool(id, titulo);
             } else { // Abyss
-                // Abismo: Passamos string vazia na descrição, pois a lógica está no ID
                 elemento = new Abyss(id, pos, titulo, "");
             }
 
