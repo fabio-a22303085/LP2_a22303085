@@ -110,7 +110,11 @@
 
                 try {
                     int id = Integer.parseInt(info[0]);
+                    if (id < 0 || idJogadores.contains(id)) return false;
+
                     String nome = info[1];
+                    if (nome == null || nome.isBlank()) return false;
+
                     String linguagens = info[2];
                     String corSolicitada = info[3];
 
@@ -197,7 +201,9 @@
                                     break;
                             }
 
-                        } else { // ABISMO
+                        } else if (tipoStr.equals("0")) { // === ABISMOS ===
+                            if (idItem < 0 || idItem > 20) return false; // Permite até 20
+
                             switch (idItem) {
                                 case 0: elemento = new SyntaxErrorAbyss(0, nomesAbyss[0]); break;
                                 case 1: elemento = new LogicErrorAbyss(1, nomesAbyss[1]); break;
@@ -209,17 +215,17 @@
                                 case 7: elemento = new BlueScreenAbyss(7, nomesAbyss[7]); break;
                                 case 8: elemento = new InfiniteLoopAbyss(8, nomesAbyss[8]); break;
                                 case 9: elemento = new SegmentationFaultAbyss(9, nomesAbyss[9]); break;
-                                case 20: elemento = new LLMAbyss(20, "LLM"); break; // NOVO ABISMO
+
+                                case 20: elemento = new LLMAbyss(20, "LLM"); break; // OK
                                 default: return false;
                             }
+                        } else return false;
 
-                        } tabuleiro.put(posicao, elemento);
-
-                    } catch (NumberFormatException e) {
-                        return false;
-                    }
+                        tabuleiro.put(posicao, elemento);
+                    } catch (Exception e) { return false; }
                 }
-            } return true;
+            }
+            return true;
         }
 
 
