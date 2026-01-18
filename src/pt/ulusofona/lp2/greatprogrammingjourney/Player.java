@@ -1,6 +1,9 @@
 package pt.ulusofona.lp2.greatprogrammingjourney;
 
 import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Player {
     int id, posicao;
@@ -10,6 +13,7 @@ public class Player {
     private int turnosPreso = 0;
     private int ultimoDado = 0;
 
+    private String causaDerrota = "";
     private Set<String> nomeFerramentas = new HashSet<>();
     private Set<Tool> ferramentas = new HashSet<>();
     private List<Integer> historicoPosicoes = new ArrayList<>();
@@ -29,6 +33,14 @@ public class Player {
         Arrays.sort(linguasArray, String.CASE_INSENSITIVE_ORDER);
         this.linguagens = String.join("; ", linguasArray);
         this.historicoPosicoes.add(this.posicao);
+    }
+
+    public void setCausaDerrota(String causa) {
+        this.causaDerrota = causa;
+    }
+
+    public String getCausaDerrota() {
+        return this.causaDerrota;
     }
 
     public String getPrimeiraLinguagem() {
@@ -141,19 +153,30 @@ public class Player {
 
     public String getFerramentasToString() {
         if (nomeFerramentas.isEmpty()) {
-            return "";
+            return ""; // Ou "No tools", conforme a tua preferência
         }
+
+        // 1. Criar uma lista temporária com o conteúdo do Set
+        List<String> listaOrdenada = new ArrayList<>(nomeFerramentas);
+
+        // 2. Ordenar a lista alfabeticamente
+        // Se quiseres garantir que "a" e "A" ficam juntos, usa: String.CASE_INSENSITIVE_ORDER
+        Collections.sort(listaOrdenada);
 
         StringBuilder sb = new StringBuilder();
 
-        for (String t: nomeFerramentas) {
+        // 3. Percorrer a lista JÁ ORDENADA
+        for (String t : listaOrdenada) {
             sb.append(t);
-            sb.append(";");
-
+            sb.append("; ");
         }
-        sb.deleteCharAt(sb.length()-1);
 
-        return sb.toString().replaceAll(";", "; ");
+        // 4. Remover o último "; " extra
+        if (sb.length() > 0) {
+            sb.setLength(sb.length() - 2);
+        }
+
+        return sb.toString();
     }
 
     public String getEstado() {

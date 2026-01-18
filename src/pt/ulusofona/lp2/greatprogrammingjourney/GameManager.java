@@ -360,21 +360,28 @@
         }
 
         public boolean gameIsOver(){
+            // 1. Verificação de Vitória Normal (alguém chegou ao fim)
             for(Player p: listaPlayers){
-                if(p.getPosicao() == tamanhoTabuleiro/2+1){
-                    vencedor=p.getNome();
+                if(p.getPosicao() == tamanhoTabuleiro){
+                    vencedor = p.getNome();
                     return true;
                 }
-
-                /*// 2. NOVA REGRA: Limite de Rondas
-        if (rondas >= 30) {
-            // Tens de decidir quem ganha. Ex: Quem está mais à frente
-            calcularVencedorPorDistancia(); // Terias de criar lógica para isto ou definir um empate
-            vencedor = "Tempo Esgotado"; // Ou o nome do líder
-            return true;
-        }*/
-
             }
+
+            // 2. NOVA REGRA: Verificar se TODOS estão derrotados
+            int contagemMortos = 0;
+            for(Player p : listaPlayers) {
+                if(p.getEstado().equals("Derrotado")) {
+                    contagemMortos++;
+                }
+            }
+
+            // Se o número de mortos for igual ao número total de jogadores
+            if (contagemMortos == numJogadores) {
+                vencedor = "Empate"; // Define o vencedor como Empate
+                return true;
+            }
+
             return false;
         }
 
@@ -385,11 +392,30 @@
             str.add("NR. DE TURNOS");
             str.add(String.valueOf(rondas));
             str.add("");
-            str.add("VENCEDOR");
-            str.add(vencedor);
-            str.add("");
-            str.add("RESTANTES");
-            str.addAll(restantes());
+
+            // LÓGICA ALTERADA AQUI
+            if (vencedor.equals("Empate")) {
+                str.add("O JOGO TERMINOU EMPATADO");
+                str.add("(Todos os jogadores foram derrotados)");
+                str.add("");
+                str.add("CAUSAS DA DERROTA");
+
+                // Adiciona a lista personalizada de mortes
+                for (Player p : listaPlayers) {
+                    // Formato: ID | Nome | Causa
+                    String linha = p.getId() + " | " + p.getNome() + " | " + p.getCausaDerrota();
+                    str.add(linha);
+                }
+
+            } else {
+                // Vitória Normal
+                str.add("VENCEDOR");
+                str.add(vencedor);
+                str.add("");
+                str.add("RESTANTES");
+                str.addAll(restantes());
+            }
+
             return str;
         }
 

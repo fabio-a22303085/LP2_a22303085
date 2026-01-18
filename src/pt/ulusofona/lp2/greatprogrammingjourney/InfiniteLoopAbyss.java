@@ -10,6 +10,8 @@ public class InfiniteLoopAbyss extends Abyss {
         }
         player.setEmJogo("Preso");
         player.setTurnosPreso(1);
+        // player.setEmJogo("Derrotado"); // Se quiseres que acabe o jogo para ele
+        player.setCausaDerrota("Ficou preso num Ciclo Infinito");
         return "Ciclo infinito! Fica preso nesta casa 1 turno.";
     }
 }

@@ -7,6 +7,7 @@ public class BlueScreenAbyss extends Abyss {
     public String interact(Player player, GameManager game) {
         player.setEmJogo("Derrotado");
         player.setTurnosPreso(0);
+        player.setCausaDerrota("Blue Screen of Death");
         return "Blue Screen of Death! Perde o jogo";
     }
 }
