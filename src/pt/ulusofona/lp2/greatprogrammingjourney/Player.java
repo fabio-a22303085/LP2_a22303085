@@ -127,9 +127,17 @@ public class Player {
             return id + " | " + nome + " | " + posicao + " | No tools | " + linguagens + " | " + emJogo;
         } else {
 
-            return id + " | " + nome + " | " + posicao + " | " + getFerramentasToString() + " | " + linguagens + " | " + emJogo;
+            return id + " | " + nome + " | " + posicao + " | " + getFerramentasToString() + " | " + linguagens + " | " + emJogo ;
         }
     }
+
+    /* // cria string base para não repetir código
+    String baseInfo = id + " | " + nome + " | " + posicao + " | ";
+
+    String toolsStr = ferramentas.isEmpty() ? "No tools" : getFerramentasToString();
+
+    //Add "turnosPreso"
+    return baseInfo + toolsStr + " | " + linguagens + " | " + emJogo + " | Turnos Preso: " + turnosPreso; */
 
     public String getFerramentasToString() {
         if (nomeFerramentas.isEmpty()) {
@@ -219,6 +227,14 @@ public class Player {
         sb.append(":");
 
         return sb.toString();
+    }
+
+    public int getNumeroDeJogadas() {
+        // A lista tem a posição inicial + 1 registo por cada jogada feita.
+        // Exemplo:
+        // Início (sem jogar): Tamanho 1 -> (1-1) = 0 Jogadas
+        // Jogou 1 vez: Tamanho 2 -> (2-1) = 1 Jogada
+        return historicoPosicoes.size() - 1;
     }
 
 }
