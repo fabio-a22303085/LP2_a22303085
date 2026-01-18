@@ -146,7 +146,6 @@
                 currentPlayer[i] = tempIds.get(i);
             }
 
-
             if (abyssesAndTools != null) {
                 int[] countAbyss = new int[21]; // int[] countAbyss = new int[11] 0 a 10
                 int[] countTools = new int[8]; // int[] countTools = new int[7]; 0 a 6
@@ -183,12 +182,10 @@
 
                         BoardElement elemento = null;
 
-
                         if (tipoStr.equals("1")) { // FERRAMENTA
                             // Verifica limites (agora com o novo ID 6 incluído)
                             if (idItem < 0 || idItem > 6) { return false; }
 
-                            // Switch para escolher a classe correta
                             switch (idItem) {
                                 case 1: // Programação Funcional
                                     elemento = new FunctionalProgTool(idItem, nomesTools[idItem]);
@@ -198,7 +195,6 @@
                                     elemento = new IDETool(idItem, nomesTools[idItem]);
                                     break;
 
-                                // Podes adicionar casos específicos para outras se inventares regras novas
 
                                 default: // Todas as outras (Herança, Testes, Ajuda, Martelo, Refactoring)
                                     elemento = new SimpleTool(idItem, nomesTools[idItem]);
@@ -263,7 +259,7 @@
                 result[2] = elemento.getTypePrefix() + ":" + elemento.getId();
 
             } else {
-                result[1] = String.valueOf(this.numJogadores);
+                result[1] = "";
                 result[2] = "";
             }
 
