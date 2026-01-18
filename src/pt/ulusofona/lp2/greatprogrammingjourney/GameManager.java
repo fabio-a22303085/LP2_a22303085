@@ -335,17 +335,10 @@
 
             // Movimento
             if (p.getPosicao() + nrSpaces >= tamanhoTabuleiro) {
-
-                /*if (p.getFerramentasToString().isEmpty() || p.getFerramentasToString().equals("No tools")) { // Ou verificar tamanho da lista de ferramentas
-             p.move(-5); // Penalidade
-                    } else {
-                         p.setPosicao(tamanhoTabuleiro); // Ganha
-                    }
-                        } else {
-                    p.setPosicao(p.getPosicao() + nrSpaces);
-                            }*/
-
                 p.setPosicao(tamanhoTabuleiro);
+
+                rondas++;
+                return true;
             } else {
                 p.setPosicao(p.getPosicao() + nrSpaces);
             }
