@@ -171,10 +171,8 @@
                         if (tabuleiro.containsKey(posicao)){return false;}
 
                         if (tipoStr.equals("0")) { // ABISMO
-                            // Mudar de > 9 para > 10 (para aceitar o ID 10)
-                            if (idItem < 0 || idItem > 9){return false;}
+                            if (idItem < 0 || idItem > 20){return false;}
                         } else if (tipoStr.equals("1")) { // FERRAMENTA
-                            // Mudar de > 5 para > 6 (para aceitar o ID 6)
                             if (idItem < 0 || idItem > 100){return false;}
                         } else {
                             return false;
@@ -183,7 +181,6 @@
                         BoardElement elemento = null;
 
                         if (tipoStr.equals("1")) { // FERRAMENTA
-                            // Verifica limites (agora com o novo ID 6 incluído)
                             if (idItem < 0 || idItem > 6) { return false; }
 
                             switch (idItem) {
@@ -194,7 +191,6 @@
                                 case 4: // IDE
                                     elemento = new IDETool(idItem, nomesTools[idItem]);
                                     break;
-
 
                                 default: // Todas as outras (Herança, Testes, Ajuda, Martelo, Refactoring)
                                     elemento = new SimpleTool(idItem, nomesTools[idItem]);

@@ -6,11 +6,13 @@ public abstract class Abyss extends BoardElement {
         super(id, titulo);
     }
 
-    // Método auxiliar para as classes filhas usarem
-    // Alterado para PROTECTED para os filhos terem acesso
     protected boolean tentarUsarFerramenta(Player p, int idTool) {
         if (p.temFerramenta(idTool)) {
-            p.removerFerramenta(idTool);
+
+            if (idTool != 4) {
+                p.removerFerramenta(idTool);
+            }
+
             return true;
         }
         return false;
