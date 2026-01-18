@@ -173,7 +173,7 @@
                         if (tipoStr.equals("0")) { // ABISMO
                             if (idItem < 0 || idItem > 20){return false;}
                         } else if (tipoStr.equals("1")) { // FERRAMENTA
-                            if (idItem < 0 || idItem > 100){return false;}
+                            if (idItem < 0 || idItem > 6){return false;}
                         } else {
                             return false;
                         }
