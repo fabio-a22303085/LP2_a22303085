@@ -137,7 +137,7 @@ public class GameManager {
 
 
         if (abyssesAndTools != null) {
-            int[] countAbyss = new int[10];
+            int[] countAbyss = new int[21];
             int[] countTools = new int[6];
 
             String[] nomesAbyss = {"Erro de sintaxe", "Erro de lógica", "Exception", "FileNotFoundException",
@@ -160,7 +160,7 @@ public class GameManager {
                     if (tabuleiro.containsKey(posicao)){return false;}
 
                     if (tipoStr.equals("0")) { // ABISMO
-                        if (idItem < 0 || idItem > 9){return false;}
+                        if ((idItem < 0 || idItem > 9) && idItem != 20){return false;}
                     } else if (tipoStr.equals("1")) { // FERRAMENTA
                         if (idItem < 0 || idItem > 5){return false;}
                     } else {
