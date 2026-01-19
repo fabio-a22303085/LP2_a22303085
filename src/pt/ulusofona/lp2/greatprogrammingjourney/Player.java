@@ -202,6 +202,7 @@ public class Player {
         }
 
     }
+
     public void setUltimoDado(int valor) {
         this.ultimoDado = valor;
     }
