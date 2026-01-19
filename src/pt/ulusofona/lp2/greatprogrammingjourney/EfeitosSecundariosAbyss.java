@@ -10,7 +10,7 @@ public class EfeitosSecundariosAbyss extends Abyss {
         if (tentarUsarFerramenta(player, 1)) { // ID 1 = Prog Funcional
             return "A Programação Funcional evitou efeitos secundários! Estás salvo.";
         }
-        player.voltarDoisTurnos(); // Usar o método que criaste no Player
+        player.voltarDoisTurnos();
         return "Efeitos secundários! Recua para a posição de 2 movimentos atrás";
     }
 }

@@ -13,14 +13,12 @@ public class SegmentationFaultAbyss extends Abyss {
         int posicaoAtual = player.getPosicao();
         int contagem = 0;
 
-        // 1. Primeiro contamos quantos estão na casa (vivos)
         for (Player p : todosOsJogadores) {
             if (p.getPosicao() == posicaoAtual && !p.getEstado().equals("Derrotado")) {
                 contagem++;
             }
         }
 
-        // 2. Se houver 2 ou mais, TODOS recuam
         if (contagem >= 2) {
             for (Player p : todosOsJogadores) {
                 if (p.getPosicao() == posicaoAtual && !p.getEstado().equals("Derrotado")) {

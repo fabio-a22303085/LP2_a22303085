@@ -312,38 +312,33 @@ public class GameManager {
 
 
     public boolean gameIsOver() {
-        int cont = 0;       // Jogadores vivos
-        int contEmpate = 0; // Jogadores derrotados
+        int cont = 0;
+        int contEmpate = 0;
         Player jogadorRestante = null;
 
         for (Player p : listaPlayers) {
-
             if (p.getPosicao() == tamanhoTabuleiro) {
                 vencedor = p.getNome();
                 return true;
             }
 
-            // Contagem de vivos (para Last Man Standing)
-            // Assumindo que !isDerrotado() equivale a não ter o estado "Derrotado"
             if (!p.getEstado().equals("Derrotado")) {
                 cont++;
                 jogadorRestante = p;
             }
 
-            // Contagem de mortos (para Empate)
             if (p.getEstado().equals("Derrotado")) {
                 contEmpate++;
             }
         }
 
-        // 2. Caso de Empate Total (Todos morreram)
         if (contEmpate == listaPlayers.size()) {
-            vencedor = null; // Garante que é nulo
+            vencedor = null; // Garante que não há vencedor no empate total
             return true;
         }
 
         if (cont < 2) {
-            if (cont == 1 && jogadorRestante != null) {
+            if (cont == 1) {
                 vencedor = jogadorRestante.getNome();
             }
             return true;
@@ -352,33 +347,23 @@ public class GameManager {
         return false;
     }
 
+
     public ArrayList<String> getGameResults() {
         ArrayList<String> linhas = new ArrayList<>();
         linhas.add("THE GREAT PROGRAMMING JOURNEY");
         linhas.add("");
 
         linhas.add("NR. DE TURNOS");
-        linhas.add(String.valueOf(rondas)); // Ou rondas + ""
+        linhas.add(String.valueOf(rondas));
         linhas.add("");
 
         linhas.add("VENCEDOR");
         if (vencedor == null) {
-            // Se for nulo, usamos a lógica de empate
-            // Nota: O título "VENCEDOR" fica vazio ou mudamos a lógica?
-            // No teu snippet tinhas "VENCEDOR" fixo em cima.
-            // Vou ajustar para bater certo com a tua lógica de "getGameResultsEmpate"
-            // que escreve "O jogo terminou empatado."
 
-            // Removemos o cabeçalho "VENCEDOR" se for empate para não ficar estranho,
-            // ou deixamos em branco. Pelo teu snippet getGameResultsEmpate começa com texto.
-            // Vou remover as duas linhas anteriores ("VENCEDOR") se for empate
-            // para bater certo com o output esperado tipicamente,
-            // mas mantendo a tua estrutura:
-
-            linhas.remove(linhas.size() - 1); // Remove título VENCEDOR
+            linhas.remove(linhas.size() - 1);
             linhas.addAll(getGameResultsEmpate());
         } else {
-            // Se houver vencedor, adicionamos o nome e depois os restantes
+
             linhas.add(vencedor);
             linhas.add("");
             linhas.addAll(getGameResultsVitoria());
@@ -386,14 +371,9 @@ public class GameManager {
         return linhas;
     }
 
-    // --- Métodos Auxiliares de Resultados ---
-
     public ArrayList<String> getGameResultsVitoria() {
         ArrayList<String> linhas = new ArrayList<>();
 
-        // Nota: O "VENCEDOR" já foi adicionado no método principal getGameResults
-        // ou queres mover para aqui? Pelo teu snippet parecia separado.
-        // Vou assumir que aqui listas apenas os RESTANTES, pois o vencedor já foi impresso acima.
 
         linhas.add("RESTANTES");
         linhas.addAll(getLastPlayers());
@@ -405,19 +385,16 @@ public class GameManager {
         ArrayList<String> linhas = new ArrayList<>();
         List<Player> lastPlayers = new ArrayList<>(listaPlayers);
 
-        // Ordena por posição (decrescente) e depois por nome
         lastPlayers.sort(
                 Comparator.comparingInt(Player::getPosicao).reversed()
                         .thenComparing(Player::getNome)
         );
 
-        // Remove o primeiro (o Vencedor) para não aparecer nos "Restantes"
         if (!lastPlayers.isEmpty()) {
             lastPlayers.remove(0);
         }
 
         for (Player p : lastPlayers) {
-            // Formato simples para os restantes na vitória
             linhas.add(p.getNome() + " " + p.getPosicao());
         }
         return linhas;
@@ -445,8 +422,6 @@ public class GameManager {
         );
 
         for (Player p : lastPlayers) {
-            // No empate, mostramos onde morreram e o que havia lá (Abismo)
-            // Usamos getSlotInfo para ir buscar o título do elemento na casa
             String infoSlot = "";
             String[] slotData = getSlotInfo(p.getPosicao());
 
@@ -461,7 +436,6 @@ public class GameManager {
 
 
     public ArrayList<String> restantes() {
-        // Ordenar: Quem está mais à frente primeiro, depois por nome
         listaPlayers.sort((p1, p2) -> {
             int comparePos = Integer.compare(p2.getPosicao(), p1.getPosicao());
             if (comparePos != 0) {
@@ -551,8 +525,6 @@ public class GameManager {
                 int pos = entry.getKey();
                 BoardElement el = entry.getValue();
 
-                // CORREÇÃO AQUI (Sem instanceof):
-                // O elemento já sabe se é 0 ou 1
                 int tipo = el.getTypeId();
 
                 writer.println(pos + ":" + tipo + ":" + el.getId() + ":" + el.getTitle());
