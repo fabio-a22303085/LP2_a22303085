@@ -189,11 +189,10 @@ public class Player {
 
     // 4. Implementação do Abismo 5: "Voltar Posição Anterior"
     public void voltarPosicaoAnterior(int num) {
-        // A posição anterior é o último elemento que foi gravado no histórico
-        if (!historicoPosicoes.isEmpty()) {
 
-            int posAnterior = historicoPosicoes.get(historicoPosicoes.size() - num);
-            this.posicao = posAnterior;
+        if (historicoPosicoes.size() > num) {
+            int indiceAlvo = historicoPosicoes.size() - 1 - num;
+            this.posicao = historicoPosicoes.get(indiceAlvo);
         }
     }
 
