@@ -302,7 +302,6 @@ public class GameManager {
 
         //Verifica se está preso
         if (p.getTurnosPreso() > 0) {
-            p.setTurnosPreso(0); // Liberta o jogador para a jogada
 
             atual = (atual + 1) % numJogadores; // Passa a vez ao próximo
             rondas++;
@@ -580,7 +579,6 @@ public class GameManager {
             Player player = new Player(id, pos, nome, cor, langs);
 
             player.setEmJogo(estado);
-            player.setTurnosPreso(turnosPreso);
             player.setUltimoDado(ultimoDado);
 
             // Restaurar Causa Morte

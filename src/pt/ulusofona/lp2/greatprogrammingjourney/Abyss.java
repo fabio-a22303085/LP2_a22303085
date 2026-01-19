@@ -9,7 +9,6 @@ public abstract class Abyss extends BoardElement {
         this.position = position;
     }
 
-    // Método auxiliar que todos os abismos filhos podem usar
     protected boolean tentarUsarFerramenta(Player p, int idTool) {
         if (p.temFerramenta(idTool)) {
             p.removerFerramenta(idTool);

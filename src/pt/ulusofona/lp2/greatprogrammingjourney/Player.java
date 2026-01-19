@@ -74,10 +74,6 @@ public class Player {
         return false;
     }
 
-    public void setTurnosPreso(int turnos) {
-        this.turnosPreso = turnos;
-    }
-
     public int getTurnosPreso() {
         return turnosPreso;
     }
