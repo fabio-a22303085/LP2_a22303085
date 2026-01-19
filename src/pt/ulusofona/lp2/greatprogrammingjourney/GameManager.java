@@ -135,7 +135,6 @@ public class GameManager {
             }
         }
 
-        Collections.sort(tempIds);
         for (int i = 0; i < numJogadores; i++) {
             currentPlayer[i] = tempIds.get(i);
         }
@@ -346,20 +345,28 @@ public class GameManager {
 
 
     public boolean gameIsOver() {
-
         for (Player p : listaPlayers) {
-
+            // 1. Ignora quem já saiu do jogo (Derrotados)
             if (!p.getEstado().equals("Em Jogo")) {
                 continue;
             }
 
+            // 2. Ignora quem está imobilizado este turno (Presos)
+            // (Como moveCurrentPlayer retorna false se estiver preso, ele não "consegue mover")
             if (p.getTurnosPreso() > 0) {
                 continue;
             }
 
-            String lang = p.getPrimeiraLinguagem().trim();
+            // 3. CRUCIAL: Ignora quem já chegou à meta
+            // Se já lá está, não pode fazer um movimento válido de avanço.
+            if (p.getPosicao() >= tamanhoTabuleiro) {
+                continue;
+            }
 
-            int maxPermitido;
+            // 4. Se chegou aqui, o jogador está "Em Jogo", não está preso e não está na meta.
+            // Verificamos se a linguagem dele permite pelo menos o dado 1.
+            String lang = p.getPrimeiraLinguagem().trim();
+            int maxPermitido = 0;
 
             if (lang.equalsIgnoreCase("Assembly")) {
                 maxPermitido = 2;
@@ -369,19 +376,17 @@ public class GameManager {
                 maxPermitido = 6;
             }
 
-            // Testa se existe ALGUM valor de dado válido (1..6)
-            for (int dado = 1; dado <= 6; dado++) {
-                if (dado <= maxPermitido) {
-                    // ESTE jogador conseguiria mover
-                    return false;
-                }
+            // Se ele pode lançar pelo menos o dado 1, ele consegue mover.
+            if (maxPermitido >= 1) {
+                return false; // Jogo continua: encontrámos alguém que pode mudar de posição
             }
         }
 
-        // NINGUÉM conseguiu mover
+        // 5. Se o ciclo terminou e ninguém conseguiu mover:
+        // O jogo termina empatado (vencedor = null) conforme o requisito de Recurso.
+        vencedor = null;
         return true;
     }
-
 
 
 
