@@ -293,7 +293,9 @@ public class GameManager {
         if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) {return false;}
         if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) {return false;}
 
-
+        if (!p.getEstado().equals("Em Jogo")){
+              return false;
+          }
 
         p.setUltimoDado(nrSpaces); //Erro de Lógica
         p.registarJogada();        //Voltar Posição Anterior
@@ -342,7 +344,7 @@ public class GameManager {
         str.add("THE GREAT PROGRAMMING JOURNEY");
         str.add("");
         str.add("NR. DE TURNOS");
-        str.add(String.valueOf(rondas));
+        str.add(String.valueOf(rondas+1));
         str.add("");
         str.add("VENCEDOR");
 
