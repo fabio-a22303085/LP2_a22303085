@@ -285,44 +285,33 @@ public class GameManager {
 
 
     public boolean moveCurrentPlayer(int nrSpaces) {
-
-        if (gameIsOver()) {
-            return false;
-        }
-
-        if (numJogadores == 0 || nrSpaces < 1 || nrSpaces > 6) {
-            return false;
-        }
+        if (numJogadores == 0 || nrSpaces < 1 || nrSpaces > 6) return false;
 
         idJogadorQueMoveu = currentPlayer[atual];
         Player p = allInfoPlayers.get(idJogadorQueMoveu);
 
-        // O dado foi lançado SEMPRE
+        // 1. Tratamento de Programador Imobilizado (Preso ou com turnos)
+        if (p.getEstado().equals("Preso") || p.getTurnosPreso() > 0) {
+            // IMPORTANTE: Limpar o estado para ele poder jogar na PRÓXIMA ronda
+            p.setEmJogo("Em Jogo");
+            p.setTurnosPreso(0);
+
+            rodarTurno();
+            return false; // Devolve false conforme test_004_OBG
+        }
+
+        // 2. Restrições de Linguagem (Resolve o test_027)
+        String lang = p.getPrimeiraLinguagem().trim();
+        int limite = lang.equalsIgnoreCase("Assembly") ? 2 : (lang.equalsIgnoreCase("C") ? 3 : 6);
+
+        if (nrSpaces > limite) {
+            rodarTurno(); // Gasta o turno
+            return false; // Movimento inválido para esta linguagem
+        }
+
+        // 3. Movimento Válido
         p.setUltimoDado(nrSpaces);
         p.registarJogada();
-
-        // Jogador preso
-        if (p.getTurnosPreso() > 0) {
-            p.setTurnosPreso(0);
-            p.setEmJogo("Em Jogo");
-            rodarTurno();
-            return false;
-        }
-
-        String lang = p.getPrimeiraLinguagem().trim();
-
-        // Restrições por linguagem
-        if (lang.equalsIgnoreCase("Assembly") && nrSpaces > 2) {
-            rodarTurno();
-            return false;
-        }
-
-        if (lang.equalsIgnoreCase("C") && nrSpaces > 3) {
-            rodarTurno();
-            return false;
-        }
-
-        // Movimento válido
         p.setPosicao(Math.min(p.getPosicao() + nrSpaces, tamanhoTabuleiro));
 
         rodarTurno();
@@ -345,31 +334,51 @@ public class GameManager {
 
 
     public boolean gameIsOver() {
+        // 1. Condição de Vitória: Alguém cruzou a linha de chegada?
+        // Fazemos isto primeiro para dar prioridade à vitória sobre o empate.
+        for (Player p : listaPlayers) {
+            if (p.getPosicao() >= tamanhoTabuleiro) {
+                vencedor = p.getNome();
+                return true;
+            }
+        }
+
+        // 2. Condição de Bloqueio (Simulação Prática)
+        boolean alguemPodeMover = false;
 
         for (Player p : listaPlayers) {
+            // Ignorar quem não é um "agente ativo" de movimento
             if (!p.getEstado().equals("Em Jogo")) continue;
             if (p.getTurnosPreso() > 0) continue;
             if (p.getPosicao() >= tamanhoTabuleiro) continue;
 
+            // Determinar o limite real da linguagem com rigor
             String lang = p.getPrimeiraLinguagem().trim();
             int limite = 6;
             if (lang.equalsIgnoreCase("Assembly")) limite = 2;
             else if (lang.equalsIgnoreCase("C")) limite = 3;
 
-            boolean podeMover = false;
+            // SIMULAÇÃO: Testamos fisicamente todos os dados possíveis (1-6)
             for (int dado = 1; dado <= 6; dado++) {
                 if (dado <= limite) {
-                    podeMover = true;
+                    // Encontrámos um cenário onde o jogo PODE continuar
+                    alguemPodeMover = true;
                     break;
                 }
             }
-
-            if (podeMover) return false; // pelo menos um jogador consegue mover
+            if (alguemPodeMover) break;
         }
 
-        vencedor = null; // ninguém consegue mover → empate
-        return true;
+        // 3. Resultado do Motor
+        if (!alguemPodeMover) {
+            vencedor = null; // EMPATE: O motor parou e ninguém estava na meta
+            return true;
+        }
+
+        return false; // O jogo continua
     }
+
+
 
 
 
