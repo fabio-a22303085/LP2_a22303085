@@ -295,22 +295,6 @@ public class GameManager {
 
 
 
-
-        do{
-            atual=(atual+1) % listaPlayers.size();
-
-        } while (listaPlayers.get(atual).equals("Derrotado"));
-        rondas++;
-
-
-        //Verifica se está preso
-        if (p.getTurnosPreso() > 0) {
-
-            atual = (atual + 1) % numJogadores; // Passa a vez ao próximo
-            rondas++;
-            return true; // O jogador atual não se mexe neste turno
-        }
-
         p.setUltimoDado(nrSpaces); //Erro de Lógica
         p.registarJogada();        //Voltar Posição Anterior
 
@@ -321,8 +305,10 @@ public class GameManager {
             p.setPosicao(p.getPosicao() + nrSpaces);
         }
 
-        // Terminar turno
-        atual = (atual + 1) % numJogadores;
+        do{
+            atual=(atual+1) % listaPlayers.size();
+
+        } while (listaPlayers.get(atual).equals("Derrotado"));
         rondas++;
 
         return true;
