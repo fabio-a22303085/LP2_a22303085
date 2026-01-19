@@ -287,17 +287,26 @@ public class GameManager {
     // --- Lógica do Jogo ---
 
     public boolean moveCurrentPlayer(int nrSpaces) {
+        // 1. REGRA DE OURO: Se já há vencedor, o jogo acabou. Ninguém se mexe.
+        // Isto resolve o erro do test021 (expected <false> but was <true>)
+        if (vencedor != null) {
+            return false;
+        }
+
         this.nrSpaces = nrSpaces;
 
-        if (numJogadores == 0){return false;}
-        if (nrSpaces < 1 || nrSpaces > 6) {return false;}
+        if (numJogadores == 0) { return false; }
+
+        // Validação do dado (1 a 6)
+        if (nrSpaces < 1 || nrSpaces > 6) { return false; }
 
         Player p = allInfoPlayers.get(currentPlayer[atual]);
 
-        if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) {return false;}
-        if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) {return false;}
+        // Validação das Linguagens (Assembly e C)
+        if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) { return false; }
+        if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) { return false; }
 
-        // Se morreu não se mexe
+        // Se morreu não se mexe (mas conta como turno jogado, por isso retorna true)
         if (p.getEstado().equals("Derrotado")) {
             passarVez();
             return true;
@@ -313,22 +322,40 @@ public class GameManager {
         p.setUltimoDado(nrSpaces);
         p.registarJogada();
 
-        // Movimento
         int novaPosicao = p.getPosicao() + nrSpaces;
 
+        // === LÓGICA DE VITÓRIA ===
         if (novaPosicao >= tamanhoTabuleiro) {
             p.setPosicao(tamanhoTabuleiro);
-            // Verifica logo se ganhou
             vencedor = p.getNome();
-            return true;
+
+            // 2. CORREÇÃO IMPORTANTÍSSIMA:
+            // A jogada que dá a vitória TAMBÉM conta como turno.
+            // Isto resolve o erro do test022 (8 vs 9 turnos)
+            rondas++;
+
+            return true; // Acabou, retorna true
         } else {
             p.setPosicao(novaPosicao);
         }
 
-        // IMPORTANTE: A lógica de interação com o tabuleiro é feita via "reactToAbyssOrTool"
-        // que é chamado pela GUI ou Testes. No entanto, se quiseres garantir que as ferramentas
-        // são apanhadas automaticamente ao mover, podes descomentar abaixo.
-        // Pelo padrão do projeto, deixamos o 'reactToAbyssOrTool' tratar disso separadamente.
+        // === INTERAÇÃO COM TABULEIRO ===
+        if (tabuleiro.containsKey(novaPosicao)) {
+            BoardElement elemento = tabuleiro.get(novaPosicao);
+
+            if (elemento instanceof Tool) {
+                p.apanharFerramenta((Tool) elemento);
+                tabuleiro.remove(novaPosicao);
+            } else if (elemento instanceof Abyss) {
+                ((Abyss) elemento).interact(p, this);
+
+                // Se morreu após interação
+                if (p.getEstado().equals("Derrotado")) {
+                    passarVez();
+                    return true;
+                }
+            }
+        }
 
         passarVez();
         return true;
