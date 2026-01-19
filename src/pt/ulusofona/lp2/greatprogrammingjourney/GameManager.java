@@ -114,7 +114,7 @@
                     String linguagens = info[2];
                     String corSolicitada = info[3];
 
-                    if (id < 0 || idJogadores.contains(id)){
+                    if (id < 1 || idJogadores.contains(id)){
                         return false;
                     }
                     if (nome == null || nome.isBlank()){
