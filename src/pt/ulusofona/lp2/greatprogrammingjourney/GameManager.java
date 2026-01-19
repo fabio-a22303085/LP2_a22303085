@@ -42,6 +42,43 @@
             return nrSpaces;
         }
 
+        public boolean createInitialBoard(String[][] playerInfo, int worldSize){
+            listaPlayers.clear();
+            allInfoPlayers.clear();
+            idJogadores.clear();
+
+            numJogadores = playerInfo.length;
+            if(numJogadores<=1 || numJogadores>4){return false;}
+            currentPlayer = new int[numJogadores];
+            List<String> cores = new ArrayList<>(Arrays.asList("Purple", "Green", "Blue", "Brown"));
+            int cont=0;
+            for(int i=0;i<numJogadores;i++){
+                String[] dados = playerInfo[i];
+
+                int id= Integer.parseInt(dados[0]);
+                if(id<0 || idJogadores.contains(id)){return false;}
+
+                String nome = dados[1];
+                if(nome.isBlank() || nome.isEmpty()){return false;}
+
+                String linguagens = dados[2];
+                String cor = dados[3];
+                if(!cores.contains(cor)){return false;}
+                cores.remove(cor);
+
+                currentPlayer[cont]=id;
+
+                Player p = new Player(id, 1, nome, cor, linguagens);
+                listaPlayers.add(p);
+                allInfoPlayers.put(id, p);
+                idJogadores.add(id);
+                cont++;
+            }
+            if(worldSize<numJogadores*2){return false;}
+            tamanhoTabuleiro= worldSize;
+            return true;
+        }
+
         public boolean createInitialBoard(String[][] playerInfo, int worldSize, String[][] abyssesAndTools) {
             // 1. Limpar dados antigos
             listaPlayers.clear();
