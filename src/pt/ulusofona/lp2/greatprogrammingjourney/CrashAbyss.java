@@ -9,7 +9,6 @@ public class CrashAbyss extends Abyss {
             return "O teu Tratamento de Excepções preveniu o Crash. O sistema recuperou e continuas na mesma posição.";
         }
 
-
         player.setPosicao(1);
         return "Crash! Volta à primeira casa do jogo";
     }

@@ -22,7 +22,7 @@ public class LLMAbyss extends Abyss {
 
             int bonus = player.getUltimoDado();
             player.move(bonus);
-            return "O LLM acelerou o desenvolvimento! Avanças mais " + bonus + " casas extra.";
+            return "O LLM acelerou o desenvolvimento! Avanças mais ";
         }
     }
 }

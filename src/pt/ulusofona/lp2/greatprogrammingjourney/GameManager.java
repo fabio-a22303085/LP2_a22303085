@@ -293,58 +293,82 @@
         }
 
         public boolean moveCurrentPlayer(int nrSpaces) {
-            this.nrSpaces = nrSpaces;
-
-            if (numJogadores == 0){return false;}
-            if (nrSpaces < 1 || nrSpaces > 6) {return false;}
+            if (numJogadores == 0) return false;
+            if (nrSpaces < 1 || nrSpaces > 6) return false;
 
             Player p = allInfoPlayers.get(currentPlayer[atual]);
 
+            // 1. Validações de Linguagem
+            if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) return false;
+            if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) return false;
 
-            if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) {return false;}
-            if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) {return false;}
-
-            /*if (p.getPrimeiraLinguagem().equalsIgnoreCase("Python")) {
-                        nrSpaces++; // Adiciona o bónus
-                    }*/
-
-            //Se morreu não se mexe
+            // 2. Verifica se está Morto/Derrotado (Salta a vez)
             if (p.getEstado().equals("Derrotado")) {
                 atual = (atual + 1) % numJogadores;
                 rondas++;
                 return true;
             }
 
-            //Verifica se está preso
+            // 3. Verifica se está Preso (Salta a vez e diminui contador)
             if (p.getTurnosPreso() > 0) {
-                p.setTurnosPreso(0); // Liberta o jogador para a jogada
-
-                atual = (atual + 1) % numJogadores; // Passa a vez ao próximo
+                p.setTurnosPreso(p.getTurnosPreso() - 1);
+                // Se ainda estiver preso depois de decrementar, passa a vez
+                if (p.getTurnosPreso() > 0) {
+                    atual = (atual + 1) % numJogadores;
+                    rondas++;
+                    return true;
+                }
+                // Se chegou a 0, liberta-se e JOGA NESTE TURNO (ou no próximo, dependendo da regra).
+                // Normalmente perde a vez na mesma:
+                atual = (atual + 1) % numJogadores;
                 rondas++;
-                return true; // O jogador atual não se mexe neste turno
+                return true;
             }
 
-            p.setUltimoDado(nrSpaces); //Guarda o valor do dado. Isto é necessário para o Abismo Erro de Lógica
-            p.registarJogada();        //Guarda a posição onde o jogador está agora no histórico Abismos Código Duplicado e Efeitos Secundários
+            // 4. Registar dados e calcular nova posição
+            p.setUltimoDado(nrSpaces);
+            p.registarJogada();
+            int novaPosicao = p.getPosicao() + nrSpaces;
 
-            // Movimento
-            if (p.getPosicao() + nrSpaces >= tamanhoTabuleiro) {
-
-                /*if (p.getFerramentasToString().isEmpty() || p.getFerramentasToString().equals("No tools")) { // Ou verificar tamanho da lista de ferramentas
-             p.move(-5); // Penalidade
-                    } else {
-                         p.setPosicao(tamanhoTabuleiro); // Ganha
-                    }
-                        } else {
-                    p.setPosicao(p.getPosicao() + nrSpaces);
-                            }*/
-
+            // === CORREÇÃO CRÍTICA AQUI ===
+            if (novaPosicao >= tamanhoTabuleiro) {
                 p.setPosicao(tamanhoTabuleiro);
-            } else {
-                p.setPosicao(p.getPosicao() + nrSpaces);
+
+                // O JOGADOR GANHOU!
+                // Incrementamos o contador global de rondas (opcional, mas recomendado)
+                rondas++;
+
+                // IMPORTANTE: Retornamos JÁ!
+                // NÃO executamos o código lá em baixo que muda o 'atual'.
+                // Assim, o getCurrentPlayerID() continua a ser o vencedor (3).
+                return true;
+            }
+            // =============================
+
+            // Movimento normal (não ganhou)
+            p.setPosicao(novaPosicao);
+
+            // 5. Interagir com o Tabuleiro (Abismos/Ferramentas)
+            if (tabuleiro.containsKey(novaPosicao)) {
+                BoardElement elemento = tabuleiro.get(novaPosicao);
+
+                if (elemento instanceof Abyss) {
+                    String msg = ((Abyss) elemento).interact(p, this);
+                    // Se o abismo matou o jogador agora mesmo
+                    if (p.getEstado().equals("Derrotado")) {
+                        // Passa a vez
+                        atual = (atual + 1) % numJogadores;
+                        rondas++;
+                        return true;
+                    }
+                } else if (elemento instanceof Tool) {
+                    // Apanha ferramenta
+                    p.apanharFerramenta((Tool) elemento);
+                    tabuleiro.remove(novaPosicao); // Remove do tabuleiro
+                }
             }
 
-            // Terminar turno
+            // 6. Passar a vez (Só acontece se NÃO ganhou e NÃO morreu)
             atual = (atual + 1) % numJogadores;
             rondas++;
 
