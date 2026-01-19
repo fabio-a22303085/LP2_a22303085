@@ -8,7 +8,7 @@ public class LLMAbyss extends Abyss {
 
     @Override
     public String interact(Player player, GameManager game) {
-        if (player.getNumeroDeJogadas() <= 3) {
+        if (player.getNumeroDeJogadas() < 4) {
 
             if (tentarUsarFerramenta(player, 5)) {
                 return "O Professor reviu o código do LLM e corrigiu as alucinações. Estás salvo.";

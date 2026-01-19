@@ -143,14 +143,6 @@ public class Player {
         }
     }
 
-    /* // cria string base para não repetir código
-    String baseInfo = id + " | " + nome + " | " + posicao + " | ";
-
-    String toolsStr = ferramentas.isEmpty() ? "No tools" : getFerramentasToString();
-
-    //Add "turnosPreso"
-    return baseInfo + toolsStr + " | " + linguagens + " | " + emJogo + " | Turnos Preso: " + turnosPreso; */
-
     public String getFerramentasToString() {
         if (nomeFerramentas.isEmpty()) {
             return ""; // Ou "No tools", conforme a tua preferência
