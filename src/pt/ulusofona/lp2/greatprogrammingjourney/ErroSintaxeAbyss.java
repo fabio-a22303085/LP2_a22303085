@@ -7,14 +7,12 @@ public class ErroSintaxeAbyss extends Abyss {
 
     @Override
     public String interact(Player player, GameManager game) {
-        // 1. Verificar se o jogador tem o IDE (ID 4)
         if (player.temFerramenta(4)) {
-            player.removerFerramenta(4); // Importante: a ferramenta gasta-se!
+            player.removerFerramenta(4);
             return "O IDE corrigiu o Erro de Sintaxe! Estás salvo.";
         }
-
-        // 2. Penalização: Voltar ao início (Posição 1 ou 0, conforme o teu worldSize)
-        player.setPosicao(1);
-        return "Erro de sintaxe! Voltaste ao início do projeto.";
+        // O teste quer que recues apenas 1 casa:
+        player.setPosicao(Math.max(1, player.getPosicao() - 1));
+        return "Caiu num erro de sintaxe! Recua 1 casa";
     }
 }

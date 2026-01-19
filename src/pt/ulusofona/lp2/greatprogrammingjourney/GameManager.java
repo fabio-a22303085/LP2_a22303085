@@ -280,13 +280,20 @@ public class GameManager {
     }
 
     public boolean moveCurrentPlayer(int nrSpaces) {
+        Player p = allInfoPlayers.get(currentPlayer[atual]);
+
+        // Se o jogador já está derrotado, não faz nada e passa o turno
+        if (p.getEstado().equals("Derrotado")) {
+            atual = (atual + 1) % numJogadores;
+            while (allInfoPlayers.get(currentPlayer[atual]).getEstado().equals("Derrotado")) {
+                atual = (atual + 1) % numJogadores;
+            }
+            return false; // Retorna false porque não houve movimento
+        }
+
         if (numJogadores <= 0) return false;
         if (nrSpaces < 1 || nrSpaces > 6) return false;
 
-        Player p = allInfoPlayers.get(currentPlayer[atual]);
-
-        // Importante: Se o jogador cair num abismo que o mata, o estado muda para "Derrotado"
-        // Mas ele só sai da lista de ativos na próxima vez que o turno tentar chegar a ele.
 
         if (p.getTurnosPreso() > 0) {
             p.setTurnosPreso(p.getTurnosPreso() - 1);
@@ -680,31 +687,15 @@ public class GameManager {
 
 
     public String reactToAbyssOrTool() {
-        // 1. Identificar quem acabou de se mexer (o jogador que ainda não passou o turno logicamente)
-        // No teu moveCurrentPlayer, tu mudas o 'atual' no fim.
-        // Por isso, quem se mexeu foi o (atual - 1)
         int idxQueJogou = (atual - 1 + numJogadores) % numJogadores;
         Player p = allInfoPlayers.get(currentPlayer[idxQueJogou]);
-
         int pos = p.getPosicao();
 
-        // 2. Se a casa está vazia, retorna null
-        if (!tabuleiro.containsKey(pos)) {
-            return null;
-        }
+        if (!tabuleiro.containsKey(pos)) return null;
 
         BoardElement el = tabuleiro.get(pos);
+        return el.interact(p, this);
 
-        // 3. Interage
-        String resultado = el.interact(p, this);
-
-        // 4. REGRA DE OURO: Se for Ferramenta, tem de sair do tabuleiro após apanhada
-        // Se for Abismo, depende do enunciado, mas normalmente ferramentas desaparecem.
-        if (el.getTypePrefix().equals("T")) {
-            tabuleiro.remove(pos);
-        }
-
-        return resultado;
     }
 
 }

@@ -26,9 +26,10 @@ public class Player {
         this.emJogo = "Em Jogo";
 
         String[] linguasArray = linguagens.split(";");
-        primeiraLinguagem = linguasArray[0];
+        this.primeiraLinguagem = linguasArray[0].trim();
+
         Arrays.sort(linguasArray, String.CASE_INSENSITIVE_ORDER);
-        this.linguagens = String.join(";", linguasArray);
+        this.linguagens = String.join("; ", linguasArray);
         this.historicoPosicoes.add(this.posicao);
     }
 
