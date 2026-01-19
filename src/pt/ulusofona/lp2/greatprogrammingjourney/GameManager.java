@@ -311,27 +311,40 @@ public class GameManager {
     }
 
     public boolean gameIsOver() {
-        // 1. Alguém chegou ao fim?
+
+        Player jogadorRestante = null;
+        int cont = 0;
+        int contDerrotados = 0;
         for (Player p : listaPlayers) {
+            // 1. Verifica se alguém chegou ao fim (Vitória imediata)
             if (p.getPosicao() == tamanhoTabuleiro) {
                 vencedor = p.getNome();
                 return true;
             }
-        }
 
-        // 2. Existe alguém que ainda possa jogar?
-        boolean alguemAtivo = false;
-        for (Player p : listaPlayers) {
+            // Conta jogadores que NÃO estão derrotados (estão em jogo)
             if (!p.getEstado().equals("Derrotado")) {
-                // Se o jogador não está morto, ele ainda conta como "ativo"
-                // mesmo que esteja preso temporariamente, pois irá libertar-se.
-                alguemAtivo = true;
-                break;
+                cont++;
+                jogadorRestante = p;
+            }
+
+            // Conta jogadores que estão mortos/derrotados
+            if (p.getEstado().equals("Derrotado")) {
+                contDerrotados++;
             }
         }
 
-        if (!alguemAtivo) {
-            vencedor = null; // Empate
+        // 2. Verifica se todos morreram (Empate)
+        if (contDerrotados == listaPlayers.size()) {
+            vencedor = null; // Garante que é nulo em caso de empate
+            return true;
+        }
+
+        // 3. Verifica se sobrou apenas 1 jogador (Last Man Standing)
+        if (cont < 2) {
+            if (cont == 1 && jogadorRestante != null) {
+                vencedor = jogadorRestante.getNome();
+            }
             return true;
         }
 
