@@ -24,7 +24,7 @@ public class GameManager {
     private String vencedor;
     private int nrSpaces = 0;
 
-    // Constante com os nomes para usar no Load/Save e Criação
+    // Constante para usar nos nomes das ferramentas (Load/Save/Create)
     private static final String[] NOMES_TOOLS = {
             "Herança",                  // ID 0
             "Programação Funcional",    // ID 1
@@ -32,8 +32,27 @@ public class GameManager {
             "Tratamento de Excepções",  // ID 3
             "IDE",                      // ID 4
             "Ajuda Do Professor",       // ID 5
-            "Martelo Dourado"           // ID 6 (Opcional)
+            "Martelo Dourado"           // ID 6
     };
+
+    // --- Métodos de Getter/Setter e Auxiliares ---
+
+    public int getNrSpaces() {
+        return nrSpaces;
+    }
+
+    public int getCurrentPlayerID(){
+        return currentPlayer[atual];
+    }
+
+    // Necessário para o InfiniteLoopAbyss interagir com outros jogadores
+    public List<Player> getListaPlayers() {
+        return this.listaPlayers;
+    }
+
+    public List<String> getProgrammersBetweenPositions(int posicao1, int posicao2) {
+        return null;
+    }
 
     public void recuarTodosEm(int posicao, int casas) {
         for (Player p : listaPlayers) {
@@ -43,21 +62,14 @@ public class GameManager {
         }
     }
 
-    public List<String> getProgrammersBetweenPositions(int posicao1, int posicao2) {
-        return null;
-    }
+    // --- Criação do Tabuleiro ---
 
-    public int getNrSpaces() {
-        return nrSpaces;
-    }
-
-    // === CORREÇÃO 1: Sobrecarga para suportar testes da Parte 1 ===
+    // Sobrecarga para compatibilidade com testes da Parte 1
     public boolean createInitialBoard(String[][] playerInfo, int worldSize) {
         return createInitialBoard(playerInfo, worldSize, null);
     }
 
     public boolean createInitialBoard(String[][] playerInfo, int worldSize, String[][] abyssesAndTools) {
-        // 1. Limpar dados antigos
         listaPlayers.clear();
         allInfoPlayers.clear();
         idJogadores.clear();
@@ -66,24 +78,18 @@ public class GameManager {
         rondas = 0;
         atual = 0;
 
-        // 2. Validações Iniciais
-        if (playerInfo == null || playerInfo.length < 2 || playerInfo.length > 4) {
-            return false;
-        }
+        // Validações Básicas
+        if (playerInfo == null || playerInfo.length < 2 || playerInfo.length > 4) return false;
 
         this.numJogadores = playerInfo.length;
-
-        if (worldSize < numJogadores * 2) {
-            return false;
-        }
+        if (worldSize < numJogadores * 2) return false;
         this.tamanhoTabuleiro = worldSize;
 
         currentPlayer = new int[numJogadores];
-
         List<String> coresDisponiveis = new ArrayList<>(Arrays.asList("Purple", "Green", "Blue", "Brown"));
         List<Integer> tempIds = new ArrayList<>();
 
-        // 3. Processar Jogadores
+        // Criar Jogadores
         for (String[] info : playerInfo) {
             if (info.length < 4) return false;
 
@@ -93,12 +99,8 @@ public class GameManager {
                 String linguagens = info[2];
                 String corSolicitada = info[3];
 
-                if (id < 0 || idJogadores.contains(id)) {
-                    return false;
-                }
-                if (nome == null || nome.isBlank()) {
-                    return false;
-                }
+                if (id < 0 || idJogadores.contains(id)) return false; // Aceita ID 0
+                if (nome == null || nome.isBlank()) return false;
 
                 String corFinal;
                 if (corSolicitada != null && coresDisponiveis.contains(corSolicitada)) {
@@ -124,9 +126,8 @@ public class GameManager {
             currentPlayer[i] = tempIds.get(i);
         }
 
-        // 4. Processar Elementos do Tabuleiro
+        // Criar Ferramentas e Abismos
         if (abyssesAndTools != null) {
-
             String[] nomesAbyss = {
                     "Erro de sintaxe", "Erro de lógica", "Exception", "FileNotFoundException",
                     "Crash", "Código Duplicado", "Efeitos Secundários",
@@ -147,9 +148,9 @@ public class GameManager {
                     BoardElement elemento = null;
 
                     if (tipoStr.equals("1")) { // === FERRAMENTAS ===
-                        if (idItem < 0 || idItem > 5) return false; // IDs válidos de 0 a 5 apenas (que têm classe)
+                        if (idItem < 0 || idItem > 5) return false; // Só aceita até 5 (ferramentas com classe)
 
-                        // CORREÇÃO 2: Uso das classes específicas (Adeus SimpleTool)
+                        // SEM SIMPLE TOOL - Instanciação explícita
                         switch (idItem) {
                             case 0: elemento = new InheritanceTool(idItem, NOMES_TOOLS[idItem]); break;
                             case 1: elemento = new FunctionalProgTool(idItem, NOMES_TOOLS[idItem]); break;
@@ -174,145 +175,78 @@ public class GameManager {
                             case 7: elemento = new BlueScreenAbyss(7, nomesAbyss[7]); break;
                             case 8: elemento = new InfiniteLoopAbyss(8, nomesAbyss[8]); break;
                             case 9: elemento = new SegmentationFaultAbyss(9, nomesAbyss[9]); break;
-                            // CORREÇÃO 3: Passar String direta para evitar IndexOutOfBounds no array
-                            case 20: elemento = new LLMAbyss(20, "LLM"); break;
+                            case 20: elemento = new LLMAbyss(20, "LLM"); break; // String direta para evitar erro de array
                             default: return false;
                         }
-
                     } else {
                         return false;
                     }
-
                     tabuleiro.put(posicao, elemento);
 
-                } catch (Exception e) {
+                } catch (NumberFormatException e) {
                     return false;
                 }
             }
         }
-
         return true;
     }
 
+    // --- Lógica do Jogo ---
 
-    public String[] getSlotInfo(int pos) {
-        if (pos < 1 || pos > tamanhoTabuleiro) {
-            return null;
-        }
-
-        String[] result = new String[3];
-        StringBuilder sbPlayers = new StringBuilder();
-        boolean primeiro = true;
-
-        for (Player p : listaPlayers) {
-            if (p.getPosicao() == pos) {
-                if (!primeiro) {
-                    sbPlayers.append(",");
-                }
-                sbPlayers.append(p.getId());
-                primeiro = false;
-            }
-        }
-        result[0] = sbPlayers.toString();
-
-        if (tabuleiro.containsKey(pos)) {
-            BoardElement elemento = tabuleiro.get(pos);
-            result[1] = elemento.getTitle();
-            result[2] = elemento.getTypePrefix() + ":" + elemento.getId();
-        } else {
-            result[1] = "";
-            result[2] = "";
-        }
-
-        return result;
-    }
-
-
-    public int getCurrentPlayerID(){
-        return currentPlayer[atual];
-    }
-
-    public String getImagePng(int nrSquare){
-        return null;
-    }
-
-    public String[] getProgrammerInfo(int id){
-        if(!allInfoPlayers.containsKey(id)){return null;}
-
-        Player p = allInfoPlayers.get(id);
-        String[] result = new String[7];
-        result[0]=String.valueOf(p.getId());
-        result[1]=p.getNome();
-        result[2]=p.getLinguagens();
-        result[3]=p.getCor();
-        result[4]=String.valueOf(p.getPosicao());
-        result[5] = p.getFerramentasToString();
-        result[6] = p.getEstado();
-
-        return result;
-    }
-
-    public String getProgrammerInfoAsStr(int id){
-        if(!allInfoPlayers.containsKey(id)){return null;}
-        return allInfoPlayers.get(id).toString();
-    }
-
-    // === CORREÇÃO 4: Lógica de Movimento + Interação + Vitória Imediata ===
     public boolean moveCurrentPlayer(int nrSpaces) {
         this.nrSpaces = nrSpaces;
-
-        if (numJogadores == 0){return false;}
-        if (nrSpaces < 1 || nrSpaces > 6) {return false;}
+        if (numJogadores == 0) return false;
+        if (nrSpaces < 1 || nrSpaces > 6) return false;
 
         Player p = allInfoPlayers.get(currentPlayer[atual]);
 
-        if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) {return false;}
-        if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) {return false;}
+        // Validação Linguagens
+        if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) return false;
+        if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) return false;
 
-        // Se morreu não se mexe (passa a vez)
+        // Estado: Derrotado
         if (p.getEstado().equals("Derrotado")) {
             passarVez();
             return true;
         }
 
-        // Verifica se está preso
+        // Estado: Preso
         if (p.getTurnosPreso() > 0) {
-            p.decrementarTurnosPreso(); // Usa o método do Player
+            p.decrementarTurnosPreso();
             passarVez();
             return true;
         }
 
+        // Registar dados antes de mover
         p.setUltimoDado(nrSpaces);
         p.registarJogada();
 
-        // Calcular nova posição
         int novaPosicao = p.getPosicao() + nrSpaces;
 
-        // --- VITÓRIA IMEDIATA ---
+        // === LÓGICA DE VITÓRIA ===
         if (novaPosicao >= tamanhoTabuleiro) {
             p.setPosicao(tamanhoTabuleiro);
             vencedor = p.getNome();
-            // NÃO passamos a vez. Retornamos true e o getCurrentPlayerID mantém-se no vencedor.
-            return true;
+            return true; // Acabou, não passa a vez
         }
 
-        // Movimento normal
+        // Move
         p.setPosicao(novaPosicao);
 
-        // --- INTERAÇÃO COM TABULEIRO (Faltava isto!) ---
+        // === INTERAÇÃO COM TABULEIRO (Ferramentas/Abismos) ===
         if (tabuleiro.containsKey(novaPosicao)) {
             BoardElement elemento = tabuleiro.get(novaPosicao);
 
             if (elemento instanceof Tool) {
-                // O Player apanha a ferramenta
+                // Adicionar ferramenta ao jogador e remover do mapa
                 p.apanharFerramenta((Tool) elemento);
-                tabuleiro.remove(novaPosicao); // Remove do chão
+                tabuleiro.remove(novaPosicao);
 
             } else if (elemento instanceof Abyss) {
-                // Interage com o abismo
+                // Interagir com o Abismo
                 ((Abyss) elemento).interact(p, this);
 
-                // Se o abismo matou o jogador (Blue Screen/SegFault)
+                // Verificar se morreu após interação
                 if (p.getEstado().equals("Derrotado")) {
                     passarVez();
                     return true;
@@ -330,7 +264,7 @@ public class GameManager {
     }
 
     public boolean gameIsOver() {
-        // 1. Vitória por Alcance
+        // 1. Vitória por chegada à meta
         for (Player p : listaPlayers) {
             if (p.getPosicao() == tamanhoTabuleiro) {
                 vencedor = p.getNome();
@@ -338,33 +272,101 @@ public class GameManager {
             }
         }
 
-        // Contagem de Sobreviventes
-        int jogadoresVivos = 0;
-        Player ultimoSobrevivente = null;
+        // Contagem para regras de eliminação
+        int vivos = 0;
+        Player ultimoVivo = null;
+        int mortos = 0;
 
         for (Player p : listaPlayers) {
             if (!p.getEstado().equals("Derrotado")) {
-                jogadoresVivos++;
-                ultimoSobrevivente = p;
+                vivos++;
+                ultimoVivo = p;
+            } else {
+                mortos++;
             }
         }
 
-        // 2. Último Resistente
-        if (jogadoresVivos == 1 && numJogadores > 1) {
-            vencedor = ultimoSobrevivente.getNome();
+        // 2. Todos morreram = Empate
+        if (mortos == numJogadores) {
+            vencedor = "Empate";
             return true;
         }
 
-        // 3. Empate Técnico
-        if (jogadoresVivos == 0) {
-            vencedor = "Empate";
+        // 3. Só sobra um (Last Man Standing)
+        if (vivos == 1 && numJogadores > 1) {
+            vencedor = ultimoVivo.getNome();
             return true;
         }
 
         return false;
     }
 
-    public ArrayList<String> getGameResults(){
+    // --- Informações e Outputs ---
+
+    public String[] getSlotInfo(int pos) {
+        if (pos < 1 || pos > tamanhoTabuleiro) return null;
+
+        String[] result = new String[3];
+        StringBuilder sbPlayers = new StringBuilder();
+        boolean primeiro = true;
+
+        for (Player p : listaPlayers) {
+            if (p.getPosicao() == pos) {
+                if (!primeiro) sbPlayers.append(",");
+                sbPlayers.append(p.getId());
+                primeiro = false;
+            }
+        }
+        result[0] = sbPlayers.toString();
+
+        if (tabuleiro.containsKey(pos)) {
+            BoardElement elemento = tabuleiro.get(pos);
+            result[1] = elemento.getTitle();
+            result[2] = elemento.getTypePrefix() + ":" + elemento.getId();
+        } else {
+            result[1] = "";
+            result[2] = "";
+        }
+        return result;
+    }
+
+    public String[] getProgrammerInfo(int id) {
+        if (!allInfoPlayers.containsKey(id)) return null;
+        Player p = allInfoPlayers.get(id);
+        String[] result = new String[7];
+        result[0] = String.valueOf(p.getId());
+        result[1] = p.getNome();
+        result[2] = p.getLinguagens();
+        result[3] = p.getCor();
+        result[4] = String.valueOf(p.getPosicao());
+        result[5] = p.getFerramentasToString();
+        result[6] = p.getEstado();
+        return result;
+    }
+
+    public String getProgrammerInfoAsStr(int id) {
+        if (!allInfoPlayers.containsKey(id)) return null;
+        return allInfoPlayers.get(id).toString();
+    }
+
+    public String getProgrammersInfo() {
+        if (listaPlayers == null || listaPlayers.isEmpty()) return "";
+        StringBuilder sb = new StringBuilder();
+        boolean primeiro = true;
+
+        for (Player p : listaPlayers) {
+            if (!p.getEstado().equals("Derrotado")) {
+                if (!primeiro) sb.append(" | ");
+                String ferramentas = p.getFerramentasToString();
+                if (ferramentas.isEmpty()) ferramentas = "No tools";
+                sb.append(p.getNome()).append(" : ").append(ferramentas);
+                primeiro = false;
+            }
+        }
+        return sb.toString();
+    }
+
+    public ArrayList<String> getGameResults() {
         ArrayList<String> str = new ArrayList<>();
         str.add("THE GREAT PROGRAMMING JOURNEY");
         str.add("");
@@ -380,7 +382,6 @@ public class GameManager {
             for (Player p : listaPlayers) {
                 str.add(p.getId() + " | " + p.getNome() + " | " + p.getCausaDerrota());
             }
-
         } else {
             str.add("VENCEDOR");
             str.add(vencedor);
@@ -388,11 +389,10 @@ public class GameManager {
             str.add("RESTANTES");
             str.addAll(restantes());
         }
-
         return str;
     }
 
-    public ArrayList<String> restantes(){
+    public ArrayList<String> restantes() {
         listaPlayers.sort((p1, p2) -> {
             int comparePos = Integer.compare(p2.getPosicao(), p1.getPosicao());
             if (comparePos != 0) return comparePos;
@@ -400,43 +400,29 @@ public class GameManager {
         });
 
         ArrayList<String> resultado = new ArrayList<>();
-        for(Player p : listaPlayers){
-            if(p.getPosicao() != tamanhoTabuleiro){
+        for (Player p : listaPlayers) {
+            if (p.getPosicao() != tamanhoTabuleiro) {
                 resultado.add(p.getNome() + " " + p.getPosicao());
             }
         }
         return resultado;
     }
 
-    public JPanel getAuthorsPanel(){
+    public JPanel getAuthorsPanel() {
         JPanel panel = new JPanel();
         panel.add(new JLabel("Nome: FJ"));
         return panel;
     }
 
-    public HashMap<String, String> customizeBoard(){
+    public HashMap<String, String> customizeBoard() {
         return new HashMap<>();
     }
 
-    public String getProgrammersInfo() {
-        if (listaPlayers == null || listaPlayers.isEmpty()) return "";
-
-        StringBuilder sb = new StringBuilder();
-        boolean primeiro = true;
-
-        for (Player p : listaPlayers) {
-            if (!p.getEstado().equals("Derrotado")) {
-                if (!primeiro) sb.append(" | ");
-
-                String ferramentas = p.getFerramentasToString();
-                if (ferramentas.isEmpty()) ferramentas = "No tools";
-
-                sb.append(p.getNome()).append(" : ").append(ferramentas);
-                primeiro = false;
-            }
-        }
-        return sb.toString();
+    public String getImagePng(int nrSquare) {
+        return null;
     }
+
+    // --- Persistência de Dados (Save/Load) ---
 
     public boolean saveGame(File file) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
@@ -491,10 +477,7 @@ public class GameManager {
             }
 
             if (!scanner.hasNextLine()) throw new InvalidFileException("Falta nº jogadores");
-            int qtdPlayers;
-            try {
-                qtdPlayers = Integer.parseInt(scanner.nextLine());
-            } catch (NumberFormatException e) { throw new InvalidFileException("Erro numérico qtd players"); }
+            int qtdPlayers = Integer.parseInt(scanner.nextLine());
 
             for (int i = 0; i < qtdPlayers; i++) {
                 if (!scanner.hasNextLine()) throw new InvalidFileException("Fim inesperado (players)");
@@ -509,10 +492,7 @@ public class GameManager {
             }
 
             if (!scanner.hasNextLine()) throw new InvalidFileException("Falta nº elementos tabuleiro");
-            int qtdElementos;
-            try {
-                qtdElementos = Integer.parseInt(scanner.nextLine());
-            } catch (NumberFormatException e) { throw new InvalidFileException("Erro numérico qtd elementos"); }
+            int qtdElementos = Integer.parseInt(scanner.nextLine());
 
             for (int i = 0; i < qtdElementos; i++) {
                 if (!scanner.hasNextLine()) throw new InvalidFileException("Fim inesperado (tabuleiro)");
@@ -523,64 +503,6 @@ public class GameManager {
             throw e;
         } catch (Exception e) {
             throw new InvalidFileException("Erro desconhecido: " + e.getMessage());
-        }
-    }
-
-    private void restaurarElementoTabuleiro(String linha) throws InvalidFileException {
-        // Formato da linha: Posicao:TipoID:ID:Titulo
-        String[] p = linha.split(":");
-        if (p.length < 4) {
-            throw new InvalidFileException("Linha de tabuleiro inválida");
-        }
-
-        try {
-            int pos = Integer.parseInt(p[0]);
-            int tipoId = Integer.parseInt(p[1]); // 1 = Tool, 0 = Abyss
-            int id = Integer.parseInt(p[2]);
-            String titulo = p[3];
-
-            BoardElement elemento = null; // Inicializar a null
-
-            if (tipoId == 1) { // === É UMA FERRAMENTA ===
-                switch (id) {
-                    case 0: elemento = new InheritanceTool(id, titulo); break;
-                    case 1: elemento = new FunctionalProgTool(id, titulo); break;
-                    case 2: elemento = new UnitTestsTool(id, titulo); break;
-                    case 3: elemento = new ExceptionHandlingTool(id, titulo); break;
-                    case 4: elemento = new IDETool(id, titulo); break;
-                    case 5: elemento = new TeacherHelpTool(id, titulo); break;
-                    default:
-                        // Se o ID não for 0-5, ignoramos para não dar erro,
-                        // ou lançamos exceção se quiseres ser rigoroso.
-                        return;
-                }
-
-            } else if (tipoId == 0) { // === É UM ABISMO ===
-                switch (id) {
-                    case 0: elemento = new SyntaxErrorAbyss(id, titulo); break;
-                    case 1: elemento = new LogicErrorAbyss(id, titulo); break;
-                    case 2: elemento = new ExceptionAbyss(id, titulo); break;
-                    case 3: elemento = new FileNotFoundAbyss(id, titulo); break;
-                    case 4: elemento = new CrashAbyss(id, titulo); break;
-                    case 5: elemento = new DuplicatedCodeAbyss(id, titulo); break;
-                    case 6: elemento = new SideEffectsAbyss(id, titulo); break;
-                    case 7: elemento = new BlueScreenAbyss(id, titulo); break;
-                    case 8: elemento = new InfiniteLoopAbyss(id, titulo); break;
-                    case 9: elemento = new SegmentationFaultAbyss(id, titulo); break;
-                    case 20: elemento = new LLMAbyss(id, titulo); break;
-                    default:
-                        throw new InvalidFileException("ID de Abismo desconhecido no save: " + id);
-                }
-            } else {
-                // Se não for nem 0 nem 1
-                throw new InvalidFileException("Tipo de elemento desconhecido: " + tipoId);
-            }
-
-            // Adiciona ao mapa do tabuleiro
-            tabuleiro.put(pos, elemento);
-
-        } catch (NumberFormatException e) {
-            throw new InvalidFileException("Erro numérico ao ler linha do tabuleiro");
         }
     }
 
@@ -604,35 +526,22 @@ public class GameManager {
             player.setTurnosPreso(turnosPreso);
             player.setUltimoDado(ultimoDado);
 
-            // CORREÇÃO 5: Restaurar usando classes específicas
             if (!toolsStr.equals("NULL") && !toolsStr.isBlank()) {
                 String[] tIds = toolsStr.split(",");
                 for (String tId : tIds) {
                     try {
                         int tid = Integer.parseInt(tId);
-                        if (tid >= 0 && tid < 6) { // Apenas IDs válidos 0-5
+                        if (tid >= 0 && tid < 6) {
                             Tool ferramenta;
+                            // SEM SIMPLE TOOL AQUI
                             switch (tid) {
-                                case 0:
-                                    ferramenta = new InheritanceTool(tid, NOMES_TOOLS[tid]);
-                                    break;
-                                case 1:
-                                    ferramenta = new FunctionalProgTool(tid, NOMES_TOOLS[tid]);
-                                    break;
-                                case 2:
-                                    ferramenta = new UnitTestsTool(tid, NOMES_TOOLS[tid]);
-                                    break;
-                                case 3:
-                                    ferramenta = new ExceptionHandlingTool(tid, NOMES_TOOLS[tid]);
-                                    break;
-                                case 4:
-                                    ferramenta = new IDETool(tid, NOMES_TOOLS[tid]);
-                                    break;
-                                case 5:
-                                    ferramenta = new TeacherHelpTool(tid, NOMES_TOOLS[tid]);
-                                    break;
-                                default:
-                                    throw new InvalidFileException("Tool ID inválido");
+                                case 0: ferramenta = new InheritanceTool(tid, NOMES_TOOLS[tid]); break;
+                                case 1: ferramenta = new FunctionalProgTool(tid, NOMES_TOOLS[tid]); break;
+                                case 2: ferramenta = new UnitTestsTool(tid, NOMES_TOOLS[tid]); break;
+                                case 3: ferramenta = new ExceptionHandlingTool(tid, NOMES_TOOLS[tid]); break;
+                                case 4: ferramenta = new IDETool(tid, NOMES_TOOLS[tid]); break;
+                                case 5: ferramenta = new TeacherHelpTool(tid, NOMES_TOOLS[tid]); break;
+                                default: throw new InvalidFileException("Tool ID inválido");
                             }
                             player.apanharFerramenta(ferramenta);
                         }
@@ -649,10 +558,61 @@ public class GameManager {
         } catch (NumberFormatException e) {
             throw new InvalidFileException("Erro numérico no jogador");
         }
-
     }
 
-    public List<Player> getListaPlayers() {
-        return this.listaPlayers;
+    private void restaurarElementoTabuleiro(String linha) throws InvalidFileException {
+        String[] p = linha.split(":");
+        if (p.length < 4) throw new InvalidFileException("Linha de tabuleiro inválida");
+
+        try {
+            int pos = Integer.parseInt(p[0]);
+            int tipoId = Integer.parseInt(p[1]);
+            int id = Integer.parseInt(p[2]);
+            String titulo = p[3];
+
+            BoardElement elemento;
+
+            if (tipoId == 1) { // FERRAMENTAS
+                switch (id) {
+                    case 0: elemento = new InheritanceTool(id, titulo); break;
+                    case 1: elemento = new FunctionalProgTool(id, titulo); break;
+                    case 2: elemento = new UnitTestsTool(id, titulo); break;
+                    case 3: elemento = new ExceptionHandlingTool(id, titulo); break;
+                    case 4: elemento = new IDETool(id, titulo); break;
+                    case 5: elemento = new TeacherHelpTool(id, titulo); break;
+                    default: return; // IDs desconhecidos são ignorados
+                }
+            } else { // ABISMOS
+                switch (id) {
+                    case 0: elemento = new SyntaxErrorAbyss(id, titulo); break;
+                    case 1: elemento = new LogicErrorAbyss(id, titulo); break;
+                    case 2: elemento = new ExceptionAbyss(id, titulo); break;
+                    case 3: elemento = new FileNotFoundAbyss(id, titulo); break;
+                    case 4: elemento = new CrashAbyss(id, titulo); break;
+                    case 5: elemento = new DuplicatedCodeAbyss(id, titulo); break;
+                    case 6: elemento = new SideEffectsAbyss(id, titulo); break;
+                    case 7: elemento = new BlueScreenAbyss(id, titulo); break;
+                    case 8: elemento = new InfiniteLoopAbyss(id, titulo); break;
+                    case 9: elemento = new SegmentationFaultAbyss(id, titulo); break;
+                    case 20: elemento = new LLMAbyss(id, titulo); break;
+                    default: throw new InvalidFileException("ID de Abismo desconhecido: " + id);
+                }
+            }
+            tabuleiro.put(pos, elemento);
+
+        } catch (NumberFormatException e) {
+            throw new InvalidFileException("Erro numérico no tabuleiro");
+        }
+    }
+
+    public String reactToAbyssOrTool() {
+        int indiceQuemMoveu = (atual - 1 + numJogadores) % numJogadores;
+        int id = currentPlayer[indiceQuemMoveu];
+        Player player = allInfoPlayers.get(id);
+
+        if (!tabuleiro.containsKey(player.getPosicao())) return null;
+
+        BoardElement elemento = tabuleiro.get(player.getPosicao());
+        return elemento.interact(player, this);
     }
 }
