@@ -265,7 +265,7 @@ public class TestGameManager {
         str.add("THE GREAT PROGRAMMING JOURNEY");
         str.add("");
         str.add("NR. DE TURNOS");
-        str.add("8");
+        str.add("4");
         str.add("");
         str.add("VENCEDOR");
         str.add("Ana");
@@ -287,28 +287,36 @@ public class TestGameManager {
         gm.createInitialBoard(jogadoresValidos2(), boardSize);
 
         gm.moveCurrentPlayer(5);
+        gm.reactToAbyssOrTool();
         gm.gameIsOver();
 
         gm.moveCurrentPlayer(3);
+        gm.reactToAbyssOrTool();
         gm.gameIsOver();
 
         gm.moveCurrentPlayer(4);
+        gm.reactToAbyssOrTool();
         gm.gameIsOver();
 
         gm.moveCurrentPlayer(3);
+        gm.reactToAbyssOrTool();
         gm.gameIsOver();
 
 
         gm.moveCurrentPlayer(1);
+        gm.reactToAbyssOrTool();
         gm.gameIsOver();
 
         gm.moveCurrentPlayer(1);
+        gm.reactToAbyssOrTool();
         gm.gameIsOver();
 
         gm.moveCurrentPlayer(1);
+        gm.reactToAbyssOrTool();
         gm.gameIsOver();
 
         gm.moveCurrentPlayer(1);
+        gm.reactToAbyssOrTool();
         gm.gameIsOver();
 
         System.out.println(gm.getProgrammerInfoAsStr(1));

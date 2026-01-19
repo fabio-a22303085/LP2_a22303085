@@ -288,7 +288,7 @@ public class GameManager {
         if (numJogadores == 0){return false;}
         if (nrSpaces < 1 || nrSpaces > 6) {return false;}
 
-        Player p = allInfoPlayers.get(currentPlayer[atual]);
+        Player p = listaPlayers.get(atual);
 
         if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) {return false;}
         if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) {return false;}
@@ -680,26 +680,25 @@ public class GameManager {
 
 
     public String reactToAbyssOrTool() {
-        int id = currentPlayer[atual];
-
-        Player player = allInfoPlayers.get(id);
-
+        Player player = listaPlayers.get(atual);
         int posicao = player.getPosicao();
 
-        if (!tabuleiro.containsKey(posicao)) {
-            return null;
+        // 1. Guardamos o elemento (se existir) ANTES de mudar o turno
+        BoardElement elemento = tabuleiro.get(posicao);
+        String resultadoInteracao = null;
+
+        if (elemento != null) {
+            resultadoInteracao = elemento.interact(player, this);
         }
 
-        BoardElement elemento = tabuleiro.get(posicao);
-
-        do{
-            atual=(atual+1) % listaPlayers.size();
-            System.out.println(listaPlayers.get(atual).getEstado());
-
+        // 2. Lógica de passar o turno (Acontece SEMPRE)
+        do {
+            atual = (atual + 1) % listaPlayers.size();
         } while (listaPlayers.get(atual).getEstado().equals("Derrotado"));
-        rondas++;
 
-        return elemento.interact(player, this);
+            rondas++;
+
+        return resultadoInteracao;
     }
 
 }
