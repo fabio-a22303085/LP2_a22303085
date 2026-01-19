@@ -1,3 +1,4 @@
+
 package pt.ulusofona.lp2.greatprogrammingjourney;
 
 import javax.swing.*;
@@ -68,7 +69,7 @@ public class GameManager {
         return true;
     }
 
-     public boolean createInitialBoard(String[][] playerInfo, int worldSize, String[][] abyssesAndTools) {
+    public boolean createInitialBoard(String[][] playerInfo, int worldSize, String[][] abyssesAndTools) {
         listaPlayers.clear();
         allInfoPlayers.clear();
         idJogadores.clear();
@@ -280,36 +281,61 @@ public class GameManager {
     }
 
     public boolean moveCurrentPlayer(int nrSpaces) {
-        if (numJogadores <= 0) return false;
-        if (nrSpaces < 1 || nrSpaces > 6) return false;
+        this.nrSpaces = nrSpaces;
+
+        if (numJogadores == 0){return false;}
+        if (nrSpaces < 1 || nrSpaces > 6) {return false;}
 
         Player p = allInfoPlayers.get(currentPlayer[atual]);
 
-        // 1. Lógica de Restrições (Assembly/C)
-        if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) return false;
-        if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) return false;
+        if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) {return false;}
+        if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) {return false;}
 
-        // 2. Movimento ou Prisão
+        if (p.getEstado().equals("Derrotado")) {
+            // Passa ao próximo
+            atual = (atual + 1) % numJogadores;
+            // Se o próximo TAMBÉM estiver morto, continua a saltar
+            while (allInfoPlayers.get(currentPlayer[atual]).getEstado().equals("Derrotado")) {
+                atual = (atual + 1) % numJogadores;
+            }
+            rondas++;
+            return true;
+        }
+
+        //Verifica se está preso
         if (p.getTurnosPreso() > 0) {
             p.setTurnosPreso(p.getTurnosPreso() - 1);
+
+            atual = (atual + 1) % numJogadores; // Passa a vez ao próximo
+            rondas++;
+
+            // O truque simples: Loop enquanto o próximo estiver Derrotado
+            while (allInfoPlayers.get(currentPlayer[atual]).getEstado().equals("Derrotado")) {
+                atual = (atual + 1) % numJogadores;
+            }
+
+            return true; // O jogador atual não se mexe neste turno
+        }
+
+        p.setUltimoDado(nrSpaces); //Erro de Lógica
+        p.registarJogada();        //Voltar Posição Anterior
+
+        // Movimento
+        if (p.getPosicao() + nrSpaces >= tamanhoTabuleiro) {
+            p.setPosicao(tamanhoTabuleiro);
         } else {
-            p.setUltimoDado(nrSpaces);
-            p.registarJogada();
-            int novaPos = p.getPosicao() + nrSpaces;
-            p.setPosicao(Math.min(novaPos, tamanhoTabuleiro));
+            p.setPosicao(p.getPosicao() + nrSpaces);
         }
 
-        // 3. PASSAR O TURNO E SALTAR MORTOS IMEDIATAMENTE
-        // Isto garante que o getCurrentPlayerID() devolve logo o próximo jogador válido
+        // Terminar turno
         atual = (atual + 1) % numJogadores;
+        rondas++;
 
-        int seguranca = 0;
-        while (allInfoPlayers.get(currentPlayer[atual]).getEstado().equals("Derrotado") && seguranca < numJogadores) {
+        // O truque simples: Loop enquanto o próximo estiver Derrotado
+        while (allInfoPlayers.get(currentPlayer[atual]).getEstado().equals("Derrotado")) {
             atual = (atual + 1) % numJogadores;
-            seguranca++;
         }
 
-        rondas++;
         return true;
     }
 
@@ -362,18 +388,33 @@ public class GameManager {
 
 
     public ArrayList<String> restantes() {
-        // Mantém a tua lógica de ordenação (sort)
-        ArrayList<String> resultado = new ArrayList<>();
-        for (Player p : listaPlayers) {
-            if (p.getPosicao() != tamanhoTabuleiro) {
-                StringBuilder sb = new StringBuilder();
-                sb.append(p.getNome()); // Apenas o nome
+        // Ordenar: Quem está mais à frente primeiro, depois por nome
+        listaPlayers.sort((p1, p2) -> {
+            int comparePos = Integer.compare(p2.getPosicao(), p1.getPosicao());
+            if (comparePos != 0) {
+                return comparePos;
+            }
+            return p1.getNome().compareTo(p2.getNome());
+        });
 
+        ArrayList<String> resultado = new ArrayList<>();
+
+        for (Player p : listaPlayers) {
+            // Ignora o vencedor (quem chegou à meta)
+            if (p.getPosicao() != tamanhoTabuleiro) {
+
+                StringBuilder sb = new StringBuilder();
+                sb.append(p.getNome())
+                        .append(" (").append(p.getId()).append(")");
+
+                // Se estiver morto/derrotado, mostra a causa
                 if (p.getEstado().equals("Derrotado")) {
                     sb.append(": ").append(p.getCausaMorte());
                 } else {
+                    // Se estiver vivo mas perdeu (ex: jogo acabou empatado ou outro ganhou)
                     sb.append(" ").append(p.getPosicao());
                 }
+
                 resultado.add(sb.toString());
             }
         }
@@ -658,32 +699,29 @@ public class GameManager {
                 }
             }
 
-                tabuleiro.put(pos, elemento);
+            tabuleiro.put(pos, elemento);
 
-            } catch (NumberFormatException e) {
-                throw new InvalidFileException("Erro numérico no tabuleiro");
-            }
+        } catch (NumberFormatException e) {
+            throw new InvalidFileException("Erro numérico no tabuleiro");
+        }
     }
 
 
     public String reactToAbyssOrTool() {
-        // 1. Quem se mexeu foi o anterior ao "atual"
-        int indexQuemJogou = (atual - 1 + numJogadores) % numJogadores;
-        Player jogador = allInfoPlayers.get(currentPlayer[indexQuemJogou]);
+        int indiceQuemMoveu = (atual - 1 + numJogadores) % numJogadores;
+        int id = currentPlayer[indiceQuemMoveu];
 
-        // 2. Onde é que ele está?
-        int posicao = jogador.getPosicao();
+        Player player = allInfoPlayers.get(id);
 
-        // 3. Existe alguma coisa (Abisso/Ferramenta) nessa posição do HashMap tabuleiro?
+        int posicao = player.getPosicao();
+
         if (!tabuleiro.containsKey(posicao)) {
             return null;
         }
 
-        // 4. Se existe, vamos buscar esse "Elemento"
         BoardElement elemento = tabuleiro.get(posicao);
 
-        // 5. Chamamos a interação (o jogador apanha a ferramenta ou sofre o abismo)
-        return elemento.interact(jogador, this);
+        return elemento.interact(player, this);
     }
 
 }

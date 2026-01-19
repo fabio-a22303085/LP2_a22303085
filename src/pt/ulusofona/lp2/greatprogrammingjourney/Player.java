@@ -133,12 +133,12 @@ public class Player {
 
     @Override
     public String toString() {
-        String tools = getFerramentasToString();
-        if (tools.isEmpty()) {
-            tools = "No tools";
+        if (ferramentas.isEmpty()) {
+            return id + " | " + nome + " | " + posicao + " | No tools | " + linguagens + " | " + emJogo;
+        } else {
+
+            return id + " | " + nome + " | " + posicao + " | " + getFerramentasToString() + " | " + linguagens + " | " + emJogo;
         }
-        // O formato que o teste exige:
-        return id + " | " + nome + " | " + posicao + " | " + tools + " | " + linguagens + " | " + emJogo;
     }
 
     public String getFerramentasToString() {
@@ -251,7 +251,7 @@ public class Player {
                 histSb.append(pos).append(",");
             }
             if (histSb.length() > 0) histSb.deleteCharAt(histSb.length() - 1);
-            {sb.append(histSb.toString());}
+            {sb.append(histSb.toString());  }
         }
 
         return sb.toString();
