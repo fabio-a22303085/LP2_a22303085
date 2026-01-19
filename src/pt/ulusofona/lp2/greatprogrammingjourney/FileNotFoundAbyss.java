@@ -5,12 +5,10 @@ public class FileNotFoundAbyss extends Abyss {
 
     @Override
     public String interact(Player player, GameManager game) {
-        if (tentarUsarFerramenta(player, 3)) {
-            return "O ficheiro não existia, mas tinhas tratamento de exceções. Estás salvo.";
+        if (tentarUsarFerramenta(player, 3)) { // Tool 3: Exception Handling
+            return "Trataste a FileNotFoundException! Estás salvo.";
         }
-
-        // Falha: Recua para a anterior
-        player.voltarPosicaoAnterior(1);
-        return "FileNotFoundException! O ficheiro de configuração sumiu. Recuas.";
+        player.move(-3);
+        return "FileNotFoundException! Recua 3 casas";
     }
 }

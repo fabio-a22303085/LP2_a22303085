@@ -5,11 +5,10 @@ public class DuplicatedCodeAbyss extends Abyss {
 
     @Override
     public String interact(Player player, GameManager game) {
-        if (tentarUsarFerramenta(player, 0)) {
-            return "Usaste Herança para evitar repetição de código. Estás salvo.";
+        if (tentarUsarFerramenta(player, 0)) { // Tool 0: Herança
+            return "Usaste Herança para evitar código duplicado! Estás salvo.";
         }
-
         player.voltarPosicaoAnterior(1);
-        return "Código duplicado detetado! Tens de refatorizar. Voltas atrás.";
+        return "Código duplicado! Recua para a casa anterior";
     }
 }

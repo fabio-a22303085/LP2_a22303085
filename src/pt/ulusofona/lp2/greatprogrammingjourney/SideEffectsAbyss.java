@@ -5,11 +5,10 @@ public class SideEffectsAbyss extends Abyss {
 
     @Override
     public String interact(Player player, GameManager game) {
-        if (tentarUsarFerramenta(player, 1)) {
-            return "A imutabilidade da Programação Funcional evitou efeitos secundários.";
+        if (tentarUsarFerramenta(player, 1)) { // Tool 1: Prog Funcional
+            return "A Programação Funcional evitou efeitos secundários! Estás salvo.";
         }
-
-        player.voltarPosicaoAnterior(1);
-        return "Efeitos Secundários alteraram variáveis globais! O programa ficou instável.";
+        player.voltarPosicaoAnterior(2);
+        return "Efeitos secundários! Recua para a posição de 2 movimentos atrás";
     }
 }

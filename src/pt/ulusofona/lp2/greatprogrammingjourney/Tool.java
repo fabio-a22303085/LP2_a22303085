@@ -16,22 +16,8 @@ public abstract class Tool extends BoardElement {
         return 1;
     }
 
-    // 1. Necessário para o Player conseguir listar os nomes das ferramentas no toString()
-    public String getTitle() {
-        return super.getTitle();
-    }
-
-    // 2. Auxiliar para apanhar a ferramenta
+    // Método auxiliar para as subclasses usarem
     protected void apanhar(Player p) {
         p.apanharFerramenta(this);
-    }
-
-    @Override
-    public String interact(Player player, GameManager game) {
-        // A lógica de apanhar a ferramenta:
-        player.apanharFerramenta(this);
-
-        // Retorna uma mensagem de sucesso
-        return "Apanhaste a ferramenta: " + super.getTitle();
     }
 }
