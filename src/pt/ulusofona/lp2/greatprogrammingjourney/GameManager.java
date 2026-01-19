@@ -26,6 +26,9 @@ public class GameManager {
     private String vencedor;
     private int nrSpaces = 0;
 
+    public List<Player> getPlayers() {
+        return listaPlayers;
+    }
 
     public int getNrSpaces() {
         return nrSpaces;
@@ -145,7 +148,7 @@ public class GameManager {
                     "Blue Screen of Death", "Ciclo Infinito", "Segmentation Fault"};
 
             String[] nomesTools = {"Herança", "Programação Funcional", "Testes Unitários",
-                    "Tratamento de Excepções", "IDE", "Ajuda do Professor"};
+                    "Tratamento de Excepções", "IDE", "Ajuda Do Professor"};
 
             for (String[] dados : abyssesAndTools) {
                 if (dados.length < 3){return false;}
@@ -323,25 +326,28 @@ public class GameManager {
         return true;
     }
 
-    public boolean gameIsOver(){
-        for(Player p: listaPlayers){
-            if(p.getPosicao()==tamanhoTabuleiro){
-                vencedor=p.getNome();
+    public boolean gameIsOver() {
+        // 1. Alguém chegou ao fim?
+        for (Player p : listaPlayers) {
+            if (p.getPosicao() == tamanhoTabuleiro) {
+                vencedor = p.getNome();
                 return true;
             }
         }
-        boolean alguemPodeJogar = false;
+
+        // 2. Existe alguém que ainda possa jogar?
+        boolean alguemAtivo = false;
         for (Player p : listaPlayers) {
-            if (p.getEstado().equals("Em Jogo") && p.getTurnosPreso() == 0) {
-                alguemPodeJogar = true;
+            if (!p.getEstado().equals("Derrotado")) {
+                // Se o jogador não está morto, ele ainda conta como "ativo"
+                // mesmo que esteja preso temporariamente, pois irá libertar-se.
+                alguemAtivo = true;
                 break;
             }
         }
 
-        if (!alguemPodeJogar) {
-            // Se ninguém se pode mexer, o jogo acaba.
-            // Se ninguém ganhou acima, o vencedor continua a ser null (Empate)
-            vencedor = null;
+        if (!alguemAtivo) {
+            vencedor = null; // Empate
             return true;
         }
 

@@ -2,9 +2,11 @@ package pt.ulusofona.lp2.greatprogrammingjourney;
 
 public abstract class Abyss extends BoardElement {
     protected String imagePng; // Para gerir imagens se necessário
+    protected int position;
 
     public Abyss(int id, int position, String title) { // Position não é estritamente necessária aqui se o tabuleiro gere, mas ok
         super(id, title);
+        this.position = position;
     }
 
     // Método auxiliar que todos os abismos filhos podem usar

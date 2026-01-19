@@ -11,6 +11,13 @@ public class CicloInfinitoAbyss extends Abyss {
             return "O Professor ajudou-te a sair do Ciclo Infinito!";
         }
 
+        for (Player p : game.getPlayers()) {
+            if (p.getId() != player.getId() && p.getPosicao() == this.position) {
+                p.setTurnosPreso(0);
+                p.setEmJogo("Em Jogo");
+            }
+        }
+
         player.setEmJogo("Preso");
         player.setTurnosPreso(1);
         return "Ciclo infinito! Fica preso nesta casa 1 turno.";
