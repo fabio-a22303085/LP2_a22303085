@@ -178,7 +178,7 @@ public class GameManager {
                             case 2: elemento = new UnitTestsTool(2, "Testes Unitários"); break;
                             case 3: elemento = new TratamentoExcepcoesTool(3, "Tratamento de Excepções"); break;
                             case 4: elemento = new IDETool(4, "IDE"); break;
-                            case 5: elemento = new AjudaProfessorTool(5, "Ajuda Do Professor"); break;
+                            case 5: elemento = new AjudaProfessorTool(5, "Ajuda do Professor"); break;
                             default: return false; // ou throw exception dependendo do método
                         }
 
@@ -280,61 +280,34 @@ public class GameManager {
     }
 
     public boolean moveCurrentPlayer(int nrSpaces) {
-        this.nrSpaces = nrSpaces;
-
-        if (numJogadores == 0){return false;}
-        if (nrSpaces < 1 || nrSpaces > 6) {return false;}
+        if (numJogadores <= 0) return false;
+        if (nrSpaces < 1 || nrSpaces > 6) return false;
 
         Player p = allInfoPlayers.get(currentPlayer[atual]);
 
-        if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) {return false;}
-        if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) {return false;}
+        // Importante: Se o jogador cair num abismo que o mata, o estado muda para "Derrotado"
+        // Mas ele só sai da lista de ativos na próxima vez que o turno tentar chegar a ele.
 
-        if (p.getEstado().equals("Derrotado")) {
-            // Passa ao próximo
-            atual = (atual + 1) % numJogadores;
-            // Se o próximo TAMBÉM estiver morto, continua a saltar
-            while (allInfoPlayers.get(currentPlayer[atual]).getEstado().equals("Derrotado")) {
-                atual = (atual + 1) % numJogadores;
-            }
-            rondas++;
-            return true;
-        }
-
-        //Verifica se está preso
         if (p.getTurnosPreso() > 0) {
             p.setTurnosPreso(p.getTurnosPreso() - 1);
-
-            atual = (atual + 1) % numJogadores; // Passa a vez ao próximo
-            rondas++;
-
-            // O truque simples: Loop enquanto o próximo estiver Derrotado
-            while (allInfoPlayers.get(currentPlayer[atual]).getEstado().equals("Derrotado")) {
-                atual = (atual + 1) % numJogadores;
-            }
-
-            return true; // O jogador atual não se mexe neste turno
-        }
-
-        p.setUltimoDado(nrSpaces); //Erro de Lógica
-        p.registarJogada();        //Voltar Posição Anterior
-
-        // Movimento
-        if (p.getPosicao() + nrSpaces >= tamanhoTabuleiro) {
-            p.setPosicao(tamanhoTabuleiro);
         } else {
-            p.setPosicao(p.getPosicao() + nrSpaces);
+            p.setUltimoDado(nrSpaces);
+            p.registarJogada();
+            int novaPos = p.getPosicao() + nrSpaces;
+            p.setPosicao(Math.min(novaPos, tamanhoTabuleiro));
         }
 
-        // Terminar turno
+        // SÓ AGORA avançamos o turno
         atual = (atual + 1) % numJogadores;
-        rondas++;
 
-        // O truque simples: Loop enquanto o próximo estiver Derrotado
-        while (allInfoPlayers.get(currentPlayer[atual]).getEstado().equals("Derrotado")) {
+        // Ciclo para saltar quem já morreu
+        int seguranca = 0;
+        while (allInfoPlayers.get(currentPlayer[atual]).getEstado().equals("Derrotado") && seguranca < numJogadores) {
             atual = (atual + 1) % numJogadores;
+            seguranca++;
         }
 
+        rondas++;
         return true;
     }
 
@@ -707,32 +680,31 @@ public class GameManager {
 
 
     public String reactToAbyssOrTool() {
-        int indiceQuemMoveu = (atual - 1 + numJogadores) % numJogadores;
-        int id = currentPlayer[indiceQuemMoveu];
-        Player player = allInfoPlayers.get(id);
+        // 1. Identificar quem acabou de se mexer (o jogador que ainda não passou o turno logicamente)
+        // No teu moveCurrentPlayer, tu mudas o 'atual' no fim.
+        // Por isso, quem se mexeu foi o (atual - 1)
+        int idxQueJogou = (atual - 1 + numJogadores) % numJogadores;
+        Player p = allInfoPlayers.get(currentPlayer[idxQueJogou]);
 
-        int posicao = player.getPosicao();
+        int pos = p.getPosicao();
 
-        // 1. Se não há nada na casa, retorna null
-        if (!tabuleiro.containsKey(posicao)) {
+        // 2. Se a casa está vazia, retorna null
+        if (!tabuleiro.containsKey(pos)) {
             return null;
         }
 
-        BoardElement elemento = tabuleiro.get(posicao);
+        BoardElement el = tabuleiro.get(pos);
 
-        // 2. Executa a interação
-        String mensagem = elemento.interact(player, this);
+        // 3. Interage
+        String resultado = el.interact(p, this);
 
-        // 3. REGRA CRUCIAL: Se for um Abismo, ele desaparece após o uso
-        if (elemento.getTypePrefix().equals("A")) {
-            tabuleiro.remove(posicao);
+        // 4. REGRA DE OURO: Se for Ferramenta, tem de sair do tabuleiro após apanhada
+        // Se for Abismo, depende do enunciado, mas normalmente ferramentas desaparecem.
+        if (el.getTypePrefix().equals("T")) {
+            tabuleiro.remove(pos);
         }
 
-        // Nota: As Ferramentas (T) normalmente também desaparecem após serem apanhadas.
-        // Se os testes falharem em ferramentas, remove o IF e deixa apenas:
-        // tabuleiro.remove(posicao);
-
-        return mensagem;
+        return resultado;
     }
 
 }

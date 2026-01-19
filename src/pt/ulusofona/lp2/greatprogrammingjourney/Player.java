@@ -28,7 +28,7 @@ public class Player {
         String[] linguasArray = linguagens.split(";");
         primeiraLinguagem = linguasArray[0];
         Arrays.sort(linguasArray, String.CASE_INSENSITIVE_ORDER);
-        this.linguagens = String.join("; ", linguasArray);
+        this.linguagens = String.join(";", linguasArray);
         this.historicoPosicoes.add(this.posicao);
     }
 
@@ -99,8 +99,8 @@ public class Player {
 
     public void apanharFerramenta(Tool t) {
         if (t != null) {
-            // Adiciona à lista de nomes (que usamos no toString e no save)
-            this.nomeFerramentas.add(t.getTitle());
+            this.ferramentas.add(t); // Adicionar o objeto
+            this.nomeFerramentas.add(t.getTitle()); // Adicionar o nome
         }
     }
 
@@ -130,14 +130,8 @@ public class Player {
         if (tools.isEmpty()) {
             tools = "No tools";
         }
-
-        // Formato: ID | Nome | Posicao | Ferramentas | Linguagem | Estado
-        return id + " | " +
-                nome + " | " +
-                posicao + " | " +
-                tools + " | " +
-                linguagens + " | " +
-                emJogo;
+        // O formato que o teste exige:
+        return id + " | " + nome + " | " + posicao + " | " + tools + " | " + linguagens + " | " + emJogo;
     }
 
     public String getFerramentasToString() {
@@ -240,13 +234,12 @@ public class Player {
         if (ferramentas.isEmpty()) {
             sb.append("NULL");
         } else {
-
-            for (String t: nomeFerramentas) {
-                sb.append(t);
-                sb.append(",");
-
+            // Gravar os IDs numéricos separados por vírgula para o load conseguir ler
+            StringJoiner sj = new StringJoiner(",");
+            for (Tool t : ferramentas) {
+                sj.add(String.valueOf(t.getId()));
             }
-            sb.deleteCharAt(sb.length()-1);
+            sb.append(sj.toString());
         }
         sb.append(":");
 
