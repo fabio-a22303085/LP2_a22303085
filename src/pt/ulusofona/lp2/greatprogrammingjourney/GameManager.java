@@ -674,6 +674,10 @@ public class GameManager {
         }
     }
 
+    public String aaa(){
+        return (listaPlayers.get(atual).getEstado());
+    }
+
 
     public String reactToAbyssOrTool() {
         int id = currentPlayer[atual];
@@ -690,8 +694,9 @@ public class GameManager {
 
         do{
             atual=(atual+1) % listaPlayers.size();
+            System.out.println(listaPlayers.get(atual).getEstado());
 
-        } while (listaPlayers.get(atual).equals("Derrotado"));
+        } while (listaPlayers.get(atual).getEstado().equals("Derrotado"));
         rondas++;
 
         return elemento.interact(player, this);
