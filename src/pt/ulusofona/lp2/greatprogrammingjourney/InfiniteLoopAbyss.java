@@ -10,54 +10,44 @@ public class InfiniteLoopAbyss extends Abyss {
 
     @Override
     public String interact(Player player, GameManager game) {
-
+        // 1. Tenta usar a Ferramenta (Ajuda do Professor - ID 5)
+        // A regra diz: "Se tiver ferramenta... não fica preso, mas também NÃO liberta o que lá estava."
         if (tentarUsarFerramenta(player, 5)) {
-            return "O Professor detetou o Ciclo Infinito e tirou-te de lá antes de entrares. Estás salvo.";
+            return "O Professor percebeu que ias entrar num loop e impediu-te. Estás a salvo.";
         }
 
-        int jogadoresVivos = 0;
-        List<Player> todosJogadores = game.getListaPlayers();
-
-        for (Player p : todosJogadores) {
-            if (!p.getEstado().equals("Derrotado")) {
-                jogadoresVivos++;
-            }
-        }
-
-        if (jogadoresVivos <= 1) {
-            player.setEmJogo("Derrotado");
-            player.setTurnosPreso(0);
-            return "Entraste num Ciclo Infinito e não há ninguém para te reiniciar. O jogo acabou para ti.";
-        }
-
-        // TENTAR LIBERTAR OUTRO JOGADOR (Troca)
+        // 2. Lógica de Libertar outro jogador (Troca)
+        List<Player> jogadores = game.getListaPlayers();
         boolean libertouAlguem = false;
-        String nomeLibertado = "";
+        String nomeLiberto = "";
 
-        for (Player p : todosJogadores) {
-            // Se for outro jogador, estiver na mesma casa E estiver "Preso"
-            if (p.getId() != player.getId() &&
-                    p.getPosicao() == player.getPosicao() &&
-                    p.getEstado().equals("Preso")) {
+        for (Player p : jogadores) {
+            // Se for outro jogador, estiver na mesma casa, e estiver "Preso"
+            if (p.getId() != player.getId()
+                    && p.getPosicao() == player.getPosicao()
+                    && p.getEstado().equals("Preso")) {
 
                 // Liberta o prisioneiro anterior
                 p.setEmJogo("Em Jogo");
                 p.setTurnosPreso(0);
+
                 libertouAlguem = true;
-                nomeLibertado = p.getNome();
+                nomeLiberto = p.getNome();
+                // Apenas um é libertado (assumindo que só lá cabe um preso de cada vez)
                 break;
             }
         }
 
-        // PRENDER O JOGADOR ATUAL
+        // 3. Prender o jogador atual
         player.setEmJogo("Preso");
-
-        player.setTurnosPreso(100);
+        // Definimos um valor alto para garantir que ele não sai por contagem de turnos normal
+        // (A menos que alguém o venha salvar)
+        player.setTurnosPreso(999);
 
         if (libertouAlguem) {
-            return "Entraste no Ciclo Infinito. Agora és tu que estás preso.";
+            return "Ciclo Infinito! Ficaste preso no loop, mas a tua chegada libertou o " + nomeLiberto + "!";
         } else {
-            return "Entraste num Ciclo Infinito. Ficas preso aqui até que outro programador caia nesta casa.";
+            return "Ciclo Infinito! O processo bloqueou e ficaste Preso nesta casa.";
         }
     }
 }

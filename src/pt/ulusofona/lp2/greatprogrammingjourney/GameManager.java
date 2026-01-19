@@ -725,4 +725,10 @@ public class GameManager {
         return elemento.interact(player, this);
     }
 
+    // Adicionar isto no GameManager.java para o Ciclo Infinito funcionar
+
+    public List<Player> getListaPlayers() {
+        return this.listaPlayers;
+    }
+
 }
