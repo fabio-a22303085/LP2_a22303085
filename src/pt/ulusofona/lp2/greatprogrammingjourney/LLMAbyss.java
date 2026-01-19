@@ -13,7 +13,7 @@ public class LLMAbyss extends Abyss {
             // Comportamento Boost: avança o mesmo número de casas do último dado
             int boost = player.getUltimoDado();
             player.move(boost);
-            return "O LLM alucinou a teu favor! Avanças mais " + boost + " casas.";
+            return "Caiu no LLM mas já tem experiência! Avança quantas casas quantas as do ultimo movimento.";
         }
         else {
 
