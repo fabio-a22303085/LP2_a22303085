@@ -305,11 +305,6 @@ public class GameManager {
             p.setPosicao(p.getPosicao() + nrSpaces);
         }
 
-        do{
-            atual=(atual+1) % listaPlayers.size();
-
-        } while (listaPlayers.get(atual).equals("Derrotado"));
-        rondas++;
 
         return true;
     }
@@ -681,8 +676,7 @@ public class GameManager {
 
 
     public String reactToAbyssOrTool() {
-        int indiceQuemMoveu = (atual - 1 + numJogadores) % numJogadores;
-        int id = currentPlayer[indiceQuemMoveu];
+        int id = currentPlayer[atual];
 
         Player player = allInfoPlayers.get(id);
 
@@ -693,6 +687,12 @@ public class GameManager {
         }
 
         BoardElement elemento = tabuleiro.get(posicao);
+
+        do{
+            atual=(atual+1) % listaPlayers.size();
+
+        } while (listaPlayers.get(atual).equals("Derrotado"));
+        rondas++;
 
         return elemento.interact(player, this);
     }
