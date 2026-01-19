@@ -181,7 +181,7 @@ public class GameManager {
                             case 2: elemento = new UnitTestsTool(2, "Testes Unitários"); break;
                             case 3: elemento = new TratamentoExcepcoesTool(3, "Tratamento de Excepções"); break;
                             case 4: elemento = new IDETool(4, "IDE"); break;
-                            case 5: elemento = new AjudaProfessorTool(5, "Ajuda Do Professor"); break;
+                            case 5: elemento = new AjudaProfessorTool(5, "Ajuda do Professor"); break;
                             default: return false; // ou throw exception dependendo do método
                         }
 
@@ -641,7 +641,7 @@ public class GameManager {
                     case 2: elemento = new UnitTestsTool(2, "Testes Unitários"); break;
                     case 3: elemento = new TratamentoExcepcoesTool(3, "Tratamento de Excepções"); break;
                     case 4: elemento = new IDETool(4, "IDE"); break;
-                    case 5: elemento = new AjudaProfessorTool(5, "Ajuda Do Professor"); break;
+                    case 5: elemento = new AjudaProfessorTool(5, "Ajuda do Professor"); break;
                     default: throw new InvalidFileException("ID Ferramenta inválido: " + id);
                 }
 

@@ -139,7 +139,7 @@ public class Player {
         // Converte para lista para poder ordenar alfabeticamente
         List<String> listaOrdenada = new ArrayList<>(nomeFerramentas);
         Collections.sort(listaOrdenada);
-        return String.join(", ", listaOrdenada);
+        return String.join(";", listaOrdenada);
     }
 
     public String getEstado() {
