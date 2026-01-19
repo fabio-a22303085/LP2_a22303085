@@ -136,17 +136,10 @@ public class Player {
         if (nomeFerramentas.isEmpty()) {
             return "";
         }
-
-        StringBuilder sb = new StringBuilder();
-
-        for (String t: nomeFerramentas) {
-            sb.append(t);
-            sb.append(";");
-
-        }
-        sb.deleteCharAt(sb.length()-1);
-
-        return sb.toString().replaceAll(";", "; ");
+        // Converte para lista para poder ordenar alfabeticamente
+        List<String> listaOrdenada = new ArrayList<>(nomeFerramentas);
+        Collections.sort(listaOrdenada);
+        return String.join(", ", listaOrdenada);
     }
 
     public String getEstado() {
