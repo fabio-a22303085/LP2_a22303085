@@ -651,4 +651,8 @@ public class GameManager {
         }
 
     }
+
+    public List<Player> getListaPlayers() {
+        return this.listaPlayers;
+    }
 }
