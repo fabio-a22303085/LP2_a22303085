@@ -175,7 +175,7 @@ public class GameManager {
                         switch (idItem) { // ou 'id' se estiveres no restaurarElementoTabuleiro
                             case 0: elemento = new HerancaTool(0, "Herança"); break;
                             case 1: elemento = new ProgramacaoFuncionalTool(1, "Programação Funcional"); break;
-                            case 2: elemento = new TestesUnitariosTool(2, "Testes Unitários"); break;
+                            case 2: elemento = new UnitTestsTool(2, "Testes Unitários"); break;
                             case 3: elemento = new TratamentoExcepcoesTool(3, "Tratamento de Excepções"); break;
                             case 4: elemento = new IDETool(4, "IDE"); break;
                             case 5: elemento = new AjudaProfessorTool(5, "Ajuda Do Professor"); break;
@@ -632,7 +632,7 @@ public class GameManager {
                 switch (id) { // ou 'id' se estiveres no restaurarElementoTabuleiro
                     case 0: elemento = new HerancaTool(0, "Herança"); break;
                     case 1: elemento = new ProgramacaoFuncionalTool(1, "Programação Funcional"); break;
-                    case 2: elemento = new TestesUnitariosTool(2, "Testes Unitários"); break;
+                    case 2: elemento = new UnitTestsTool(2, "Testes Unitários"); break;
                     case 3: elemento = new TratamentoExcepcoesTool(3, "Tratamento de Excepções"); break;
                     case 4: elemento = new IDETool(4, "IDE"); break;
                     case 5: elemento = new AjudaProfessorTool(5, "Ajuda Do Professor"); break;
