@@ -296,15 +296,18 @@ public class GameManager {
             p.setTurnosPreso(0);
             p.setEmJogo("Em Jogo");
             rodarTurno();
-            return false;
+            return false; // OBRIGATÓRIO: Retornar false para indicar que não se moveu
         }
 
-        // 2. Restrição de Linguagem (Neo 30 vs 28): usa trim() para evitar espaços
         String lang = p.getPrimeiraLinguagem().trim();
-        if ((lang.equalsIgnoreCase("Assembly") && nrSpaces > 2) ||
-                (lang.equalsIgnoreCase("C") && nrSpaces > 3)) {
+
+        if (lang.equalsIgnoreCase("Assembly") && nrSpaces > 2) {
             rodarTurno();
-            return false; // Movimento inválido, fica na mesma casa
+            return false; // Falha o movimento, mas passa o turno
+        }
+        if (lang.equalsIgnoreCase("C") && nrSpaces > 3) {
+            rodarTurno();
+            return false; // Falha o movimento, mas passa o turno
         }
 
         // 3. Movimento Válido: retorna TRUE
@@ -331,25 +334,27 @@ public class GameManager {
 
 
     public boolean gameIsOver() {
-        // Vitória
+        // 1. Condição de Vitória (Alguém chegou ao fim)
         for (Player p : listaPlayers) {
-            if (p.getPosicao() == tamanhoTabuleiro) {
+            if (p.getPosicao() >= tamanhoTabuleiro) { // Usa >= por segurança
                 vencedor = p.getNome();
                 return true;
             }
         }
 
-        // Empate/Bloqueio: verifica se resta alguém que não esteja "Derrotado"
-        boolean alguemAtivo = false;
+        // 2. Condição de Bloqueio (Ninguém pode jogar)
+        boolean alguemPodeJogar = false;
         for (Player p : listaPlayers) {
+            // Se houver PELO MENOS UM que não está Derrotado, o jogo continua
             if (!p.getEstado().equals("Derrotado")) {
-                alguemAtivo = true;
+                alguemPodeJogar = true;
                 break;
             }
         }
 
-        if (!alguemAtivo) {
-            vencedor = null; // Resulta em "O jogo acabou empatado."
+        // Se o ciclo acabou e ninguém pode jogar, o jogo ACABOU (true)
+        if (!alguemPodeJogar) {
+            vencedor = null; // Empate
             return true;
         }
 
