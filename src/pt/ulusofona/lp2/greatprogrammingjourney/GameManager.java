@@ -287,40 +287,54 @@ public class GameManager {
 
     public boolean moveCurrentPlayer(int nrSpaces) {
         this.nrSpaces = nrSpaces;
+
+        // 1. Validações básicas de input
         if (numJogadores == 0 || nrSpaces < 1 || nrSpaces > 6) { return false; }
 
-        // 1. Guardamos o ID antes de qualquer rotação
+        // 2. Fixar quem é o "autor" da jogada para o reactToAbyssOrTool
         idJogadorQueMoveu = currentPlayer[atual];
         Player p = allInfoPlayers.get(idJogadorQueMoveu);
 
-        // Validações de linguagem
-        if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) { return false; }
-        if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) { return false; }
-
-        // Lógica de Movimento/Preso
+        // 3. Caso: Jogador Preso
         if (p.getTurnosPreso() > 0) {
             p.setTurnosPreso(0);
             p.setEmJogo("Em Jogo");
-        } else {
-            p.setUltimoDado(nrSpaces);
-            p.registarJogada();
-            p.setPosicao(Math.min(p.getPosicao() + nrSpaces, tamanhoTabuleiro));
+            rodarTurno();
+            return false; // Teste 004: gasta turno mas não move
         }
 
-        // Rotação de Turno Simples
+        // 4. Caso: Restrição de Linguagem (Assembly/C)
+        if ((p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) ||
+                (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3)) {
+            rodarTurno(); // IMPORTANTE: Passa a vez mesmo que não mova
+            return false; // Teste 004: movimento inválido
+        }
+
+        // 5. Caso: Movimento Válido
+        p.setUltimoDado(nrSpaces);
+        p.registarJogada();
+        p.setPosicao(Math.min(p.getPosicao() + nrSpaces, tamanhoTabuleiro));
+
+        rodarTurno();
+        return true;
+    }
+
+    private void rodarTurno() {
+        // Avança pelo menos um
         atual = (atual + 1) % numJogadores;
+
+        // Salta quem está Derrotado
         int s = 0;
         while (allInfoPlayers.get(currentPlayer[atual]).getEstado().equals("Derrotado") && s < numJogadores) {
             atual = (atual + 1) % numJogadores;
             s++;
         }
-
         rondas++;
-        return true;
     }
 
+
     public boolean gameIsOver() {
-        // 1. Alguém chegou ao fim?
+        // 1. Alguém chegou à meta? (Vitória)
         for (Player p : listaPlayers) {
             if (p.getPosicao() == tamanhoTabuleiro) {
                 vencedor = p.getNome();
@@ -328,19 +342,18 @@ public class GameManager {
             }
         }
 
-        // 2. Existe alguém que ainda possa jogar?
-        boolean alguemAtivo = false;
+        // 2. Bloqueio por Eliminação: Resta algum jogador que não esteja "Derrotado"?
+        boolean alguemVivo = false;
         for (Player p : listaPlayers) {
             if (!p.getEstado().equals("Derrotado")) {
-                // Se o jogador não está morto, ele ainda conta como "ativo"
-                // mesmo que esteja preso temporariamente, pois irá libertar-se.
-                alguemAtivo = true;
+                alguemVivo = true;
                 break;
             }
         }
 
-        if (!alguemAtivo) {
-            vencedor = null; // Empate
+        // Se ninguém está vivo, o jogo termina em empate
+        if (!alguemVivo) {
+            vencedor = null;
             return true;
         }
 
