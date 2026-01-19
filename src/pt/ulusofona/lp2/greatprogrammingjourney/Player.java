@@ -26,10 +26,14 @@ public class Player {
         this.emJogo = "Em Jogo";
 
         String[] linguasArray = linguagens.split(";");
+
+        // 2. GUARDAR A PRIMEIRA ANTES DE ORDENAR (Crucial para o teste 027)
         this.primeiraLinguagem = linguasArray[0].trim();
 
+        // 3. Ordenar e juntar com "; " (com espaço para os outros testes passarem)
         Arrays.sort(linguasArray, String.CASE_INSENSITIVE_ORDER);
         this.linguagens = String.join("; ", linguasArray);
+
         this.historicoPosicoes.add(this.posicao);
     }
 
@@ -99,9 +103,11 @@ public class Player {
     }
 
     public void apanharFerramenta(Tool t) {
-        if (t != null) {
-            this.ferramentas.add(t); // Adicionar o objeto
-            this.nomeFerramentas.add(t.getTitle()); // Adicionar o nome
+        if (t != null && t.getTitle() != null) {
+
+            // Se usas a lista de objetos Tool, adiciona também:
+            if (this.ferramentas == null) { this.ferramentas = new HashSet<>(); }
+            this.ferramentas.add(t);
         }
     }
 
@@ -136,28 +142,12 @@ public class Player {
     }
 
     public String getFerramentasToString() {
-        if (nomeFerramentas.isEmpty()) {
+        if (nomeFerramentas == null || nomeFerramentas.isEmpty()) {
             return "";
         }
-
-        // 1. Converter para lista para poder ordenar
         List<String> listaOrdenada = new ArrayList<>(nomeFerramentas);
-
-        // 2. Ordenar alfabeticamente (Obrigatório segundo o enunciado)
         Collections.sort(listaOrdenada);
-
-        StringBuilder sb = new StringBuilder();
-        for (String t : listaOrdenada) {
-            sb.append(t);
-            sb.append(";"); // Apenas ponto e vírgula, SEM espaço
-        }
-
-        // Remover o último ";"
-        if (sb.length() > 0) {
-            sb.deleteCharAt(sb.length() - 1);
-        }
-
-        return sb.toString();
+        return String.join(";", listaOrdenada);
     }
 
     public String getEstado() {

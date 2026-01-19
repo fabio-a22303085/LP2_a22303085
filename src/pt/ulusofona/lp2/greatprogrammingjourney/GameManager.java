@@ -280,21 +280,25 @@ public class GameManager {
     }
 
     public boolean moveCurrentPlayer(int nrSpaces) {
-        Player p = allInfoPlayers.get(currentPlayer[atual]);
-
-        // Se o jogador já está derrotado, não faz nada e passa o turno
-        if (p.getEstado().equals("Derrotado")) {
-            atual = (atual + 1) % numJogadores;
-            while (allInfoPlayers.get(currentPlayer[atual]).getEstado().equals("Derrotado")) {
-                atual = (atual + 1) % numJogadores;
-            }
-            return false; // Retorna false porque não houve movimento
-        }
-
+        // 1. Validar inputs base
         if (numJogadores <= 0) return false;
         if (nrSpaces < 1 || nrSpaces > 6) return false;
 
+        // 2. TENTAR obter o jogador atual
+        Player p = allInfoPlayers.get(currentPlayer[atual]);
 
+        // 3. Se ele estiver derrotado, saltamos ATÉ encontrar um vivo antes de começar a jogada
+        // Isto garante que o 'atual' começa sempre num jogador válido
+        while (p.getEstado().equals("Derrotado")) {
+            atual = (atual + 1) % numJogadores;
+            p = allInfoPlayers.get(currentPlayer[atual]);
+        }
+
+        // 4. Lógica de Restrições (Assembly/C)
+        if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) return false;
+        if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) return false;
+
+        // 5. Movimento ou Prisão
         if (p.getTurnosPreso() > 0) {
             p.setTurnosPreso(p.getTurnosPreso() - 1);
         } else {
@@ -304,17 +308,11 @@ public class GameManager {
             p.setPosicao(Math.min(novaPos, tamanhoTabuleiro));
         }
 
-        // SÓ AGORA avançamos o turno
+        // 6. PASSAR O TURNO (Apenas incrementamos o índice)
+        // NÃO saltamos mortos aqui. Deixamos isso para o início da PRÓXIMA jogada.
         atual = (atual + 1) % numJogadores;
-
-        // Ciclo para saltar quem já morreu
-        int seguranca = 0;
-        while (allInfoPlayers.get(currentPlayer[atual]).getEstado().equals("Derrotado") && seguranca < numJogadores) {
-            atual = (atual + 1) % numJogadores;
-            seguranca++;
-        }
-
         rondas++;
+
         return true;
     }
 
@@ -687,15 +685,18 @@ public class GameManager {
 
 
     public String reactToAbyssOrTool() {
+        // O jogador que se moveu é o anterior ao 'atual' (sem saltos complexos pelo meio)
         int idxQueJogou = (atual - 1 + numJogadores) % numJogadores;
         Player p = allInfoPlayers.get(currentPlayer[idxQueJogou]);
-        int pos = p.getPosicao();
 
+        if (p == null || p.getEstado().equals("Derrotado")) {
+            return null;
+        }
+
+        int pos = p.getPosicao();
         if (!tabuleiro.containsKey(pos)) return null;
 
-        BoardElement el = tabuleiro.get(pos);
-        return el.interact(p, this);
-
+        return tabuleiro.get(pos).interact(p, this);
     }
 
 }
