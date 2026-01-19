@@ -71,7 +71,7 @@ public class GameManager {
         return true;
     }
 
-    public boolean createInitialBoard(String[][] playerInfo, int worldSize, String[][] abyssesAndTools) {
+    public void limpar(){
         listaPlayers.clear();
         allInfoPlayers.clear();
         idJogadores.clear();
@@ -80,7 +80,10 @@ public class GameManager {
 
         rondas = 0;
         atual = 0;
+    }
 
+    public boolean createInitialBoard(String[][] playerInfo, int worldSize, String[][] abyssesAndTools) {
+        limpar();
         if (playerInfo == null || playerInfo.length < 2 || playerInfo.length > 4) {
             return false;
         }
@@ -144,11 +147,9 @@ public class GameManager {
             int[] countTools = new int[6];
 
             String[] nomesAbyss = {"Erro de sintaxe", "Erro de lógica", "Exception", "FileNotFoundException",
-                    "Crash", "Código Duplicado", "Efeitos Secundários",
-                    "Blue Screen of Death", "Ciclo Infinito", "Segmentation Fault"};
+                    "Crash", "Código Duplicado", "Efeitos Secundários", "Blue Screen of Death", "Ciclo Infinito", "Segmentation Fault"};
 
-            String[] nomesTools = {"Herança", "Programação Funcional", "Testes Unitários",
-                    "Tratamento de Excepções", "IDE", "Ajuda Do Professor"};
+            String[] nomesTools = {"Herança", "Programação Funcional", "Testes Unitários", "Tratamento de Excepções", "IDE", "Ajuda Do Professor"};
 
             for (String[] dados : abyssesAndTools) {
                 if (dados.length < 3){return false;}
@@ -166,9 +167,7 @@ public class GameManager {
                         if ((idItem < 0 || idItem > 9) && idItem != 20){return false;}
                     } else if (tipoStr.equals("1")) { // FERRAMENTA
                         if (idItem < 0 || idItem > 5){return false;}
-                    } else {
-                        return false;
-                    }
+                    } else { return false; }
 
                     BoardElement elemento = null;
 

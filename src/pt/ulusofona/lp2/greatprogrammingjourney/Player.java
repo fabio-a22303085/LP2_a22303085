@@ -237,7 +237,7 @@ public class Player {
             for (Integer pos : historicoPosicoes) {
                 histSb.append(pos).append(",");
             }
-            if (histSb.length() > 0) histSb.deleteCharAt(histSb.length() - 1);
+            if (histSb.length() > 0){histSb.deleteCharAt(histSb.length() - 1);}
             sb.append(histSb.toString());
         }
 
