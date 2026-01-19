@@ -251,7 +251,7 @@ public class Player {
                 histSb.append(pos).append(",");
             }
             if (histSb.length() > 0) histSb.deleteCharAt(histSb.length() - 1);
-            sb.append(histSb.toString());
+            {sb.append(histSb.toString());}
         }
 
         return sb.toString();

@@ -74,139 +74,95 @@ public class GameManager {
         idJogadores.clear();
         tabuleiro.clear();
         vencedor = null;
-
         rondas = 0;
         atual = 0;
 
-        if (playerInfo == null || playerInfo.length < 2 || playerInfo.length > 4) {
+        if (playerInfo == null || playerInfo.length < 2 || playerInfo.length > 4 || worldSize < playerInfo.length * 2) {
             return false;
         }
-
         this.numJogadores = playerInfo.length;
-
-        if (worldSize < numJogadores * 2) {
-            return false;
-        }
         this.tamanhoTabuleiro = worldSize;
-
         currentPlayer = new int[numJogadores];
 
         List<String> coresDisponiveis = new ArrayList<>(Arrays.asList("Purple", "Green", "Blue", "Brown"));
         List<Integer> tempIds = new ArrayList<>();
 
         for (String[] info : playerInfo) {
-            if (info.length < 4){return false;}
+            if (info.length < 4) return false;
+            int id = Integer.parseInt(info[0]);
+            if (id < 1 || idJogadores.contains(id) || !coresDisponiveis.contains(info[3])) return false;
 
-            try {
-                int id = Integer.parseInt(info[0]);
-                String nome = info[1];
-                String linguagens = info[2];
-                String corSolicitada = info[3];
-
-                if (id < 1 || idJogadores.contains(id)){
-                    return false;
-                }
-                if (nome == null || nome.isBlank()){
-                    return false;
-                }
-
-                String corFinal;
-                if (corSolicitada != null && coresDisponiveis.contains(corSolicitada)) {
-                    corFinal = corSolicitada;
-                    coresDisponiveis.remove(corSolicitada);
-                } else {
-                    return false;
-                }
-
-                Player p = new Player(id, 1, nome, corFinal, linguagens);
-
-                listaPlayers.add(p);
-                allInfoPlayers.put(id, p);
-                idJogadores.add(id);
-                tempIds.add(id);
-
-            } catch (NumberFormatException e) {
-                return false;
-            }
+            String corFinal = info[3];
+            coresDisponiveis.remove(corFinal);
+            Player p = new Player(id, 1, info[1], corFinal, info[2]);
+            listaPlayers.add(p);
+            allInfoPlayers.put(id, p);
+            idJogadores.add(id);
+            tempIds.add(id);
         }
 
         Collections.sort(tempIds);
-        for (int i = 0; i < numJogadores; i++) {
-            currentPlayer[i] = tempIds.get(i);
-        }
+        for (int i = 0; i < numJogadores; i++) currentPlayer[i] = tempIds.get(i);
 
+        return adicionarElementosAoTabuleiro(abyssesAndTools, worldSize);
+    }
 
-        if (abyssesAndTools != null) {
-            int[] countAbyss = new int[21];
-            int[] countTools = new int[6];
+    private boolean adicionarElementosAoTabuleiro(String[][] abyssesAndTools, int worldSize) {
+        if (abyssesAndTools == null) return true;
 
-            String[] nomesAbyss = {"Erro de sintaxe", "Erro de lógica", "Exception", "FileNotFoundException",
-                    "Crash", "Código Duplicado", "Efeitos Secundários",
-                    "Blue Screen of Death", "Ciclo Infinito", "Segmentation Fault"};
+        for (String[] dados : abyssesAndTools) {
+            if (dados.length < 3) return false;
+            String tipoStr = dados[0];
+            int idItem = Integer.parseInt(dados[1]);
+            int posicao = Integer.parseInt(dados[2]);
 
-            String[] nomesTools = {"Herança", "Programação Funcional", "Testes Unitários",
-                    "Tratamento de Excepções", "IDE", "Ajuda do Professor"};
+            if (posicao < 1 || posicao > worldSize || tabuleiro.containsKey(posicao)) return false;
 
-            for (String[] dados : abyssesAndTools) {
-                if (dados.length < 3){return false;}
-
-                try {
-                    String tipoStr = dados[0];
-                    int idItem = Integer.parseInt(dados[1]);
-                    int posicao = Integer.parseInt(dados[2]);
-
-                    if (posicao < 1 || posicao > worldSize){return false;}
-
-                    if (tabuleiro.containsKey(posicao)){return false;}
-
-                    if (tipoStr.equals("0")) { // ABISMO
-                        if ((idItem < 0 || idItem > 9) && idItem != 20){return false;}
-                    } else if (tipoStr.equals("1")) { // FERRAMENTA
-                        if (idItem < 0 || idItem > 5){return false;}
-                    } else {
-                        return false;
-                    }
-
-                    BoardElement elemento = null;
-
-                    if (tipoStr.equals("1")) { // Adapta a condição conforme estejas no create ou no restore
-
-                        // Switch para criar a Ferramenta específica
-                        switch (idItem) { // ou 'id' se estiveres no restaurarElementoTabuleiro
-                            case 0: elemento = new HerancaTool(0, "Herança"); break;
-                            case 1: elemento = new ProgramacaoFuncionalTool(1, "Programação Funcional"); break;
-                            case 2: elemento = new UnitTestsTool(2, "Testes Unitários"); break;
-                            case 3: elemento = new TratamentoExcepcoesTool(3, "Tratamento de Excepções"); break;
-                            case 4: elemento = new IDETool(4, "IDE"); break;
-                            case 5: elemento = new AjudaProfessorTool(5, "Ajuda do Professor"); break;
-                            default: return false; // ou throw exception dependendo do método
-                        }
-
-                    } else {
-                        // Criação dos Abismos Específicos
-                        switch (idItem) {
-                            case 0: elemento = new ErroSintaxeAbyss(posicao); break;
-                            case 1: elemento = new ErroLogicaAbyss(posicao); break;
-                            case 2: elemento = new ExceptionAbyss(posicao); break;
-                            case 3: elemento = new FileNotFoundAbyss(posicao); break;
-                            case 4: elemento = new CrashAbyss(posicao); break;
-                            case 5: elemento = new CodigoDuplicadoAbyss(posicao); break;
-                            case 6: elemento = new EfeitosSecundariosAbyss(posicao); break;
-                            case 7: elemento = new BlueScreenAbyss(posicao); break;
-                            case 8: elemento = new CicloInfinitoAbyss(posicao); break;
-                            case 9: elemento = new SegmentationFaultAbyss(posicao); break;
-
-                            case 20: elemento = new LLMAbyss(posicao); break;
-
-                            default: return false;
-                        }
-                    } tabuleiro.put(posicao, elemento);
-
-                } catch (NumberFormatException e) {
-                    return false;
-                }
+            BoardElement elemento = null;
+            if (tipoStr.equals("1")) { // FERRAMENTA
+                if (idItem < 0 || idItem > 5) return false;
+                elemento = criarFerramenta(idItem);
+            } else if (tipoStr.equals("0")) { // ABISMO
+                if ((idItem < 0 || idItem > 9) && idItem != 20) return false;
+                elemento = criarAbismo(idItem, posicao);
+            } else {
+                return false;
             }
-        } return true;
+
+            if (elemento == null) return false;
+            tabuleiro.put(posicao, elemento);
+        }
+        return true;
+    }
+
+    // Métodos pequenos para simplificar ainda mais
+    private BoardElement criarFerramenta(int id) {
+        return switch (id) {
+            case 0 -> new HerancaTool(0, "Herança");
+            case 1 -> new ProgramacaoFuncionalTool(1, "Programação Funcional");
+            case 2 -> new UnitTestsTool(2, "Testes Unitários");
+            case 3 -> new TratamentoExcepcoesTool(3, "Tratamento de Excepções");
+            case 4 -> new IDETool(4, "IDE");
+            case 5 -> new AjudaProfessorTool(5, "Ajuda do Professor");
+            default -> null;
+        };
+    }
+
+    private BoardElement criarAbismo(int id, int pos) {
+        return switch (id) {
+            case 0 -> new ErroSintaxeAbyss(pos);
+            case 1 -> new ErroLogicaAbyss(pos);
+            case 2 -> new ExceptionAbyss(pos);
+            case 3 -> new FileNotFoundAbyss(pos);
+            case 4 -> new CrashAbyss(pos);
+            case 5 -> new CodigoDuplicadoAbyss(pos);
+            case 6 -> new EfeitosSecundariosAbyss(pos);
+            case 7 -> new BlueScreenAbyss(pos);
+            case 8 -> new CicloInfinitoAbyss(pos);
+            case 9 -> new SegmentationFaultAbyss(pos);
+            case 20 -> new LLMAbyss(pos);
+            default -> null;
+        };
     }
 
 
@@ -295,8 +251,8 @@ public class GameManager {
         }
 
         // 4. Lógica de Restrições (Assembly/C)
-        if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) return false;
-        if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) return false;
+        if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) {return false;}
+        if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) {return false;}
 
         // 5. Movimento ou Prisão
         if (p.getTurnosPreso() > 0) {
@@ -694,7 +650,7 @@ public class GameManager {
         }
 
         int pos = p.getPosicao();
-        if (!tabuleiro.containsKey(pos)) return null;
+        if (!tabuleiro.containsKey(pos)) {return null;}
 
         return tabuleiro.get(pos).interact(p, this);
     }
