@@ -10,19 +10,18 @@ public class LLMAbyss extends Abyss {
     @Override
     public String interact(Player player, GameManager game) {
         if (player.getNumeroJogadas() > 3) {
-            // Comportamento Boost: avança o mesmo número de casas do último dado
             int boost = player.getUltimoDado();
             player.move(boost);
-            return "Caiu no LLM mas já tem experiência! Avança quantas casas quantas as do ultimo movimento.";
+            return "Caiu no LLM mas já tem experiência! Avança tantas casas quantas as do último movimento";
         }
         else {
 
             if (tentarUsarFerramenta(player, 5)) {
-                return "O Professor ajudou-te a verificar o código do LLM! Estás salvo.";
+                return "LLM anulado pela ajuda do Professor";
             } else {
                 // Efeito: Volta para a posição anterior
                 player.voltarPosicaoAnterior(1);
-                return "Copiaste código do LLM sem saber! Voltas à posição anterior.";
+                return "Caiu no LLM!! Recua à posição onde estavas.";
             }
         }
     }

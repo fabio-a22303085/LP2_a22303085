@@ -3,17 +3,20 @@ package pt.ulusofona.lp2.greatprogrammingjourney;
 import java.util.*;
 
 public class Player {
-    private int id, posicao;
-    private String nome, cor, linguagens;
-    private String emJogo;
-    private String primeiraLinguagem;
+    int id, posicao;
+    String nome, cor, linguagens;
+    String emJogo;
+
     private int turnosPreso = 0;
     private int ultimoDado = 0;
+
+    private Set<String> nomeFerramentas = new HashSet<>();
+    private Set<Tool> ferramentas = new HashSet<>();
+    private List<Integer> historicoPosicoes = new ArrayList<>();
+    int index = 0;
+    String primeiraLinguagem;
     private String causaMorte = "";
 
-    private Set<Tool> ferramentas = new HashSet<>();
-    private Set<String> nomeFerramentas = new HashSet<>();
-    private List<Integer> historicoPosicoes = new ArrayList<>();
 
     public Player(int id, int posicao, String nome, String cor, String linguagens) {
         this.id = id;
@@ -23,45 +26,75 @@ public class Player {
         this.emJogo = "Em Jogo";
 
         String[] linguasArray = linguagens.split(";");
-        this.primeiraLinguagem = linguasArray[0].trim(); // CORRETO!
+        primeiraLinguagem = linguasArray[0];
         Arrays.sort(linguasArray, String.CASE_INSENSITIVE_ORDER);
         this.linguagens = String.join("; ", linguasArray);
-
-        historicoPosicoes.add(posicao); // Histórico inicia com posição inicial
+        this.historicoPosicoes.add(this.posicao);
     }
 
-    public String getEstado() {
+    public String getPrimeiraLinguagem() {
+        return primeiraLinguagem;
+    }
+
+
+    public int getId() {
+        return id;
+    }
+
+    public int getPosicao() {
+        return posicao;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public String getCor() {
+        return cor;
+    }
+
+    public String getLinguagens() {
+        return linguagens;
+    }
+
+    public String getEmJogo() {
         return emJogo;
     }
-    public int getId() { return id; }
-    public int getPosicao() { return posicao; }
-    public String getNome() { return nome; }
-    public String getCor() { return cor; }
-    public String getLinguagens() { return linguagens; }
-    public String getEmJogo() { return emJogo; }
-    public String getPrimeiraLinguagem() { return primeiraLinguagem; }
-    public int getTurnosPreso() { return turnosPreso; }
-    public int getUltimoDado() { return ultimoDado; }
-    public String getCausaMorte() { return causaMorte; }
 
-    public void setPosicao(int posicao) { this.posicao = posicao; }
-    public void setEmJogo(String estado) { this.emJogo = estado; }
-    public void setTurnosPreso(int turnos) { this.turnosPreso = turnos; }
-    public void setUltimoDado(int valor) { this.ultimoDado = valor; }
-    public void setCausaMorte(String causa) { this.causaMorte = causa; }
-
-    public void decrementarTurnosPreso() {
-        if (turnosPreso > 0) {
-            turnosPreso--;
-            if (turnosPreso == 0) emJogo = "Em Jogo";
-        }
+    public void setPosicao(int posicao) {
+        this.posicao = posicao;
     }
 
     public boolean temFerramenta(int idFerramenta) {
         for (Tool t : ferramentas) {
-            if (t.getId() == idFerramenta) return true;
+            if (t.getId() == idFerramenta) {
+                return true;
+            }
         }
         return false;
+    }
+
+    public void setTurnosPreso(int turnos) {
+        this.turnosPreso = turnos;
+    }
+
+    public int getTurnosPreso() {
+        return turnosPreso;
+    }
+
+    public void decrementarTurnosPreso() {
+        if (turnosPreso > 0) {
+            turnosPreso--;
+
+            if (turnosPreso == 0) {
+                this.emJogo = "Em Jogo";
+            }
+        }
+    }
+
+    public void move(int deslocamento) {
+        this.posicao += deslocamento;
+        if (this.posicao < 0){this.posicao = 0;}
     }
 
     public void apanharFerramenta(Tool ferramenta) {
@@ -70,84 +103,170 @@ public class Player {
     }
 
     public void removerFerramenta(int idFerramenta) {
+        // Procura a ferramenta para obter o título antes de remover
         Tool toolToRemove = null;
-        for (Tool t : ferramentas) if (t.getId() == idFerramenta) toolToRemove = t;
+        for (Tool t : ferramentas) {
+            if (t.getId() == idFerramenta) {
+                toolToRemove = t;
+                break; // Parar assim que encontrar
+            }
+        }
+
         if (toolToRemove != null) {
             ferramentas.remove(toolToRemove);
             nomeFerramentas.remove(toolToRemove.getTitle());
         }
     }
 
-    public void registarJogada() {
-        historicoPosicoes.add(posicao);
+    public void setEmJogo(String emJogo) {
+        this.emJogo = emJogo;
     }
 
-    public void voltarPosicaoAnterior(int num) {
-        if (historicoPosicoes.size() >= num) {
-            posicao = historicoPosicoes.get(historicoPosicoes.size() - num);
-        }
-    }
-
-    public void voltarDoisTurnos() {
-        if (historicoPosicoes.size() >= 2) {
-            posicao = historicoPosicoes.get(historicoPosicoes.size() - 2);
+    @Override
+    public String toString() {
+        if (ferramentas.isEmpty()) {
+            return id + " | " + nome + " | " + posicao + " | No tools | " + linguagens + " | " + emJogo;
         } else {
-            posicao = 0; // fallback
+
+            return id + " | " + nome + " | " + posicao + " | " + getFerramentasToString() + " | " + linguagens + " | " + emJogo;
         }
-    }
-
-    public void move(int deslocamento) {
-        posicao += deslocamento;
-        if (posicao < 0) posicao = 0;
-    }
-
-    public void kill(String causa) {
-        emJogo = "Derrotado";
-        causaMorte = causa;
     }
 
     public String getFerramentasToString() {
-        if (nomeFerramentas.isEmpty()) return "";
-        List<String> lista = new ArrayList<>(nomeFerramentas);
-        Collections.sort(lista);
-        return String.join(";", lista);
+        if (nomeFerramentas.isEmpty()) {
+            return "";
+        }
+        // Converte para lista para poder ordenar alfabeticamente
+        List<String> listaOrdenada = new ArrayList<>(nomeFerramentas);
+        Collections.sort(listaOrdenada);
+        return String.join(";", listaOrdenada);
     }
 
-    public int getNumeroJogadas() { return historicoPosicoes.size() - 1; }
+    public String getEstado() {
+        return emJogo;
+    }
+
+    public void registarJogada() {
+        this.historicoPosicoes.add(this.posicao);
+    }
+
+    // 4. Implementação do Abismo 5: "Voltar Posição Anterior"
+    public void voltarPosicaoAnterior(int num) {
+        // A posição anterior é o último elemento que foi gravado no histórico
+        if (!historicoPosicoes.isEmpty()) {
+
+            int posAnterior = historicoPosicoes.get(historicoPosicoes.size() - num);
+            this.posicao = posAnterior;
+        }
+    }
+
+    // 5. Implementação do Abismo 6: "Voltar Dois Turnos"
+    public void voltarDoisTurnos() {
+        // Precisamos de ter pelo menos 2 registos no histórico para recuar 2 vezes
+        if (historicoPosicoes.size() >= 2) {
+            // size-1 é o turno anterior. size-2 é há dois turnos.
+            int posAntiga = historicoPosicoes.get(historicoPosicoes.size() - 2);
+            this.posicao = posAntiga;
+        } else {
+            // Se não houver histórico suficiente, volta ao início
+            this.posicao = 0;
+        }
+
+    }
+    public void setUltimoDado(int valor) {
+        this.ultimoDado = valor;
+    }
+
+    public int getUltimoDado() {
+        return this.ultimoDado;
+    }
+
+    public int getNumeroJogadas() {
+        // Se o histórico tem 1 elemento (pos inicial), fez 0 jogadas.
+        // Se tem 2 elementos, fez 1 jogada.
+        return historicoPosicoes.size() - 1;
+    }
+
+    public void kill(String causa) {
+        this.emJogo = "Derrotado";
+        this.causaMorte = causa;
+    }
+
+    public String getCausaMorte() {
+        return causaMorte;
+    }
 
     public String getDataForSave() {
         StringBuilder sb = new StringBuilder();
-        sb.append(id).append(":").append(posicao).append(":").append(nome).append(":")
-                .append(cor).append(":").append(emJogo).append(":").append(turnosPreso).append(":")
-                .append(ultimoDado).append(":").append(linguagens.isEmpty() ? "NULL" : linguagens).append(":");
 
-        if (nomeFerramentas.isEmpty()) sb.append("NULL");
-        else sb.append(String.join(",", nomeFerramentas));
-        sb.append(":").append(causaMorte.isEmpty() ? "NULL" : causaMorte).append(":");
+        sb.append(id).append(":");
+        sb.append(posicao).append(":");
+        sb.append(nome).append(":");
+        sb.append(cor).append(":");
+        sb.append(getEstado()).append(":");
+        sb.append(turnosPreso).append(":");
+        sb.append(ultimoDado).append(":");
 
-        if (historicoPosicoes.isEmpty()) sb.append("NULL");
-        else {
-            for (int p : historicoPosicoes) sb.append(p).append(",");
+        if (linguagens == null || linguagens.isBlank()) {
+            sb.append("NULL");
+        } else {
+            sb.append(linguagens);
+        }
+        sb.append(":");
+
+        if (ferramentas.isEmpty()) {
+            sb.append("NULL");
+        } else {
+
+            for (String t: nomeFerramentas) {
+                sb.append(t);
+                sb.append(",");
+
+            }
             sb.deleteCharAt(sb.length()-1);
+        }
+        sb.append(":");
+
+        if (causaMorte == null || causaMorte.isEmpty()) {
+            sb.append("NULL");
+        } else {
+            sb.append(causaMorte);
+        }
+        sb.append(":");
+
+        if (historicoPosicoes.isEmpty()) {
+            sb.append("NULL");
+        } else {
+            StringBuilder histSb = new StringBuilder();
+            for (Integer pos : historicoPosicoes) {
+                histSb.append(pos).append(",");
+            }
+            if (histSb.length() > 0) histSb.deleteCharAt(histSb.length() - 1);
+            sb.append(histSb.toString());
         }
 
         return sb.toString();
     }
 
     public void restaurarHistorico(String historicoStr) {
-        historicoPosicoes.clear();
+        this.historicoPosicoes.clear();
         if (!historicoStr.equals("NULL") && !historicoStr.isEmpty()) {
             String[] posicoes = historicoStr.split(",");
             for (String s : posicoes) {
-                try { historicoPosicoes.add(Integer.parseInt(s)); } catch (NumberFormatException ignored) {}
+                try {
+                    this.historicoPosicoes.add(Integer.parseInt(s));
+                } catch (NumberFormatException e) {
+                    // Ignorar erro de parsing
+                }
             }
-        } else historicoPosicoes.add(posicao);
+        } else {
+            // Se não houver histórico, pelo menos a posição atual deve estar lá
+            this.historicoPosicoes.add(this.posicao);
+        }
     }
 
-    @Override
-    public String toString() {
-        String ferramentasStr = getFerramentasToString();
-        if (ferramentasStr.isEmpty()) ferramentasStr = "No tools";
-        return id + " | " + nome + " | " + posicao + " | " + ferramentasStr + " | " + linguagens + " | " + emJogo;
+    public void setCausaMorte(String causa) {
+        this.causaMorte = causa;
     }
+
 }
