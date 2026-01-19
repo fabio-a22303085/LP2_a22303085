@@ -187,16 +187,26 @@ public class Player {
         this.historicoPosicoes.add(this.posicao);
     }
 
+    // 4. Implementação do Abismo 5: "Voltar Posição Anterior"
     public void voltarPosicaoAnterior(int num) {
-        // Se num=1, queremos recuar 1 casa.
-        // O histórico tem [Antiga, Atual]. Size = 2.
-        // Queremos o índice 0 (Size - 1 - num).
+        // A posição anterior é o último elemento que foi gravado no histórico
+        if (!historicoPosicoes.isEmpty()) {
 
-        // Verifica se há histórico suficiente para recuar
-        if (historicoPosicoes.size() > num) {
-            int indexAlvo = historicoPosicoes.size() - 1 - num;
-            int posAnterior = historicoPosicoes.get(indexAlvo);
+            int posAnterior = historicoPosicoes.get(historicoPosicoes.size() - num);
             this.posicao = posAnterior;
+        }
+    }
+
+    // 5. Implementação do Abismo 6: "Voltar Dois Turnos"
+    public void voltarDoisTurnos() {
+        // Precisamos de ter pelo menos 2 registos no histórico para recuar 2 vezes
+        if (historicoPosicoes.size() >= 2) {
+            // size-1 é o turno anterior. size-2 é há dois turnos.
+            int posAntiga = historicoPosicoes.get(historicoPosicoes.size() - 2);
+            this.posicao = posAntiga;
+        } else {
+            // Se não houver histórico suficiente, volta ao início
+            this.posicao = 0;
         }
 
     }
