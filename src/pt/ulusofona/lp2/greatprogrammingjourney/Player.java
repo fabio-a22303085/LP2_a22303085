@@ -26,14 +26,9 @@ public class Player {
         this.emJogo = "Em Jogo";
 
         String[] linguasArray = linguagens.split(";");
-
-        // 2. GUARDAR A PRIMEIRA ANTES DE ORDENAR (Crucial para o teste 027)
-        this.primeiraLinguagem = linguasArray[0].trim();
-
-        // 3. Ordenar e juntar com "; " (com espaço para os outros testes passarem)
+        primeiraLinguagem = linguasArray[0];
         Arrays.sort(linguasArray, String.CASE_INSENSITIVE_ORDER);
         this.linguagens = String.join("; ", linguasArray);
-
         this.historicoPosicoes.add(this.posicao);
     }
 
@@ -102,13 +97,9 @@ public class Player {
         if (this.posicao < 0){this.posicao = 0;}
     }
 
-    public void apanharFerramenta(Tool t) {
-        if (t != null && t.getTitle() != null) {
-
-            // Se usas a lista de objetos Tool, adiciona também:
-            if (this.ferramentas == null) { this.ferramentas = new HashSet<>(); }
-            this.ferramentas.add(t);
-        }
+    public void apanharFerramenta(Tool ferramenta) {
+        ferramentas.add(ferramenta);
+        nomeFerramentas.add(ferramenta.getTitle());
     }
 
     public void removerFerramenta(int idFerramenta) {
@@ -142,12 +133,28 @@ public class Player {
     }
 
     public String getFerramentasToString() {
-        if (nomeFerramentas == null || nomeFerramentas.isEmpty()) {
+        if (nomeFerramentas.isEmpty()) {
             return "";
         }
+
+        // 1. Converter para lista para poder ordenar
         List<String> listaOrdenada = new ArrayList<>(nomeFerramentas);
+
+        // 2. Ordenar alfabeticamente (Obrigatório segundo o enunciado)
         Collections.sort(listaOrdenada);
-        return String.join(";", listaOrdenada);
+
+        StringBuilder sb = new StringBuilder();
+        for (String t : listaOrdenada) {
+            sb.append(t);
+            sb.append("; ");
+        }
+
+        // Remover o último ";"
+        if (sb.length() > 0) {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+
+        return sb.toString();
     }
 
     public String getEstado() {
@@ -225,12 +232,13 @@ public class Player {
         if (ferramentas.isEmpty()) {
             sb.append("NULL");
         } else {
-            // Gravar os IDs numéricos separados por vírgula para o load conseguir ler
-            StringJoiner sj = new StringJoiner(",");
-            for (Tool t : ferramentas) {
-                sj.add(String.valueOf(t.getId()));
+
+            for (String t: nomeFerramentas) {
+                sb.append(t);
+                sb.append(",");
+
             }
-            sb.append(sj.toString());
+            sb.deleteCharAt(sb.length()-1);
         }
         sb.append(":");
 
@@ -251,7 +259,7 @@ public class Player {
                 histSb.append(pos).append(",");
             }
             if (histSb.length() > 0) histSb.deleteCharAt(histSb.length() - 1);
-            {sb.append(histSb.toString());  }
+            sb.append(histSb.toString());
         }
 
         return sb.toString();

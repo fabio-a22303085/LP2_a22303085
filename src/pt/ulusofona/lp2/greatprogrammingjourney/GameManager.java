@@ -1,4 +1,3 @@
-
 package pt.ulusofona.lp2.greatprogrammingjourney;
 
 import javax.swing.*;
@@ -179,7 +178,7 @@ public class GameManager {
                             case 2: elemento = new UnitTestsTool(2, "Testes Unitários"); break;
                             case 3: elemento = new TratamentoExcepcoesTool(3, "Tratamento de Excepções"); break;
                             case 4: elemento = new IDETool(4, "IDE"); break;
-                            case 5: elemento = new AjudaProfessorTool(5, "Ajuda do Professor"); break;
+                            case 5: elemento = new AjudaProfessorTool(5, "Ajuda Do Professor"); break;
                             default: return false; // ou throw exception dependendo do método
                         }
 
@@ -291,29 +290,19 @@ public class GameManager {
         if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) {return false;}
         if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) {return false;}
 
+        //Se morreu não se mexe
         if (p.getEstado().equals("Derrotado")) {
-            // Passa ao próximo
             atual = (atual + 1) % numJogadores;
-            // Se o próximo TAMBÉM estiver morto, continua a saltar
-            while (allInfoPlayers.get(currentPlayer[atual]).getEstado().equals("Derrotado")) {
-                atual = (atual + 1) % numJogadores;
-            }
             rondas++;
             return true;
         }
 
         //Verifica se está preso
         if (p.getTurnosPreso() > 0) {
-            p.setTurnosPreso(p.getTurnosPreso() - 1);
+            p.setTurnosPreso(0); // Liberta o jogador para a jogada
 
             atual = (atual + 1) % numJogadores; // Passa a vez ao próximo
             rondas++;
-
-            // O truque simples: Loop enquanto o próximo estiver Derrotado
-            while (allInfoPlayers.get(currentPlayer[atual]).getEstado().equals("Derrotado")) {
-                atual = (atual + 1) % numJogadores;
-            }
-
             return true; // O jogador atual não se mexe neste turno
         }
 
@@ -331,14 +320,8 @@ public class GameManager {
         atual = (atual + 1) % numJogadores;
         rondas++;
 
-        // O truque simples: Loop enquanto o próximo estiver Derrotado
-        while (allInfoPlayers.get(currentPlayer[atual]).getEstado().equals("Derrotado")) {
-            atual = (atual + 1) % numJogadores;
-        }
-
         return true;
     }
-
 
     public boolean gameIsOver(){
         for(Player p: listaPlayers){
@@ -501,7 +484,7 @@ public class GameManager {
             "Testes Unitários",
             "Tratamento de Excepções",
             "IDE",
-            "Ajuda do Professor"
+            "Ajuda Do Professor"
     };
 
     public void loadGame(File file) throws FileNotFoundException, InvalidFileException {
