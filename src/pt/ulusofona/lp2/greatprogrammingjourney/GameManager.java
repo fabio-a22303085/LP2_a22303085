@@ -310,37 +310,38 @@ public class GameManager {
         return true;
     }
 
-    public boolean gameIsOver() {
 
+    public boolean gameIsOver() {
+        int cont = 0;       // Jogadores vivos
+        int contEmpate = 0; // Jogadores derrotados
         Player jogadorRestante = null;
-        int cont = 0;
-        int contDerrotados = 0;
+
         for (Player p : listaPlayers) {
-            // 1. Verifica se alguém chegou ao fim (Vitória imediata)
+
             if (p.getPosicao() == tamanhoTabuleiro) {
                 vencedor = p.getNome();
                 return true;
             }
 
-            // Conta jogadores que NÃO estão derrotados (estão em jogo)
+            // Contagem de vivos (para Last Man Standing)
+            // Assumindo que !isDerrotado() equivale a não ter o estado "Derrotado"
             if (!p.getEstado().equals("Derrotado")) {
                 cont++;
                 jogadorRestante = p;
             }
 
-            // Conta jogadores que estão mortos/derrotados
+            // Contagem de mortos (para Empate)
             if (p.getEstado().equals("Derrotado")) {
-                contDerrotados++;
+                contEmpate++;
             }
         }
 
-        // 2. Verifica se todos morreram (Empate)
-        if (contDerrotados == listaPlayers.size()) {
-            vencedor = null; // Garante que é nulo em caso de empate
+        // 2. Caso de Empate Total (Todos morreram)
+        if (contEmpate == listaPlayers.size()) {
+            vencedor = null; // Garante que é nulo
             return true;
         }
 
-        // 3. Verifica se sobrou apenas 1 jogador (Last Man Standing)
         if (cont < 2) {
             if (cont == 1 && jogadorRestante != null) {
                 vencedor = jogadorRestante.getNome();
@@ -351,25 +352,111 @@ public class GameManager {
         return false;
     }
 
-    public ArrayList<String> getGameResults(){
-        ArrayList<String> str = new ArrayList<>();
-        str.add("THE GREAT PROGRAMMING JOURNEY");
-        str.add("");
-        str.add("NR. DE TURNOS");
-        str.add(String.valueOf(rondas+1));
-        str.add("");
-        str.add("VENCEDOR");
+    public ArrayList<String> getGameResults() {
+        ArrayList<String> linhas = new ArrayList<>();
+        linhas.add("THE GREAT PROGRAMMING JOURNEY");
+        linhas.add("");
 
-        if (vencedor != null) {
-            str.add(vencedor);
+        linhas.add("NR. DE TURNOS");
+        linhas.add(String.valueOf(rondas)); // Ou rondas + ""
+        linhas.add("");
+
+        linhas.add("VENCEDOR");
+        if (vencedor == null) {
+            // Se for nulo, usamos a lógica de empate
+            // Nota: O título "VENCEDOR" fica vazio ou mudamos a lógica?
+            // No teu snippet tinhas "VENCEDOR" fixo em cima.
+            // Vou ajustar para bater certo com a tua lógica de "getGameResultsEmpate"
+            // que escreve "O jogo terminou empatado."
+
+            // Removemos o cabeçalho "VENCEDOR" se for empate para não ficar estranho,
+            // ou deixamos em branco. Pelo teu snippet getGameResultsEmpate começa com texto.
+            // Vou remover as duas linhas anteriores ("VENCEDOR") se for empate
+            // para bater certo com o output esperado tipicamente,
+            // mas mantendo a tua estrutura:
+
+            linhas.remove(linhas.size() - 1); // Remove título VENCEDOR
+            linhas.addAll(getGameResultsEmpate());
         } else {
-            str.add("O jogo acabou empatado.");
+            // Se houver vencedor, adicionamos o nome e depois os restantes
+            linhas.add(vencedor);
+            linhas.add("");
+            linhas.addAll(getGameResultsVitoria());
+        }
+        return linhas;
+    }
+
+    // --- Métodos Auxiliares de Resultados ---
+
+    public ArrayList<String> getGameResultsVitoria() {
+        ArrayList<String> linhas = new ArrayList<>();
+
+        // Nota: O "VENCEDOR" já foi adicionado no método principal getGameResults
+        // ou queres mover para aqui? Pelo teu snippet parecia separado.
+        // Vou assumir que aqui listas apenas os RESTANTES, pois o vencedor já foi impresso acima.
+
+        linhas.add("RESTANTES");
+        linhas.addAll(getLastPlayers());
+
+        return linhas;
+    }
+
+    public ArrayList<String> getLastPlayers() {
+        ArrayList<String> linhas = new ArrayList<>();
+        List<Player> lastPlayers = new ArrayList<>(listaPlayers);
+
+        // Ordena por posição (decrescente) e depois por nome
+        lastPlayers.sort(
+                Comparator.comparingInt(Player::getPosicao).reversed()
+                        .thenComparing(Player::getNome)
+        );
+
+        // Remove o primeiro (o Vencedor) para não aparecer nos "Restantes"
+        if (!lastPlayers.isEmpty()) {
+            lastPlayers.remove(0);
         }
 
-        str.add("");
-        str.add("RESTANTES");
-        str.addAll(restantes());
-        return str;
+        for (Player p : lastPlayers) {
+            // Formato simples para os restantes na vitória
+            linhas.add(p.getNome() + " " + p.getPosicao());
+        }
+        return linhas;
+    }
+
+    public ArrayList<String> getGameResultsEmpate() {
+        ArrayList<String> linhas = new ArrayList<>();
+
+        linhas.add("O jogo terminou empatado.");
+        linhas.add("");
+
+        linhas.add("Participantes:");
+        linhas.addAll(getPlayersEmpatados());
+
+        return linhas;
+    }
+
+    public ArrayList<String> getPlayersEmpatados() {
+        ArrayList<String> linhas = new ArrayList<>();
+        List<Player> lastPlayers = new ArrayList<>(listaPlayers);
+
+        lastPlayers.sort(
+                Comparator.comparingInt(Player::getPosicao).reversed()
+                        .thenComparing(Player::getNome)
+        );
+
+        for (Player p : lastPlayers) {
+            // No empate, mostramos onde morreram e o que havia lá (Abismo)
+            // Usamos getSlotInfo para ir buscar o título do elemento na casa
+            String infoSlot = "";
+            String[] slotData = getSlotInfo(p.getPosicao());
+
+            if (slotData != null && slotData.length > 1) {
+                infoSlot = slotData[1]; // Índice 1 é o Título (ex: "Erro de lógica")
+            }
+
+            linhas.add(p.getNome() + " : " + p.getPosicao() + " : " + infoSlot);
+        }
+        return linhas;
     }
 
 
