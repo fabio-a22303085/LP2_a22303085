@@ -13,7 +13,7 @@ import java.util.Map;
 public class GameManager {
 
     private List<Player> listaPlayers = new ArrayList<>();
-    private HashMap<Integer,Player> allInfoPlayers = new HashMap<>();
+    protected HashMap<Integer,Player> allInfoPlayers = new HashMap<>();
     private List<Integer> idJogadores= new ArrayList<>();
     private HashMap<Integer, BoardElement> tabuleiro = new HashMap<>();
 
@@ -260,6 +260,11 @@ public class GameManager {
         return null;
     }
 
+    private Player getJogadorAtual() {
+        int id = currentPlayer[atual];
+        return allInfoPlayers.get(id);
+    }
+
     public String[] getProgrammerInfo(int id){
         if(!allInfoPlayers.containsKey(id)){return null;}
 
@@ -284,66 +289,57 @@ public class GameManager {
     public boolean moveCurrentPlayer(int nrSpaces) {
         this.nrSpaces = nrSpaces;
 
-        if (numJogadores == 0){return false;}
-        if (nrSpaces < 1 || nrSpaces > 6) {return false;}
+        if (numJogadores == 0) return false;
+        if (nrSpaces < 1 || nrSpaces > 6) return false;
 
-        Player p = listaPlayers.get(atual);
+        // CORREÇÃO: Usar o ID do array currentPlayer
+        Player p = getJogadorAtual();
 
-        if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) {return false;}
-        if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) {return false;}
+        if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) return false;
+        if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) return false;
 
-        if (!p.getEstado().equals("Em Jogo")){
-              return false;
-          }
+        if (!p.getEstado().equals("Em Jogo")) {
+            return false;
+        }
 
-        p.setUltimoDado(nrSpaces); //Erro de Lógica
-        p.registarJogada();        //Voltar Posição Anterior
+        p.setUltimoDado(nrSpaces);
+        p.registarJogada();
 
-        // Movimento
         if (p.getPosicao() + nrSpaces >= tamanhoTabuleiro) {
             p.setPosicao(tamanhoTabuleiro);
         } else {
             p.setPosicao(p.getPosicao() + nrSpaces);
         }
 
-
         return true;
     }
 
-
     public boolean gameIsOver() {
-        int cont = 0;
-        int contEmpate = 0;
-        Player jogadorRestante = null;
+        int contAtivos = 0;
+        int contDerrotados = 0;
 
         for (Player p : listaPlayers) {
-            if (p.getPosicao() == tamanhoTabuleiro) {
+            // 1. Vitória por chegada à meta
+            if (p.getPosicao() >= tamanhoTabuleiro) {
                 vencedor = p.getNome();
                 return true;
             }
 
-            if (!p.getEstado().equals("Derrotado")) {
-                cont++;
-                jogadorRestante = p;
-            }
-
             if (p.getEstado().equals("Derrotado")) {
-                contEmpate++;
+                contDerrotados++;
+            } else {
+                contAtivos++;
             }
         }
 
-        if (contEmpate == listaPlayers.size()) {
-            vencedor = null; // Garante que não há vencedor no empate total
+        // 2. Se todos morrerem -> Empate
+        if (contDerrotados == listaPlayers.size()) {
+            vencedor = null;
             return true;
         }
 
-        if (cont < 2) {
-            if (cont == 1) {
-                vencedor = jogadorRestante.getNome();
-            }
-            return true;
-        }
-
+        // 3. Se o teste espera continuar com 1 jogador, removemos o "cont < 2"
+        // O jogo só para se contAtivos == 0 (todos mortos) ou alguém ganhar.
         return false;
     }
 
@@ -354,7 +350,7 @@ public class GameManager {
         linhas.add("");
 
         linhas.add("NR. DE TURNOS");
-        linhas.add(String.valueOf(rondas));
+        linhas.add(String.valueOf(rondas+1));
         linhas.add("");
 
         linhas.add("VENCEDOR");
@@ -749,7 +745,8 @@ public class GameManager {
 
 
     public String reactToAbyssOrTool() {
-        Player player = listaPlayers.get(atual);
+        // Busca o jogador atual pelo ID guardado no array
+        Player player = allInfoPlayers.get(currentPlayer[atual]);
         int posicao = player.getPosicao();
 
         BoardElement elemento = tabuleiro.get(posicao);
@@ -759,12 +756,17 @@ public class GameManager {
             resultadoInteracao = elemento.interact(player, this);
         }
 
-        // passa sempre o turno
-        do {
-            atual = (atual + 1) % listaPlayers.size();
-        } while (listaPlayers.get(atual).getEstado().equals("Derrotado"));
+        rondas++; // Incrementa a ronda
 
-            rondas++;
+        // PROTEÇÃO: Só procura o próximo jogador se o jogo NÃO acabou
+        if (!gameIsOver()) {
+            int startingIndex = atual;
+            do {
+                atual = (atual + 1) % numJogadores;
+                // Se dermos a volta completa e ninguém estiver vivo, paramos
+                if (atual == startingIndex) break;
+            } while (allInfoPlayers.get(currentPlayer[atual]).getEstado().equals("Derrotado"));
+        }
 
         return resultadoInteracao;
     }

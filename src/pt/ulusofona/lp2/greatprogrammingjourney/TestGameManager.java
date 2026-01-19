@@ -325,4 +325,124 @@ public class TestGameManager {
 
     }
 
+    @Test
+    public void getGameResults() {
+        GameManager gm = new GameManager();
+        String[][] playerInfoValido = {
+                {"1", "Alice", "Kotlin;Java", "Blue"},
+                {"2", "Lourenco", "Java", "Green"}
+        };
+
+
+        String expected ="[THE GREAT PROGRAMMING JOURNEY, , NR. DE TURNOS, 4, , VENCEDOR, Alice, , RESTANTES, Lourenco 6]";
+        gm.createInitialBoard(playerInfoValido, 9);
+
+        gm.allInfoPlayers.get(1);
+        gm.allInfoPlayers.get(2);
+
+        gm.moveCurrentPlayer(5);
+        gm.reactToAbyssOrTool();
+        assertFalse(gm.gameIsOver());
+        gm.moveCurrentPlayer(5);
+        gm.reactToAbyssOrTool();
+        assertFalse(gm.gameIsOver());
+        gm.moveCurrentPlayer(3);
+        gm.reactToAbyssOrTool();
+        gm.gameIsOver();
+        assertEquals(expected, gm.getGameResults().toString());
+    }
+
+    @Test
+    public void getGameResults2() {
+        GameManager gm = new GameManager();
+        String[][] playerInfoValido = {
+                {"1", "Alice", "Kotlin;Java", "Blue"},
+                {"2", "Lourenco", "Java", "Green"},
+                {"3", "Fabio", "Java", "Brown"}
+        };
+
+
+        String expected ="[THE GREAT PROGRAMMING JOURNEY, , NR. DE TURNOS, 5, , VENCEDOR, Alice, , RESTANTES, Fabio 5, Lourenco 5]";
+        gm.createInitialBoard(playerInfoValido, 9);
+
+        gm.allInfoPlayers.get(1);
+        gm.allInfoPlayers.get(2);
+
+        gm.moveCurrentPlayer(5);
+        gm.reactToAbyssOrTool();
+        assertFalse(gm.gameIsOver());
+        gm.moveCurrentPlayer(4);
+        gm.reactToAbyssOrTool();
+        assertFalse(gm.gameIsOver());
+        gm.moveCurrentPlayer(4);
+        gm.reactToAbyssOrTool();
+        gm.moveCurrentPlayer(3);
+        gm.reactToAbyssOrTool();
+        assertTrue(gm.gameIsOver());
+
+        assertEquals(expected, gm.getGameResults().toString());
+    }
+
+    @Test
+    public void getGameResults3() {
+        GameManager gm = new GameManager();
+        String[][] playerInfoValido = {
+                {"1", "Alice", "Kotlin;Java", "Blue"},
+                {"2", "Lourenco", "Java", "Green"},
+                {"3", "Fabio", "Java", "Brown"}
+        };
+
+
+        String expected ="[THE GREAT PROGRAMMING JOURNEY, , NR. DE TURNOS, 5, , VENCEDOR, Alice, , RESTANTES, Lourenco 5, Fabio 4]";
+        gm.createInitialBoard(playerInfoValido, 9);
+
+        gm.allInfoPlayers.get(1);
+        gm.allInfoPlayers.get(2);
+
+        gm.moveCurrentPlayer(5);
+        gm.reactToAbyssOrTool();
+        assertFalse(gm.gameIsOver());
+        gm.moveCurrentPlayer(4);
+        gm.reactToAbyssOrTool();
+        assertFalse(gm.gameIsOver());
+        gm.moveCurrentPlayer(3);
+        gm.reactToAbyssOrTool();
+        gm.moveCurrentPlayer(3);
+        gm.reactToAbyssOrTool();
+        assertTrue(gm.gameIsOver());
+
+        assertEquals(expected, gm.getGameResults().toString());
+    }
+
+    @Test
+    public void getGameResultsEmpate() {
+        GameManager gm = new GameManager();
+        String[][] playerInfoValido = {
+                {"1", "Alice", "Kotlin;Java", "Blue"},
+                {"2", "Lourenco", "Java", "Green"},
+                {"3", "Fabio", "Java", "Brown"},
+        };
+
+
+        String[][] abyssInfoValido = {
+                {"0", "8", "2"},
+                {"0", "7", "4"},
+                {"0", "8", "6"},
+        };
+        String expected ="[THE GREAT PROGRAMMING JOURNEY, , NR. DE TURNOS, 4, , O jogo terminou empatado., , Participantes:, Alice : 6 : Ciclo Infinito, Fabio : 4 : Blue Screen of Death, Lourenco : 2 : Ciclo Infinito]";
+        gm.createInitialBoard(playerInfoValido, 9, abyssInfoValido);
+
+
+        gm.moveCurrentPlayer(5);
+        gm.reactToAbyssOrTool();
+        assertFalse(gm.gameIsOver());
+        gm.moveCurrentPlayer(1);
+        gm.reactToAbyssOrTool();
+        assertFalse(gm.gameIsOver());
+        gm.moveCurrentPlayer(3);
+        gm.reactToAbyssOrTool();
+        assertTrue(gm.gameIsOver());
+        assertEquals(expected, gm.getGameResults().toString());
+    }
+
 }
