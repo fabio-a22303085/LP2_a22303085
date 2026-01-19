@@ -80,16 +80,15 @@
         }
 
         public boolean createInitialBoard(String[][] playerInfo, int worldSize, String[][] abyssesAndTools) {
-            // 1. Limpar dados antigos
             listaPlayers.clear();
             allInfoPlayers.clear();
             idJogadores.clear();
             tabuleiro.clear();
             vencedor = null;
+
             rondas = 0;
             atual = 0;
 
-            // 2. Validações Iniciais
             if (playerInfo == null || playerInfo.length < 2 || playerInfo.length > 4) {
                 return false;
             }
@@ -106,9 +105,8 @@
             List<String> coresDisponiveis = new ArrayList<>(Arrays.asList("Purple", "Green", "Blue", "Brown"));
             List<Integer> tempIds = new ArrayList<>();
 
-            // 3. Processar Jogadores
             for (String[] info : playerInfo) {
-                if (info.length < 4) return false;
+                if (info.length < 4){return false;}
 
                 try {
                     int id = Integer.parseInt(info[0]);
@@ -116,12 +114,10 @@
                     String linguagens = info[2];
                     String corSolicitada = info[3];
 
-                    // CORREÇÃO: id < 0 permite que o Jogador 0 exista (comum em testes).
-                    // Se o enunciado proibir o 0, muda para id < 1.
-                    if (id < 0 || idJogadores.contains(id)) {
+                    if (id < 1 || idJogadores.contains(id)){
                         return false;
                     }
-                    if (nome == null || nome.isBlank()) {
+                    if (nome == null || nome.isBlank()){
                         return false;
                     }
 
@@ -133,7 +129,6 @@
                         return false;
                     }
 
-                    // Cria o Jogador (a lógica de parsing de linguagens está agora dentro do Player)
                     Player p = new Player(id, 1, nome, corFinal, linguagens);
 
                     listaPlayers.add(p);
@@ -146,65 +141,80 @@
                 }
             }
 
-            // Ordenar IDs para definir a ordem de jogada
             Collections.sort(tempIds);
             for (int i = 0; i < numJogadores; i++) {
                 currentPlayer[i] = tempIds.get(i);
             }
 
-            // 4. Processar Elementos do Tabuleiro (Abismos e Ferramentas)
             if (abyssesAndTools != null) {
+                int[] countAbyss = new int[21]; // int[] countAbyss = new int[11] 0 a 21
+                int[] countTools = new int[8]; // int[] countTools = new int[7]; 0 a 6
 
-                // Nomes para usar na criação dos objetos
-                String[] nomesAbyss = {
-                        "Erro de sintaxe", "Erro de lógica", "Exception", "FileNotFoundException",
+                String[] nomesAbyss = {"Erro de sintaxe", "Erro de lógica", "Exception", "FileNotFoundException",
                         "Crash", "Código Duplicado", "Efeitos Secundários",
-                        "Blue Screen of Death", "Ciclo Infinito", "Segmentation Fault"
-                };
+                        "Blue Screen of Death", "Ciclo Infinito", "Segmentation Fault" /*"Novo Abyss"*/};
 
-                String[] nomesTools = {
-                        "Herança", "Programação Funcional", "Testes Unitários",
-                        "Tratamento de Excepções", "IDE", "Ajuda Do Professor", "Martelo Dourado"
-                };
+                String[] nomesTools = {"Herança", "Programação Funcional", "Testes Unitários",
+                        "Tratamento de Excepções", "IDE", "Ajuda Do Professor", "Martelo Dourado"};
+
 
                 for (String[] dados : abyssesAndTools) {
-                    if (dados.length < 3) return false;
+                    if (dados.length < 3){return false;}
 
                     try {
                         String tipoStr = dados[0];
                         int idItem = Integer.parseInt(dados[1]);
                         int posicao = Integer.parseInt(dados[2]);
 
-                        if (posicao < 1 || posicao > worldSize) return false;
-                        if (tabuleiro.containsKey(posicao)) return false;
+                        if (posicao < 1 || posicao > worldSize){return false;}
+
+                        if (tabuleiro.containsKey(posicao)){return false;}
+
+                        if (tipoStr.equals("0")) { // ABISMO
+                            if (idItem < 0 || idItem > 20){return false;}
+                        } else if (tipoStr.equals("1")) { // FERRAMENTA
+                            if (idItem < 0 || idItem > 6){return false;}
+                        } else {
+                            return false;
+                        }
 
                         BoardElement elemento = null;
 
-                        if (tipoStr.equals("1")) { // === FERRAMENTAS ===
-                            if (idItem < 0 || idItem > 6) return false; // IDs válidos de 0 a 6
-
-                            // CORREÇÃO CRÍTICA:
-                            // Como a lógica de "anular abismo" está agora nas classes Abyss,
-                            // podemos usar SimpleTool para TUDO, ou manter as classes específicas se existirem.
-                            // O 'default' garante que as ferramentas 2, 3, 5, etc., são criadas.
+                        if (tipoStr.equals("1")) { // FERRAMENTA
+                            if (idItem < 0 || idItem > 6) { return false; }
 
                             switch (idItem) {
-                                case 1:
+                                case 0: // Herança
+                                    elemento = new InheritanceTool(idItem, nomesTools[idItem]);
+                                    break;
+                                case 1: // Programação Funcional
                                     elemento = new FunctionalProgTool(idItem, nomesTools[idItem]);
                                     break;
-                                case 4:
-                                    // Se tiveres a classe IDETool usa-a, senão usa SimpleTool.
-                                    // Como agora o IDE é consumido como as outras, SimpleTool serve.
-                                    elemento = new SimpleTool(idItem, nomesTools[idItem]);
+                                case 2: // Testes Unitários
+                                    elemento = new UnitTestsTool(idItem, nomesTools[idItem]);
+                                    break;
+                                case 3: // Tratamento de Excepções
+                                    elemento = new ExceptionHandlingTool(idItem, nomesTools[idItem]);
+                                    break;
+                                case 4: // IDE
+                                    elemento = new IDETool(idItem, nomesTools[idItem]);
+                                    break;
+                                case 5: // Ajuda do Professor
+                                    elemento = new TeacherHelpTool(idItem, nomesTools[idItem]);
                                     break;
                                 default:
-                                    // Cobre: 0 (Herança), 2 (Testes), 3 (Exceptions), 5 (Professor), 6 (Martelo)
-                                    elemento = new SimpleTool(idItem, nomesTools[idItem]);
-                                    break;
+                                    // Caso exista uma ferramenta ID 6 (Martelo Dourado) e não tenhas classe para ela,
+                                    // retorna false ou cria uma GenericTool se tiveres.
+                                    // Se só existirem ferramentas até ao 5, o 'default' pode retornar false.
+                                    return false;
                             }
 
-                        } else if (tipoStr.equals("0")) { // === ABISMOS ===
-                            if (idItem < 0 || (idItem > 9 && idItem != 20)) return false;
+                        } else if (tipoStr.equals("0")) { // ABISMO
+
+                            // 1. Validação de segurança: Aceita 0-9 OU 20
+                            if (idItem < 0 || (idItem > 9 && idItem != 20)) {
+                                return false;
+                            }
 
                             switch (idItem) {
                                 case 0: elemento = new SyntaxErrorAbyss(0, nomesAbyss[0]); break;
@@ -217,23 +227,26 @@
                                 case 7: elemento = new BlueScreenAbyss(7, nomesAbyss[7]); break;
                                 case 8: elemento = new InfiniteLoopAbyss(8, nomesAbyss[8]); break;
                                 case 9: elemento = new SegmentationFaultAbyss(9, nomesAbyss[9]); break;
+
+                                // CORREÇÃO AQUI:
+                                // Não uses nomesAbyss[20] a menos que o array tenha 21 posições.
+                                // É mais seguro passar a string direta:
                                 case 20: elemento = new LLMAbyss(20, "LLM"); break;
+
                                 default: return false;
                             }
-
                         } else {
-                            return false; // Tipo inválido
+                            // Se não for nem "0" nem "1"
+                            return false;
                         }
 
                         tabuleiro.put(posicao, elemento);
 
-                    } catch (Exception e) {
+                    } catch (NumberFormatException e) {
                         return false;
                     }
                 }
-            }
-
-            return true;
+            } return true;
         }
 
 
