@@ -6,9 +6,10 @@ public class SideEffectsAbyss extends Abyss {
     @Override
     public String interact(Player player, GameManager game) {
         if (tentarUsarFerramenta(player, 1)) { // Tool 1: Prog Funcional
-            return "A Programação Funcional evitou efeitos secundários! Estás salvo.";
+            return "Efeitos Secundários anulado por Programação Funcional";
         }
-        player.voltarPosicaoAnterior(2);
-        return "Efeitos secundários! Recua para a posição de 2 movimentos atrás";
+        // Volta para onde estava há 2 turnos (verificar lógica no Player.java)
+        player.voltarDoisTurnos();
+        return "Efeitos Secundários! Voltas à posição de há 2 turnos.";
     }
 }

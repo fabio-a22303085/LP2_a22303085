@@ -1,28 +1,28 @@
 package pt.ulusofona.lp2.greatprogrammingjourney;
 
 public class LLMAbyss extends Abyss {
-
-    public LLMAbyss(int id, String titulo) {
-        super(id, titulo);
-    }
+    public LLMAbyss(int id, String titulo) { super(id, titulo); }
 
     @Override
     public String interact(Player player, GameManager game) {
-        if (player.getNumeroDeJogadas() <= 3) {
+        int jogadas = player.getNumeroDeJogadas(); // 0 no início, 1 após primeira jogada
 
-            if (tentarUsarFerramenta(player, 5)) {
-                return "O Professor reviu o código do LLM e corrigiu as alucinações. Estás salvo.";
-
-            } else {
-                player.voltarPosicaoAnterior(1);
-                return "O LLM inventou código nas primeiras rondas! Voltas à posição anterior.";
+        // "se ainda só tiver jogado 3 rodas" (<= 3)
+        if (jogadas <= 3) {
+            // Tenta usar ferramenta
+            if (tentarUsarFerramenta(player, 5)) { // Tool 5: Ajuda do Professor
+                return "LLM anulado por Ajuda do Professor";
             }
 
-        } else {
-
+            // Sem ferramenta: Volta para a posição anterior
+            player.voltarPosicaoAnterior(1);
+            return "LLM alucinou! Voltas à posição anterior.";
+        }
+        else {
+            // "A partir da 4 ronda... o resultado será sempre este"
             int bonus = player.getUltimoDado();
             player.move(bonus);
-            return "O LLM acelerou o desenvolvimento! Avanças mais " + bonus + " casas extra.";
+            return "LLM ajudou! Avanças mais " + bonus + " casas.";
         }
     }
 }

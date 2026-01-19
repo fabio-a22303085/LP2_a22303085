@@ -8,11 +8,7 @@ public abstract class Abyss extends BoardElement {
 
     protected boolean tentarUsarFerramenta(Player p, int idTool) {
         if (p.temFerramenta(idTool)) {
-
-            if (idTool != 4) {
-                p.removerFerramenta(idTool);
-            }
-
+            p.removerFerramenta(idTool); // Remove sempre após uso
             return true;
         }
         return false;

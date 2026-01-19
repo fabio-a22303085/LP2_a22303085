@@ -16,8 +16,21 @@ public abstract class Tool extends BoardElement {
         return 1;
     }
 
-    // Método auxiliar para as subclasses usarem
+    // Getter necessário para o Player listar o nome
+    public String getTitle() {
+        return super.getTitle();
+    }
+
+    // Método auxiliar (opcional, mantido por compatibilidade)
     protected void apanhar(Player p) {
         p.apanharFerramenta(this);
+    }
+
+    // === INTERAÇÃO PADRÃO ===
+    // Todas as ferramentas usam isto, a menos que faças Override numa específica
+    @Override
+    public String interact(Player player, GameManager game) {
+        player.apanharFerramenta(this);
+        return "Apanhaste a ferramenta: " + this.getTitle();
     }
 }

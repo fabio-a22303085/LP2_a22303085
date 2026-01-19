@@ -6,9 +6,9 @@ public class SyntaxErrorAbyss extends Abyss {
     @Override
     public String interact(Player player, GameManager game) {
         if (tentarUsarFerramenta(player, 4)) { // Tool 4: IDE
-            return "O IDE corrigiu o Erro de Sintaxe! Estás salvo.";
+            return "Erro de Sintaxe anulado por IDE";
         }
         player.move(-1);
-        return "Caiu num erro de sintaxe! Recua 1 casa";
+        return "Erro de Sintaxe! Recuas 1 casa.";
     }
 }

@@ -5,7 +5,8 @@ public class CrashAbyss extends Abyss {
 
     @Override
     public String interact(Player player, GameManager game) {
-        player.setPosicao(1); // Volta ao início (ajusta se for 0 ou 1 conforme tua lógica)
-        return "Crash! Volta à primeira casa do jogo";
+        // Nenhuma ferramenta anula
+        player.setPosicao(1);
+        return "Crash! O sistema foi abaixo. Voltas à casa 1.";
     }
 }

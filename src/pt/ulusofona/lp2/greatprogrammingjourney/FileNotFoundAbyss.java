@@ -6,9 +6,9 @@ public class FileNotFoundAbyss extends Abyss {
     @Override
     public String interact(Player player, GameManager game) {
         if (tentarUsarFerramenta(player, 3)) { // Tool 3: Exception Handling
-            return "Trataste a FileNotFoundException! Estás salvo.";
+            return "File Not Found Exception anulado por Exception Handling";
         }
         player.move(-3);
-        return "FileNotFoundException! Recua 3 casas";
+        return "File Not Found Exception! Recuas 3 casas.";
     }
 }
