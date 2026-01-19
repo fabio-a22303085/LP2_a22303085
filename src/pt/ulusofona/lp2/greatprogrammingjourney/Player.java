@@ -137,16 +137,24 @@ public class Player {
             return "";
         }
 
+        // 1. Converter para lista para poder ordenar
+        List<String> listaOrdenada = new ArrayList<>(nomeFerramentas);
+
+        // 2. Ordenar alfabeticamente (Obrigatório segundo o enunciado)
+        Collections.sort(listaOrdenada);
+
         StringBuilder sb = new StringBuilder();
-
-        for (String t: nomeFerramentas) {
+        for (String t : listaOrdenada) {
             sb.append(t);
-            sb.append(";");
-
+            sb.append(";"); // Apenas ponto e vírgula, SEM espaço
         }
-        sb.deleteCharAt(sb.length()-1);
 
-        return sb.toString().replaceAll(";", "; ");
+        // Remover o último ";"
+        if (sb.length() > 0) {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+
+        return sb.toString();
     }
 
     public String getEstado() {

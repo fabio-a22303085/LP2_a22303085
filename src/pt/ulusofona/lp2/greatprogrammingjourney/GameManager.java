@@ -145,7 +145,7 @@ public class GameManager {
                     "Blue Screen of Death", "Ciclo Infinito", "Segmentation Fault"};
 
             String[] nomesTools = {"Herança", "Programação Funcional", "Testes Unitários",
-                    "Tratamento de Excepções", "IDE", "Ajuda Do Professor"};
+                    "Tratamento de Excepções", "IDE", "Ajuda do Professor"};
 
             for (String[] dados : abyssesAndTools) {
                 if (dados.length < 3){return false;}
