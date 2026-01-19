@@ -1,5 +1,8 @@
 package pt.ulusofona.lp2.greatprogrammingjourney;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SegmentationFaultAbyss extends Abyss {
     public SegmentationFaultAbyss(int position) {
         super(9, position, "Segmentation Fault");
@@ -7,15 +10,23 @@ public class SegmentationFaultAbyss extends Abyss {
 
     @Override
     public String interact(Player player, GameManager game) {
-        // Verifica quantos jogadores estão nesta casa
-        String idsNaCasa = game.getSlotInfo(player.getPosicao())[0];
-        if (idsNaCasa != null && idsNaCasa.split(",").length > 1) {
+        List<Player> todos = game.getPlayers();
+        List<Player> jogadoresNaCasa = new ArrayList<>();
 
-            player.move(-3);
-
-            // Para afetar os outros, precisarias de game.recuarJogadoresNaCasa(pos, 3);
-            return "Segmentation Fault! Recuaste 3 casas devido a sobrelotação.";
+        // Identifica todos os que estão nesta posição específica
+        for (Player p : todos) {
+            if (p.getPosicao() == this.position && !p.getEstado().equals("Derrotado")) {
+                jogadoresNaCasa.add(p);
+            }
         }
+
+        // Só ativa se houver pelo menos 2 jogadores
+        if (jogadoresNaCasa.size() >= 2) {
+            for (Player p : jogadoresNaCasa) {
+                p.move(-3); // Todos recuam 3 casas
+            }
+            return "Segmentation Fault! Todos os jogadores na casa recuam 3 casas.";
+        }
+
         return "Segmentation Fault! (Sem efeito, estavas sozinho)";
-    }
-}
+    }}
