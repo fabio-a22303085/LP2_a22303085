@@ -8,7 +8,8 @@ public class Tool extends BoardElement {
     @Override
     public String interact(Player player, GameManager game) {
         player.apanharFerramenta(this);
-        return "Apanhou a ferramenta: " + this.title;
+        // O padrão esperado costuma ser apenas "Apanhou " + título
+        return "Apanhou " + this.title;
     }
 
     @Override
