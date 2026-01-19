@@ -351,29 +351,52 @@
             return true;
         }
 
-        public boolean gameIsOver(){
-            // 1. verificação de Vitória Normal
-            for(Player p: listaPlayers){
-                if(p.getPosicao() == tamanhoTabuleiro){
+        public boolean gameIsOver() {
+            // -----------------------------------------------------------
+            // CENÁRIO 1: Vitória por Alcance (Chegada à Meta)
+            // O critério clássico: quem chega à última casa ganha imediatamente.
+            // -----------------------------------------------------------
+            for (Player p : listaPlayers) {
+                if (p.getPosicao() == tamanhoTabuleiro) {
                     vencedor = p.getNome();
                     return true;
                 }
             }
 
-            // 2. verificar se todos estão derrotados
-            int contagemDerrotados = 0;
-            for(Player p : listaPlayers) {
-                if(p.getEstado().equals("Derrotado")) {
-                    contagemDerrotados++;
+            // -----------------------------------------------------------
+            // Contagem de "Sobreviventes" para os próximos cenários
+            // -----------------------------------------------------------
+            int jogadoresVivos = 0;
+            Player ultimoSobrevivente = null;
+
+            for (Player p : listaPlayers) {
+                // Consideramos "vivo" quem NÃO está com estado "Derrotado"
+                if (!p.getEstado().equals("Derrotado")) {
+                    jogadoresVivos++;
+                    ultimoSobrevivente = p; // Guardamos referência caso seja o vencedor
                 }
             }
 
-            // Se o número de mortos for igual ao número total de jogadores
-            if (contagemDerrotados == numJogadores) {
-                vencedor = "Empate"; // Define o vencedor como Empate
+            // -----------------------------------------------------------
+            // CENÁRIO 2: Vitória por Sobrevivência (Último Resistente)
+            // Se sobrar apenas 1 jogador e o jogo começou com mais de 1 (Multijogador).
+            // Esse jogador ganha por W.O. (os outros foram eliminados).
+            // -----------------------------------------------------------
+            if (jogadoresVivos == 1 && numJogadores > 1) {
+                vencedor = ultimoSobrevivente.getNome();
                 return true;
             }
 
+            // -----------------------------------------------------------
+            // CENÁRIO 3: Fim por Empate Técnico (Todos Neutralizados)
+            // Se não sobrar ninguém vivo (0 sobreviventes), o jogo bloqueou.
+            // -----------------------------------------------------------
+            if (jogadoresVivos == 0) {
+                vencedor = "Empate"; // Ninguém ganha
+                return true;
+            }
+
+            // Se ninguém chegou ao fim e ainda há 2 ou mais vivos, o jogo continua.
             return false;
         }
 

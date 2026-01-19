@@ -16,7 +16,7 @@ public class InfiniteLoopAbyss extends Abyss {
         }
 
         int jogadoresVivos = 0;
-        List<Player> todosJogadores = game.getListaPlayers(); // Tens de ter este getter no GameManager
+        List<Player> todosJogadores = game.getListaPlayers();
 
         for (Player p : todosJogadores) {
             if (!p.getEstado().equals("Derrotado")) {

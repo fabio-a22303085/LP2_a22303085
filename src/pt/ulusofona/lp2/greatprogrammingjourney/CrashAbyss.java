@@ -5,7 +5,12 @@ public class CrashAbyss extends Abyss {
 
     @Override
     public String interact(Player player, GameManager game) {
-        player.setPosicao(1); // Volta ao início
+        if (tentarUsarFerramenta(player, 3)) {
+            return "O teu Tratamento de Excepções preveniu o Crash. O sistema recuperou e continuas na mesma posição.";
+        }
+
+
+        player.setPosicao(1);
         return "Crash! Volta à primeira casa do jogo";
     }
 }
