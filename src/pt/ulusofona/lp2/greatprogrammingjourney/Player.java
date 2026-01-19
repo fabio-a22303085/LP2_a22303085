@@ -97,9 +97,11 @@ public class Player {
         if (this.posicao < 0){this.posicao = 0;}
     }
 
-    public void apanharFerramenta(Tool ferramenta) {
-        ferramentas.add(ferramenta);
-        nomeFerramentas.add(ferramenta.getTitle());
+    public void apanharFerramenta(Tool t) {
+        if (t != null) {
+            // Adiciona à lista de nomes (que usamos no toString e no save)
+            this.nomeFerramentas.add(t.getTitle());
+        }
     }
 
     public void removerFerramenta(int idFerramenta) {
@@ -124,12 +126,18 @@ public class Player {
 
     @Override
     public String toString() {
-        if (ferramentas.isEmpty()) {
-            return id + " | " + nome + " | " + posicao + " | No tools | " + linguagens + " | " + emJogo;
-        } else {
-
-            return id + " | " + nome + " | " + posicao + " | " + getFerramentasToString() + " | " + linguagens + " | " + emJogo;
+        String tools = getFerramentasToString();
+        if (tools.isEmpty()) {
+            tools = "No tools";
         }
+
+        // Formato: ID | Nome | Posicao | Ferramentas | Linguagem | Estado
+        return id + " | " +
+                nome + " | " +
+                posicao + " | " +
+                tools + " | " +
+                linguagens + " | " +
+                emJogo;
     }
 
     public String getFerramentasToString() {

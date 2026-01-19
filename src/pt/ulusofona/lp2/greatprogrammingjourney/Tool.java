@@ -8,7 +8,7 @@ public class Tool extends BoardElement {
     @Override
     public String interact(Player player, GameManager game) {
         player.apanharFerramenta(this);
-        return "Apanhaste a ferramenta: " + this.title;
+        return "Apanhou a ferramenta: " + this.title;
     }
 
     @Override

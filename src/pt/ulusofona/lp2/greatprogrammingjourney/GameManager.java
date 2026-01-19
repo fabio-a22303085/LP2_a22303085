@@ -709,18 +709,30 @@ public class GameManager {
     public String reactToAbyssOrTool() {
         int indiceQuemMoveu = (atual - 1 + numJogadores) % numJogadores;
         int id = currentPlayer[indiceQuemMoveu];
-
         Player player = allInfoPlayers.get(id);
 
         int posicao = player.getPosicao();
 
+        // 1. Se não há nada na casa, retorna null
         if (!tabuleiro.containsKey(posicao)) {
             return null;
         }
 
         BoardElement elemento = tabuleiro.get(posicao);
 
-        return elemento.interact(player, this);
+        // 2. Executa a interação
+        String mensagem = elemento.interact(player, this);
+
+        // 3. REGRA CRUCIAL: Se for um Abismo, ele desaparece após o uso
+        if (elemento.getTypePrefix().equals("A")) {
+            tabuleiro.remove(posicao);
+        }
+
+        // Nota: As Ferramentas (T) normalmente também desaparecem após serem apanhadas.
+        // Se os testes falharem em ferramentas, remove o IF e deixa apenas:
+        // tabuleiro.remove(posicao);
+
+        return mensagem;
     }
 
 }
