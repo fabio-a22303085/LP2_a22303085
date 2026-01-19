@@ -674,16 +674,12 @@ public class GameManager {
         }
     }
 
-    public String aaa(){
-        return (listaPlayers.get(atual).getEstado());
-    }
 
 
     public String reactToAbyssOrTool() {
         Player player = listaPlayers.get(atual);
         int posicao = player.getPosicao();
 
-        // 1. Guardamos o elemento (se existir) ANTES de mudar o turno
         BoardElement elemento = tabuleiro.get(posicao);
         String resultadoInteracao = null;
 
@@ -691,7 +687,7 @@ public class GameManager {
             resultadoInteracao = elemento.interact(player, this);
         }
 
-        // 2. Lógica de passar o turno (Acontece SEMPRE)
+        // passa sempre o turno
         do {
             atual = (atual + 1) % listaPlayers.size();
         } while (listaPlayers.get(atual).getEstado().equals("Derrotado"));
