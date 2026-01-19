@@ -676,6 +676,30 @@ public class GameManager {
         }
     }
 
+    public ArrayList<String> getGameResults() {
+        ArrayList<String> results = new ArrayList<>();
+        results.add("THE GREAT PROGRAMMING JOURNEY");
+        results.add("");
+        results.add("NR. DE TURNOS");
+        results.add(String.valueOf(rondas));
+        results.add("");
+        results.add("VENCEDOR");
+
+        // Verifica se há um vencedor ou se foi empate
+        if (vencedor != null && !vencedor.isEmpty()) {
+            results.add(vencedor);
+        } else {
+            results.add("O jogo acabou empatado.");
+        }
+
+        results.add("");
+        results.add("RESTANTES");
+
+        // Chama o método restantes() que já tens no código
+        results.addAll(restantes());
+
+        return results;
+    }
 
     public String reactToAbyssOrTool() {
         Player p = allInfoPlayers.get(idJogadorQueMoveu);
