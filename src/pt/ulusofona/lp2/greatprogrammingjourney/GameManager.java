@@ -293,12 +293,15 @@ public class GameManager {
         if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) {return false;}
         if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) {return false;}
 
-        //Se morreu não se mexe
-        if (p.getEstado().equals("Derrotado")) {
-            atual = (atual + 1) % numJogadores;
-            rondas++;
-            return true;
-        }
+
+
+
+        do{
+            atual=(atual+1) % listaPlayers.size();
+
+        } while (listaPlayers.get(atual).equals("Derrotado"));
+        rondas++;
+
 
         //Verifica se está preso
         if (p.getTurnosPreso() > 0) {
