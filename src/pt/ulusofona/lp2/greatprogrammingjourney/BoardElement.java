@@ -12,12 +12,9 @@ public abstract class BoardElement {
     public int getId() { return id; }
     public String getTitle() { return title; }
 
+    // Método polimórfico: cada filho decide como reage
     public abstract String interact(Player player, GameManager game);
 
-    //(retorna "A" ou "T")
-    public abstract String getTypePrefix();
-
-    //(retorna 0 ou 1)
-    public abstract int getTypeId();
-
+    public abstract String getTypePrefix(); // "A" ou "T"
+    public abstract int getTypeId(); // 0 ou 1
 }

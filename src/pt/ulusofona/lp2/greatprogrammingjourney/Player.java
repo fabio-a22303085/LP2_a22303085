@@ -1,9 +1,6 @@
 package pt.ulusofona.lp2.greatprogrammingjourney;
 
 import java.util.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class Player {
     int id, posicao;
@@ -13,12 +10,12 @@ public class Player {
     private int turnosPreso = 0;
     private int ultimoDado = 0;
 
-    private String causaDerrota = "";
     private Set<String> nomeFerramentas = new HashSet<>();
     private Set<Tool> ferramentas = new HashSet<>();
     private List<Integer> historicoPosicoes = new ArrayList<>();
     int index = 0;
     String primeiraLinguagem;
+    private String causaMorte = "";
 
 
     public Player(int id, int posicao, String nome, String cor, String linguagens) {
@@ -33,14 +30,6 @@ public class Player {
         Arrays.sort(linguasArray, String.CASE_INSENSITIVE_ORDER);
         this.linguagens = String.join("; ", linguasArray);
         this.historicoPosicoes.add(this.posicao);
-    }
-
-    public void setCausaDerrota(String causa) {
-        this.causaDerrota = causa;
-    }
-
-    public String getCausaDerrota() {
-        return this.causaDerrota;
     }
 
     public String getPrimeiraLinguagem() {
@@ -139,44 +128,25 @@ public class Player {
             return id + " | " + nome + " | " + posicao + " | No tools | " + linguagens + " | " + emJogo;
         } else {
 
-            return id + " | " + nome + " | " + posicao + " | " + getFerramentasToString() + " | " + linguagens + " | " + emJogo ;
+            return id + " | " + nome + " | " + posicao + " | " + getFerramentasToString() + " | " + linguagens + " | " + emJogo;
         }
     }
 
-    /* // cria string base para não repetir código
-    String baseInfo = id + " | " + nome + " | " + posicao + " | ";
-
-    String toolsStr = ferramentas.isEmpty() ? "No tools" : getFerramentasToString();
-
-    //Add "turnosPreso"
-    return baseInfo + toolsStr + " | " + linguagens + " | " + emJogo + " | Turnos Preso: " + turnosPreso; */
-
     public String getFerramentasToString() {
         if (nomeFerramentas.isEmpty()) {
-            return ""; // Ou "No tools", conforme a tua preferência
+            return "";
         }
-
-        // 1. Criar uma lista temporária com o conteúdo do Set
-        List<String> listaOrdenada = new ArrayList<>(nomeFerramentas);
-
-        // 2. Ordenar a lista alfabeticamente
-        // Se quiseres garantir que "a" e "A" ficam juntos, usa: String.CASE_INSENSITIVE_ORDER
-        Collections.sort(listaOrdenada);
 
         StringBuilder sb = new StringBuilder();
 
-        // 3. Percorrer a lista JÁ ORDENADA
-        for (String t : listaOrdenada) {
+        for (String t: nomeFerramentas) {
             sb.append(t);
-            sb.append("; ");
-        }
+            sb.append(";");
 
-        // 4. Remover o último "; " extra
-        if (sb.length() > 0) {
-            sb.setLength(sb.length() - 2);
         }
+        sb.deleteCharAt(sb.length()-1);
 
-        return sb.toString();
+        return sb.toString().replaceAll(";", "; ");
     }
 
     public String getEstado() {
@@ -218,6 +188,21 @@ public class Player {
         return this.ultimoDado;
     }
 
+    public int getNumeroJogadas() {
+        // Se o histórico tem 1 elemento (pos inicial), fez 0 jogadas.
+        // Se tem 2 elementos, fez 1 jogada.
+        return historicoPosicoes.size() - 1;
+    }
+
+    public void kill(String causa) {
+        this.emJogo = "Derrotado";
+        this.causaMorte = causa;
+    }
+
+    public String getCausaMorte() {
+        return causaMorte;
+    }
+
     public String getDataForSave() {
         StringBuilder sb = new StringBuilder();
 
@@ -249,15 +234,48 @@ public class Player {
         }
         sb.append(":");
 
+        if (causaMorte == null || causaMorte.isEmpty()) {
+            sb.append("NULL");
+        } else {
+            sb.append(causaMorte);
+        }
+        sb.append(":");
+
+        // --- NOVO: Histórico de Posições (para o LLM e Efeitos Secundários) ---
+        // Gravar como "0,4,6,10"
+        if (historicoPosicoes.isEmpty()) {
+            sb.append("NULL");
+        } else {
+            StringBuilder histSb = new StringBuilder();
+            for (Integer pos : historicoPosicoes) {
+                histSb.append(pos).append(",");
+            }
+            if (histSb.length() > 0) histSb.deleteCharAt(histSb.length() - 1);
+            sb.append(histSb.toString());
+        }
+
         return sb.toString();
     }
 
-    public int getNumeroDeJogadas() {
-        // A lista tem a posição inicial + 1 registo por cada jogada feita.
-        // Exemplo:
-        // Início (sem jogar): Tamanho 1 -> (1-1) = 0 Jogadas
-        // Jogou 1 vez: Tamanho 2 -> (2-1) = 1 Jogada
-        return historicoPosicoes.size() - 1;
+    public void restaurarHistorico(String historicoStr) {
+        this.historicoPosicoes.clear();
+        if (!historicoStr.equals("NULL") && !historicoStr.isEmpty()) {
+            String[] posicoes = historicoStr.split(",");
+            for (String s : posicoes) {
+                try {
+                    this.historicoPosicoes.add(Integer.parseInt(s));
+                } catch (NumberFormatException e) {
+                    // Ignorar erro de parsing
+                }
+            }
+        } else {
+            // Se não houver histórico, pelo menos a posição atual deve estar lá
+            this.historicoPosicoes.add(this.posicao);
+        }
+    }
+
+    public void setCausaMorte(String causa) {
+        this.causaMorte = causa;
     }
 
 }

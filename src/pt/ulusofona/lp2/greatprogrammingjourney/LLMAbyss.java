@@ -1,28 +1,31 @@
 package pt.ulusofona.lp2.greatprogrammingjourney;
 
 public class LLMAbyss extends Abyss {
-    public LLMAbyss(int id, String titulo) { super(id, titulo); }
+
+    public LLMAbyss(int position) {
+        // ID 20, conforme as regras novas
+        super(20, position, "LLM");
+    }
 
     @Override
     public String interact(Player player, GameManager game) {
-        int jogadas = player.getNumeroDeJogadas(); // 0 no início, 1 após primeira jogada
-
-        // "se ainda só tiver jogado 3 rodas" (<= 3)
-        if (jogadas <= 3) {
-            // Tenta usar ferramenta
-            if (tentarUsarFerramenta(player, 5)) { // Tool 5: Ajuda do Professor
-                return "LLM anulado por Ajuda do Professor";
-            }
-
-            // Sem ferramenta: Volta para a posição anterior
-            player.voltarPosicaoAnterior(1);
-            return "LLM alucinou! Voltas à posição anterior.";
+        // Regra: "A partir da 4 ronda" (ou seja, já fez mais de 3 movimentos)
+        if (player.getNumeroJogadas() > 3) {
+            // Comportamento Boost: avança o mesmo número de casas do último dado
+            int boost = player.getUltimoDado();
+            player.move(boost);
+            return "O LLM alucinou a teu favor! Avanças mais " + boost + " casas.";
         }
         else {
-            // "A partir da 4 ronda... o resultado será sempre este"
-            int bonus = player.getUltimoDado();
-            player.move(bonus);
-            return "LLM ajudou! Avanças mais " + bonus + " casas.";
+            // Comportamento Abismo (antes da 4ª ronda)
+            // Tool que anula: Teacher Help (ID 5)
+            if (tentarUsarFerramenta(player, 5)) {
+                return "O Professor ajudou-te a verificar o código do LLM! Estás salvo.";
+            } else {
+                // Efeito: Volta para a posição anterior
+                player.voltarPosicaoAnterior(1);
+                return "Copiaste código do LLM sem saber! Voltas à posição anterior.";
+            }
         }
     }
 }
