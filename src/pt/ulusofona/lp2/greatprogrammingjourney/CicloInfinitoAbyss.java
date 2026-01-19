@@ -7,7 +7,7 @@ public class CicloInfinitoAbyss extends Abyss {
 
     @Override
     public String interact(Player player, GameManager game) {
-        if (tentarUsarFerramenta(player, 5)) { // ID 5 = Ajuda Prof
+        if (tentarUsarFerramenta(player, 1)) { // ID 5 = Ajuda Prof
             return "O Professor ajudou-te a sair do Ciclo Infinito!";
         }
 

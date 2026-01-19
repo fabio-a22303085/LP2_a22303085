@@ -393,14 +393,11 @@ public class GameManager {
             if (p.getPosicao() != tamanhoTabuleiro) {
 
                 StringBuilder sb = new StringBuilder();
-                sb.append(p.getNome())
-                        .append(" (").append(p.getId()).append(")");
+                sb.append(p.getNome());
 
-                // Se estiver morto/derrotado, mostra a causa
                 if (p.getEstado().equals("Derrotado")) {
                     sb.append(": ").append(p.getCausaMorte());
                 } else {
-                    // Se estiver vivo mas perdeu (ex: jogo acabou empatado ou outro ganhou)
                     sb.append(" ").append(p.getPosicao());
                 }
 
