@@ -169,7 +169,7 @@ public class GameManager {
 
                     BoardElement elemento = null;
 
-                    if (tipoStr.equals("1") || idItem == 1) { // Adapta a condição conforme estejas no create ou no restore
+                    if (tipoStr.equals("1")) { // Adapta a condição conforme estejas no create ou no restore
 
                         // Switch para criar a Ferramenta específica
                         switch (idItem) { // ou 'id' se estiveres no restaurarElementoTabuleiro
@@ -629,7 +629,7 @@ public class GameManager {
             if (tipoId == 1) { // Adapta a condição conforme estejas no create ou no restore
 
                 // Switch para criar a Ferramenta específica
-                switch (tipoId) { // ou 'id' se estiveres no restaurarElementoTabuleiro
+                switch (id) { // ou 'id' se estiveres no restaurarElementoTabuleiro
                     case 0: elemento = new HerancaTool(0, "Herança"); break;
                     case 1: elemento = new ProgramacaoFuncionalTool(1, "Programação Funcional"); break;
                     case 2: elemento = new TestesUnitariosTool(2, "Testes Unitários"); break;
