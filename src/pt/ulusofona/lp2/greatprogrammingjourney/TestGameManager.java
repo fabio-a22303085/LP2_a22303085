@@ -232,7 +232,6 @@ public class TestGameManager {
 
         gm.moveCurrentPlayer(5);
 
-        gm.aaa();
 
         gm.reactToAbyssOrTool();
 
@@ -241,7 +240,6 @@ public class TestGameManager {
 
         gm.moveCurrentPlayer(3);
 
-        gm.aaa();
 
         gm.reactToAbyssOrTool();
 
