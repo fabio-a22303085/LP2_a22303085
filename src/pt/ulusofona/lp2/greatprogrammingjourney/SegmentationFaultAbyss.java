@@ -11,22 +11,17 @@ public class SegmentationFaultAbyss extends Abyss {
     @Override
     public String interact(Player player, GameManager game) {
         List<Player> todos = game.getPlayers();
-        List<Player> jogadoresNaCasa = new ArrayList<>();
-
-        // Identifica todos os que estão nesta posição específica
+        List<Player> naCasa = new ArrayList<>();
         for (Player p : todos) {
             if (p.getPosicao() == this.position && !p.getEstado().equals("Derrotado")) {
-                jogadoresNaCasa.add(p);
+                naCasa.add(p);
             }
         }
 
-        // Só ativa se houver pelo menos 2 jogadores
-        if (jogadoresNaCasa.size() >= 2) {
-            for (Player p : jogadoresNaCasa) {
-                p.move(-3); // Todos recuam 3 casas
-            }
+        if (naCasa.size() >= 2) {
+            for (Player p : naCasa) p.move(-3); // Todos recuam
             return "Segmentation Fault! Todos os jogadores na casa recuam 3 casas.";
         }
-
         return "Segmentation Fault! (Sem efeito, estavas sozinho)";
-    }}
+    }
+}
