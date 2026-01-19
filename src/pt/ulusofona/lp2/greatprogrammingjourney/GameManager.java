@@ -676,7 +676,6 @@ public class GameManager {
     }
 
 
-
     public String reactToAbyssOrTool() {
         Player player = listaPlayers.get(atual);
         int posicao = player.getPosicao();
@@ -697,5 +696,4 @@ public class GameManager {
 
         return resultadoInteracao;
     }
-
 }
