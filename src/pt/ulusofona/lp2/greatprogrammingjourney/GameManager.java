@@ -286,38 +286,50 @@ public class GameManager {
 
 
     public boolean moveCurrentPlayer(int nrSpaces) {
-        if (numJogadores == 0 || nrSpaces < 1 || nrSpaces > 6) { return false; }
+
+        if (gameIsOver()) {
+            return false;
+        }
+
+        if (numJogadores == 0 || nrSpaces < 1 || nrSpaces > 6) {
+            return false;
+        }
 
         idJogadorQueMoveu = currentPlayer[atual];
         Player p = allInfoPlayers.get(idJogadorQueMoveu);
 
-        // 1. Se começa o turno preso: retorna FALSE e gasta o turno
+        // O dado foi lançado SEMPRE
+        p.setUltimoDado(nrSpaces);
+        p.registarJogada();
+
+        // Jogador preso
         if (p.getTurnosPreso() > 0) {
             p.setTurnosPreso(0);
             p.setEmJogo("Em Jogo");
             rodarTurno();
-            return false; // OBRIGATÓRIO: Retornar false para indicar que não se moveu
+            return false;
         }
 
         String lang = p.getPrimeiraLinguagem().trim();
 
+        // Restrições por linguagem
         if (lang.equalsIgnoreCase("Assembly") && nrSpaces > 2) {
             rodarTurno();
-            return false; // Falha o movimento, mas passa o turno
-        }
-        if (lang.equalsIgnoreCase("C") && nrSpaces > 3) {
-            rodarTurno();
-            return false; // Falha o movimento, mas passa o turno
+            return false;
         }
 
-        // 3. Movimento Válido: retorna TRUE
-        p.setUltimoDado(nrSpaces);
-        p.registarJogada();
+        if (lang.equalsIgnoreCase("C") && nrSpaces > 3) {
+            rodarTurno();
+            return false;
+        }
+
+        // Movimento válido
         p.setPosicao(Math.min(p.getPosicao() + nrSpaces, tamanhoTabuleiro));
 
         rodarTurno();
         return true;
     }
+
 
     private void rodarTurno() {
         // Avança pelo menos um
@@ -334,32 +346,38 @@ public class GameManager {
 
 
     public boolean gameIsOver() {
-        // 1. Condição de Vitória (Alguém chegou ao fim)
+
         for (Player p : listaPlayers) {
-            if (p.getPosicao() >= tamanhoTabuleiro) { // Usa >= por segurança
-                vencedor = p.getNome();
-                return true;
+
+            if (!p.getEstado().equals("Em Jogo")) {
+                continue;
+            }
+
+            if (p.getTurnosPreso() > 0) {
+                continue;
+            }
+
+            int limite;
+
+            if (p.getPrimeiraLinguagem().equalsIgnoreCase("Assembly")) {
+                limite = 2;
+            } else if (p.getPrimeiraLinguagem().equalsIgnoreCase("C")) {
+                limite = 3;
+            } else {
+                limite = 6;
+            }
+
+            int maxDado = Math.min(6, limite);
+
+            if (maxDado >= 1) {
+                return false; // há pelo menos um jogador que pode jogar
             }
         }
 
-        // 2. Condição de Bloqueio (Ninguém pode jogar)
-        boolean alguemPodeJogar = false;
-        for (Player p : listaPlayers) {
-            // Se houver PELO MENOS UM que não está Derrotado, o jogo continua
-            if (!p.getEstado().equals("Derrotado")) {
-                alguemPodeJogar = true;
-                break;
-            }
-        }
-
-        // Se o ciclo acabou e ninguém pode jogar, o jogo ACABOU (true)
-        if (!alguemPodeJogar) {
-            vencedor = null; // Empate
-            return true;
-        }
-
-        return false;
+        return true;
     }
+
+
 
 
     public ArrayList<String> restantes() {
