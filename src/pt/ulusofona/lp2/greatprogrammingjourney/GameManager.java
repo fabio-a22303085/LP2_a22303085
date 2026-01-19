@@ -290,19 +290,29 @@ public class GameManager {
         if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) {return false;}
         if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) {return false;}
 
-        //Se morreu não se mexe
         if (p.getEstado().equals("Derrotado")) {
+            // Passa ao próximo
             atual = (atual + 1) % numJogadores;
+            // Se o próximo TAMBÉM estiver morto, continua a saltar
+            while (allInfoPlayers.get(currentPlayer[atual]).getEstado().equals("Derrotado")) {
+                atual = (atual + 1) % numJogadores;
+            }
             rondas++;
             return true;
         }
 
         //Verifica se está preso
         if (p.getTurnosPreso() > 0) {
-            p.setTurnosPreso(0); // Liberta o jogador para a jogada
+            p.setTurnosPreso(p.getTurnosPreso() - 1);
 
             atual = (atual + 1) % numJogadores; // Passa a vez ao próximo
             rondas++;
+
+            // O truque simples: Loop enquanto o próximo estiver Derrotado
+            while (allInfoPlayers.get(currentPlayer[atual]).getEstado().equals("Derrotado")) {
+                atual = (atual + 1) % numJogadores;
+            }
+
             return true; // O jogador atual não se mexe neste turno
         }
 
@@ -320,8 +330,14 @@ public class GameManager {
         atual = (atual + 1) % numJogadores;
         rondas++;
 
+        // O truque simples: Loop enquanto o próximo estiver Derrotado
+        while (allInfoPlayers.get(currentPlayer[atual]).getEstado().equals("Derrotado")) {
+            atual = (atual + 1) % numJogadores;
+        }
+
         return true;
     }
+
 
     public boolean gameIsOver(){
         for(Player p: listaPlayers){
