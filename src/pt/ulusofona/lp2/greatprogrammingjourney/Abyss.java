@@ -6,13 +6,11 @@ public abstract class Abyss extends BoardElement {
         super(id, titulo);
     }
 
+    public abstract String interact(Player player, GameManager game);
+
     protected boolean tentarUsarFerramenta(Player p, int idTool) {
         if (p.temFerramenta(idTool)) {
-
-            if (idTool != 4) {
-                p.removerFerramenta(idTool);
-            }
-
+            p.removerFerramenta(idTool); // Remove sempre do inventário
             return true;
         }
         return false;

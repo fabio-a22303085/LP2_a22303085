@@ -5,7 +5,7 @@ public class SegmentationFaultAbyss extends Abyss {
 
     @Override
     public String interact(Player player, GameManager game) {
-        game.recuarTodosEm(player.getPosicao(), 3);
-        return "Segmentation Fault! Todos os programadores nesta casa recuam 3 casas";
+        player.setEmJogo("Derrotado");
+        return "Segmentation Fault! Acedeste a memória inválida (Core Dumped). Fim de jogo.";
     }
 }

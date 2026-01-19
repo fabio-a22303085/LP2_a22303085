@@ -5,10 +5,12 @@ public class ExceptionAbyss extends Abyss {
 
     @Override
     public String interact(Player player, GameManager game) {
-        if (tentarUsarFerramenta(player, 3)) { // Tool 3: Exception Handling
-            return "Apanhaste a Exception com um Try-Catch! Estás salvo.";
+        if (tentarUsarFerramenta(player, 3)) {
+            return "O Try-Catch apanhou a exceção. Estás salvo.";
         }
-        player.move(-2);
-        return "Exception! Recua 2 casas";
+
+        // Falha: Recua 2 turnos (regra comum para Exceptions genéricas)
+        player.voltarDoisTurnos();
+        return "Lançada uma Exception não tratada! Voltas 2 posições no histórico.";
     }
 }

@@ -5,11 +5,13 @@ public class LogicErrorAbyss extends Abyss {
 
     @Override
     public String interact(Player player, GameManager game) {
-        if (tentarUsarFerramenta(player, 2)) { // Tool 2: Unit Tests
-            return "Os Testes Unitários apanharam o erro! Estás salvo.";
+        if (tentarUsarFerramenta(player, 2)) {
+            return "Os Testes Unitários apanharam o erro de lógica. Estás salvo.";
         }
-        int recuo = (int) Math.floor(game.getNrSpaces() / 2.0);
-        player.move(-recuo);
-        return "Erro de Lógica! Recua " + recuo + " casas.";
+
+        // Falha: Recua metade do dado (exemplo comum neste projeto) ou 1 casa
+        // Verifica a tua regra de penalidade específica. Vou pôr recuar 1 casa.
+        player.voltarPosicaoAnterior(1);
+        return "Erro de Lógica! O resultado não é o esperado. Recuas.";
     }
 }
