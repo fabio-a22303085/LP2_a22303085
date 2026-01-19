@@ -26,6 +26,8 @@ public class GameManager {
     private String vencedor;
     private int nrSpaces = 0;
 
+    private int idJogadorQueMoveu; // Variável imperativa para clareza
+
     public List<Player> getPlayers() {
         return listaPlayers;
     }
@@ -282,47 +284,38 @@ public class GameManager {
         return allInfoPlayers.get(id).toString();
     }
 
+
     public boolean moveCurrentPlayer(int nrSpaces) {
         this.nrSpaces = nrSpaces;
+        if (numJogadores == 0 || nrSpaces < 1 || nrSpaces > 6) { return false; }
 
-        if (numJogadores == 0){return false;}
-        if (nrSpaces < 1 || nrSpaces > 6) {return false;}
+        // 1. Guardamos o ID antes de qualquer rotação
+        idJogadorQueMoveu = currentPlayer[atual];
+        Player p = allInfoPlayers.get(idJogadorQueMoveu);
 
-        Player p = allInfoPlayers.get(currentPlayer[atual]);
+        // Validações de linguagem
+        if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) { return false; }
+        if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) { return false; }
 
-        if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) {return false;}
-        if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) {return false;}
-
-        //Se morreu não se mexe
-        if (p.getEstado().equals("Derrotado")) {
-            atual = (atual + 1) % numJogadores;
-            rondas++;
-            return true;
-        }
-
-        //Verifica se está preso
+        // Lógica de Movimento/Preso
         if (p.getTurnosPreso() > 0) {
-            p.setTurnosPreso(0); // Liberta o jogador para a jogada
-
-            atual = (atual + 1) % numJogadores; // Passa a vez ao próximo
-            rondas++;
-            return true; // O jogador atual não se mexe neste turno
-        }
-
-        p.setUltimoDado(nrSpaces); //Erro de Lógica
-        p.registarJogada();        //Voltar Posição Anterior
-
-        // Movimento
-        if (p.getPosicao() + nrSpaces >= tamanhoTabuleiro) {
-            p.setPosicao(tamanhoTabuleiro);
+            p.setTurnosPreso(0);
+            p.setEmJogo("Em Jogo");
         } else {
-            p.setPosicao(p.getPosicao() + nrSpaces);
+            p.setUltimoDado(nrSpaces);
+            p.registarJogada();
+            p.setPosicao(Math.min(p.getPosicao() + nrSpaces, tamanhoTabuleiro));
         }
 
-        // Terminar turno
+        // Rotação de Turno Simples
         atual = (atual + 1) % numJogadores;
-        rondas++;
+        int s = 0;
+        while (allInfoPlayers.get(currentPlayer[atual]).getEstado().equals("Derrotado") && s < numJogadores) {
+            atual = (atual + 1) % numJogadores;
+            s++;
+        }
 
+        rondas++;
         return true;
     }
 
@@ -697,20 +690,12 @@ public class GameManager {
 
 
     public String reactToAbyssOrTool() {
-        int indiceQuemMoveu = (atual - 1 + numJogadores) % numJogadores;
-        int id = currentPlayer[indiceQuemMoveu];
+        Player p = allInfoPlayers.get(idJogadorQueMoveu);
+        BoardElement el = tabuleiro.get(p.getPosicao());
 
-        Player player = allInfoPlayers.get(id);
+        if (el == null) { return null; }
 
-        int posicao = player.getPosicao();
-
-        if (!tabuleiro.containsKey(posicao)) {
-            return null;
-        }
-
-        BoardElement elemento = tabuleiro.get(posicao);
-
-        return elemento.interact(player, this);
+        return el.interact(p, this);
     }
 
 }
