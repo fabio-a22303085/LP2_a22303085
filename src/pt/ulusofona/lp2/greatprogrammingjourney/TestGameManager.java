@@ -240,7 +240,6 @@ public class TestGameManager {
 
         gm.moveCurrentPlayer(3);
 
-
         gm.reactToAbyssOrTool();
 
         gm.gameIsOver();
