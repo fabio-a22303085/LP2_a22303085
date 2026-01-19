@@ -357,25 +357,31 @@ public class GameManager {
                 continue;
             }
 
-            int limite;
+            String lang = p.getPrimeiraLinguagem().trim();
 
-            if (p.getPrimeiraLinguagem().equalsIgnoreCase("Assembly")) {
-                limite = 2;
-            } else if (p.getPrimeiraLinguagem().equalsIgnoreCase("C")) {
-                limite = 3;
+            int maxPermitido;
+
+            if (lang.equalsIgnoreCase("Assembly")) {
+                maxPermitido = 2;
+            } else if (lang.equalsIgnoreCase("C")) {
+                maxPermitido = 3;
             } else {
-                limite = 6;
+                maxPermitido = 6;
             }
 
-            int maxDado = Math.min(6, limite);
-
-            if (maxDado >= 1) {
-                return false; // há pelo menos um jogador que pode jogar
+            // Testa se existe ALGUM valor de dado válido (1..6)
+            for (int dado = 1; dado <= 6; dado++) {
+                if (dado <= maxPermitido) {
+                    // ESTE jogador conseguiria mover
+                    return false;
+                }
             }
         }
 
+        // NINGUÉM conseguiu mover
         return true;
     }
+
 
 
 
