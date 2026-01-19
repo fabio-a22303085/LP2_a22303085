@@ -15,7 +15,7 @@ public class LLMAbyss extends Abyss {
 
             } else {
                 player.voltarPosicaoAnterior(1);
-                return "O LLM inventou código nas primeiras rondas! Voltas à posição anterior.";
+                return "Caiu no LLM! Recue para a posição onde estava antes.";
             }
 
         } else {

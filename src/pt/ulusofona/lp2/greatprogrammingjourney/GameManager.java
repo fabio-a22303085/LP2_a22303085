@@ -352,7 +352,7 @@
         }
 
         public boolean gameIsOver(){
-            // 1. Verificação de Vitória Normal (alguém chegou ao fim)
+            // 1. verificação de Vitória Normal
             for(Player p: listaPlayers){
                 if(p.getPosicao() == tamanhoTabuleiro){
                     vencedor = p.getNome();
@@ -360,16 +360,16 @@
                 }
             }
 
-            // 2. NOVA REGRA: Verificar se TODOS estão derrotados
-            int contagemMortos = 0;
+            // 2. verificar se todos estão derrotados
+            int contagemDerrotados = 0;
             for(Player p : listaPlayers) {
                 if(p.getEstado().equals("Derrotado")) {
-                    contagemMortos++;
+                    contagemDerrotados++;
                 }
             }
 
             // Se o número de mortos for igual ao número total de jogadores
-            if (contagemMortos == numJogadores) {
+            if (contagemDerrotados == numJogadores) {
                 vencedor = "Empate"; // Define o vencedor como Empate
                 return true;
             }
@@ -723,6 +723,11 @@
             BoardElement elemento = tabuleiro.get(posicao);
 
             return elemento.interact(player, this);
+        }
+
+
+        public List<Player> getListaPlayers() {
+            return this.listaPlayers;
         }
 
     }
