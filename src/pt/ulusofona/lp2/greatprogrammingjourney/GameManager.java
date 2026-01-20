@@ -305,9 +305,11 @@ public class GameManager {
         p.setUltimoDado(nrSpaces);
         p.registarJogada();
 
-        if (p.getPosicao() + nrSpaces >= tamanhoTabuleiro) {
+        if (p.getPosicao() + nrSpaces > tamanhoTabuleiro) {
+            p.setPosicao(p.getPosicao()-(p.getPosicao()+nrSpaces - tamanhoTabuleiro));
+        } else if (p.getPosicao() + nrSpaces == tamanhoTabuleiro) {
             p.setPosicao(tamanhoTabuleiro);
-        } else {
+        }else {
             p.setPosicao(p.getPosicao() + nrSpaces);
         }
 
@@ -315,31 +317,39 @@ public class GameManager {
     }
 
     public boolean gameIsOver() {
+        String sobrevivente = "";
         int contAtivos = 0;
-        int contDerrotados = 0;
+        int empate = 0;
 
         for (Player p : listaPlayers) {
-            // 1. Vitória por chegada à meta
-            if (p.getPosicao() >= tamanhoTabuleiro) {
+            if (p.getPosicao() == tamanhoTabuleiro) {
                 vencedor = p.getNome();
                 return true;
             }
 
-            if (p.getEstado().equals("Derrotado")) {
-                contDerrotados++;
-            } else {
+        }
+
+        for (Player p : listaPlayers) {
+            if (!p.getEstado().equals("Em Jogo")) {
                 contAtivos++;
+                empate++;
+                sobrevivente = p.getNome();
+            }
+
+            if(!p.getEstado().equals("Derrotado")){
+                contAtivos++;
+                sobrevivente = p.getNome();
             }
         }
 
-        // 2. Se todos morrerem -> Empate
-        if (contDerrotados == listaPlayers.size()) {
-            vencedor = null;
+        if (contAtivos < 2) {
+            vencedor = sobrevivente;
             return true;
         }
 
-        // 3. Se o teste espera continuar com 1 jogador, removemos o "cont < 2"
-        // O jogo só para se contAtivos == 0 (todos mortos) ou alguém ganhar.
+        if (empate == listaPlayers.size()) {
+            return true;
+        }
         return false;
     }
 
@@ -745,7 +755,6 @@ public class GameManager {
 
 
     public String reactToAbyssOrTool() {
-        // Busca o jogador atual pelo ID guardado no array
         Player player = allInfoPlayers.get(currentPlayer[atual]);
         int posicao = player.getPosicao();
 
@@ -756,15 +765,17 @@ public class GameManager {
             resultadoInteracao = elemento.interact(player, this);
         }
 
-        rondas++; // Incrementa a ronda
+        rondas++;
 
-        // PROTEÇÃO: Só procura o próximo jogador se o jogo NÃO acabou
+        // Só passa o turno se o jogo ainda não acabou
         if (!gameIsOver()) {
             int startingIndex = atual;
             do {
                 atual = (atual + 1) % numJogadores;
-                // Se dermos a volta completa e ninguém estiver vivo, paramos
-                if (atual == startingIndex) break;
+                // Segurança para não entrar em loop infinito
+                if (atual == startingIndex) {
+                    break;
+                }
             } while (allInfoPlayers.get(currentPlayer[atual]).getEstado().equals("Derrotado"));
         }
 

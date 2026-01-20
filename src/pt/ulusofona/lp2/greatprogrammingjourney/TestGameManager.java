@@ -278,7 +278,7 @@ public class TestGameManager {
     }
 
     @Test
-    public void testeGetGameResults2() {
+    public void testeGetGameResults2(){
         gm = new GameManager();
         int boardSize = 15;
         gm.createInitialBoard(jogadoresValidos2(), boardSize);
@@ -323,4 +323,4 @@ public class TestGameManager {
         assertEquals(gm.getProgrammerInfoAsStr(4), "4 | John | 5 | No tools | Java; Python | Em Jogo");
 
 
-    }}
+    } }
