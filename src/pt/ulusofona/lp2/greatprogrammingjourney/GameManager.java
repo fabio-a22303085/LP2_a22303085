@@ -289,14 +289,14 @@ public class GameManager {
     public boolean moveCurrentPlayer(int nrSpaces) {
         this.nrSpaces = nrSpaces;
 
-        if (numJogadores == 0) return false;
-        if (nrSpaces < 1 || nrSpaces > 6) return false;
+        if (numJogadores == 0) {return false;}
+        if (nrSpaces < 1 || nrSpaces > 6) {return false;}
 
         // CORREÇÃO: Usar o ID do array currentPlayer
         Player p = getJogadorAtual();
 
-        if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) return false;
-        if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) return false;
+        if (p.getPrimeiraLinguagem().equals("Assembly") && nrSpaces > 2) {return false;}
+        if (p.getPrimeiraLinguagem().equals("C") && nrSpaces > 3) {return false;}
 
         if (!p.getEstado().equals("Em Jogo")) {
             return false;

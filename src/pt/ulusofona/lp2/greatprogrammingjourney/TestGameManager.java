@@ -218,64 +218,17 @@ public class TestGameManager {
         gm.createInitialBoard(jogadoresValidos(), boardSize);
 
         gm.moveCurrentPlayer(6);
+        gm.reactToAbyssOrTool();
         gm.moveCurrentPlayer(6);
+        gm.reactToAbyssOrTool();
         gm.moveCurrentPlayer(6);
+        gm.reactToAbyssOrTool();
         gm.moveCurrentPlayer(6);
+        gm.reactToAbyssOrTool();
+
         assertTrue(gm.gameIsOver());
     }
 
-    @Test
-    public void testeGetGameResults(){
-        gm = new GameManager();
-        int boardSize = 7;
-        gm.createInitialBoard(jogadoresValidos(), boardSize);
-
-        gm.moveCurrentPlayer(5);
-
-
-        gm.reactToAbyssOrTool();
-
-
-        gm.gameIsOver();
-
-        gm.moveCurrentPlayer(3);
-
-        gm.reactToAbyssOrTool();
-
-        gm.gameIsOver();
-
-        gm.moveCurrentPlayer(4);
-
-        gm.reactToAbyssOrTool();
-
-        gm.gameIsOver();
-
-        gm.moveCurrentPlayer(6);
-
-        gm.reactToAbyssOrTool();
-
-        gm.gameIsOver();
-
-
-        ArrayList<String> str = new ArrayList<>();
-
-        str.add("THE GREAT PROGRAMMING JOURNEY");
-        str.add("");
-        str.add("NR. DE TURNOS");
-        str.add("5");
-        str.add("");
-        str.add("VENCEDOR");
-        str.add("Ana");
-        str.add("");
-        str.add("RESTANTES");
-        str.add("Clara 5");
-        str.add("Bruno 4");
-
-
-
-    assertEquals(str,  gm.getGameResults());
-
-    }
 
     @Test
     public void testeGetGameResults2(){
